@@ -230,7 +230,7 @@ class Fairwalk(Node2Vec):
         Node2Vec.__init__(self, **params)
         self.group_membership = group_membership
         self.w2vparams = {
-            "sg": 0,
+            "sg": 1,
             "hs": 1,
             "min_count": 0,
             "workers": 4,
