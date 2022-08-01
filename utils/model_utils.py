@@ -56,7 +56,6 @@ class GraphConvolution(Module):
             self.bias.data.uniform_(-stdv, stdv)
 
     def forward(self, input, adj):
-        # H * W
         support = torch.mm(input, self.weight)
 
         # N(A) * H * W # Addition aggregation by multiplying

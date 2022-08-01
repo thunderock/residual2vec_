@@ -6,6 +6,11 @@ import numpy as np
 import networkx as nx
 from tqdm import trange
 
+
+def accuracy(y_pred, y_true):
+    return y_pred.max(1)[1].eq(y_true).double().mean().numpy()
+
+
 def statistical_parity(G, y):
     classes, counts = np.unique(y, return_counts=True)
     # check if G is graph
