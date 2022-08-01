@@ -5,67 +5,68 @@
 
 import torch
 import math
+from utils.config import *
 from torch.nn.parameter import Parameter
 from torch.nn.modules.module import Module
+import torch.nn as nn
+import torch.nn.functional as F
 
-class GraphConvolution(Module):
-    """
-     A simple implementation of graph convolution, please refer to the paper https://arxiv.org/abs/1609.02907
-     ...
-     Attributes
-     ----------
-     in_features: int
-         The size of the image convolution input feature vector, namely $|H^{(l)}|$
-     out_features: int
-         The size of the image convolution output vector, namely $|H^{(l+1)}|$
-     bias: bool
-         Whether to use the offset vector, the default is True, that is, the default is to use the offset vector
-     weight: Parameter
-         Trainable parameters in graph convolution,
 
-     Methods
-     -------
-     __init__(self, in_features, out_features, bias=True)
-         The constructor of the graph convolution, defines the size of the input feature, the size of the output vector, whether to use offset, parameters
-     reset_parameters(self)
-         Initialize the parameters in the graph convolution
-     forward(self, input, adj)
-         Forward propagation function, input is the feature input, and adj is the transformed adjacency matrix $N(A)=D^{-1}\tilde{A}$. Completing the calculation logic of forward propagation, $N(A) H^{(l)} W^{(l)}$
-     __repr__(self)
-         Refactored class name expression
-     """
+class GraphAttentionLayer(Module):
+    def __init__(self, in_features, out_features, dropout=DROPOUT, alpha=ALPHA, concat=True):
+        super(GraphAttentionLayer, self).__init__()
+        self.in_features = in_features
+        self.out_features = out_features
+        self.alpha = alpha
+        self.dropout = dropout
+        self.concat = concat
+        self.W = Parameter(torch.zeros(size=(in_features, out_features)))
+        nn.init.xavier_uniform_(self.W.data, gain=1.414)
+        self.a = Parameter(torch.zeros(2 * out_features, 1))
+        nn.init.xavier_uniform_(self.a.data, gain=1.414)
+        self.leakyrelu = nn.LeakyReLU(self.alpha)
 
-    def __init__(self, in_features, out_features, bias=True):
-        super(GraphConvolution, self).__init__()
+    def _attention(self, Wh):
+        W1 = torch.matmul(Wh, self.a[:self.out_features, :])
+        W2 = torch.matmul(Wh, self.a[self.out_features:, :])
+        # broadcast add
+        e = W1 + W2.T
+        return self.leakyrelu(e)
 
+    def __repr__(self):
+        return self.__class__.__name__ + ' (' \
+               + str(self.in_features) + ' -> ' \
+               + str(self.out_features) + ' -> ' \
+                + str(self.concat) + ')'
+
+    def forward(self, X, adj):
+        W = torch.mm(X, self.W)
+        e = self._attention(W)
+        zero_vec = -9e15 * torch.ones_like(e)
+        att = torch.where(adj > 0, e, zero_vec)
+        att = F.softmax(att, dim=1)
+        att = F.dropout(att, self.dropout, training=self.training)
+        h_prime = torch.matmul(att, W)
+        if self.concat:
+            return F.elu(h_prime)
+        return h_prime
+
+
+class GraphConvolutionLayer(Module):
+    def __init__(self, in_features, out_features):
+        super(GraphConvolutionLayer, self).__init__()
         # create Weight and Bias trainable parameters
         self.in_features = in_features
         self.out_features = out_features
         self.weight = Parameter(torch.FloatTensor(in_features, out_features))
-        if bias:
-            self.bias = Parameter(torch.FloatTensor(out_features))
-        else:
-            self.register_parameter('bias', None)
-        self.reset_parameters()
-
-    def reset_parameters(self):
-        # standard weight to be uniform
+        self.bias = Parameter(torch.FloatTensor(out_features))
         stdv = 1. / math.sqrt(self.weight.size(1))
         self.weight.data.uniform_(-stdv, stdv)
-        if self.bias is not None:
-            self.bias.data.uniform_(-stdv, stdv)
+        self.bias.data.uniform_(-stdv, stdv)
 
     def forward(self, input, adj):
         support = torch.mm(input, self.weight)
 
         # N(A) * H * W # Addition aggregation by multiplying
         output = torch.spmm(adj, support)
-
-        if self.bias is not None:
-            # N(A) * H * W + b
-            return output + self.bias
-        else:
-            return output
-
-    def __repr__(self):
-        return self.__class__.__name__ + ' (' + str(self.in_features) + ' -> ' + str(self.out_features) + ')'
+        return output + self.bias
