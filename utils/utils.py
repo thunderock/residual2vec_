@@ -9,6 +9,7 @@ import torch
 
 class CONSTANTS:
     NLL_LOSS = torch.nn.NLLLoss()
+    BCE_LOSS = torch.nn.BCEWithLogitsLoss()
 
 
 def sparse_to_torch_tensor(sp_mt):

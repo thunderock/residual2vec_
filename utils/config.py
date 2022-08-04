@@ -25,8 +25,9 @@ torch.manual_seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
 DEVICE = torch.device("cpu")
 ALPHA = .2
-BATCH_SIZE = 512
-EPOCHS = 200
+BATCH_SIZE = 2048
+EPOCHS = 5
+PREDICTION_THRESHOLD = .7
 NUM_NEIGHBORS = 10
 LR = .01
 if CUDA:

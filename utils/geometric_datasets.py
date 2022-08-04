@@ -2,7 +2,6 @@
 # @Author:      Ashutosh Tiwari
 # @Email:       checkashu@gmail.com
 # @Time:        8/2/22 12:47 PM
-
 from torch_geometric.data import InMemoryDataset
 from torch_geometric.data import Data, download_url
 import pandas as pd
@@ -15,60 +14,54 @@ class GeometricDataset(InMemoryDataset):
         self.data, self.slices = torch.load(self.processed_paths[0])
 
     @property
-    def processed_file_names(self):
-        return ['data.pt']
+    def processed_file_names(self): return ['data.pt']
+
+    def download(self): raise NotImplementedError
 
     def __repr__(self): return str(self.name.capitalize())
 
-    def load_dfs(self):
-        raise NotImplementedError("this needs to return two dfs. One with data and other with edges!")
-
-    def process(self):
-        pass
-
     @property
-    def name(self):
-        raise NotImplementedError("need to implement this!")
+    def name(self): raise NotImplementedError("need to implement this!")
+
+    @staticmethod
+    def create_node_masks(d):
+        print("Creating classification masks")
+        cnt = len(d.x)
+        # actually the index to the nodes
+        nums = np.arange(cnt)
+        np.random.shuffle(nums)
+
+        train_size = int(cnt * 0.75)
+        test_size = int(cnt * 0.25)
+
+        train_set = nums[0:train_size]
+        test_set = nums[train_size:train_size + test_size]
+
+        assert abs(len(train_set) + len(test_set) - cnt) <= 1, "The split should be coherent. {} + {} != {}".format(len(train_set), len(test_set), cnt)
+
+        train_mask = torch.zeros(cnt, dtype=torch.long, device=DEVICE)
+        for i in train_set:
+            train_mask[i] = 1.
+
+        test_mask = torch.zeros(cnt, dtype=torch.long, device=DEVICE)
+        for i in test_set:
+            test_mask[i] = 1.
+        d.train_mask = train_mask
+        d.test_mask = test_mask
 
 # https://github.com/Orbifold/pyg-link-prediction
-class Pokec(InMemoryDataset):
-    """
-    Pokec is the most popular on-line social network in Slovakia. The popularity of network has not changed even after the coming of Facebook.
-    Pokec has been provided for more than 10 years and connects more than 1.6 million people. Datasets contains anonymized data of the whole network.
-    Profile data contains gender, age, hobbies, interest, education etc. P
-    Profile data are in Slovak language. Friendships in Pokec are oriented.
-    This is a Pyg dataset wrapping the Pokec.
-    See https://snap.stanford.edu/data/soc-pokec.html.
-    """
+class Pokec(GeometricDataset):
 
-    def __init__(self, root=None):
-        self.name = "pokec"
-        if root is None:
-            root = '/tmp/'
+    @property
+    def name(self): return "pokec"
 
-        self.node_data_map = None
-        """ Maps the original label to a vector."""
-        self.node_index_map = None
-        """ Maps the original key to a node index."""
-        self.edge_data_map = None
-        """Maps the original label to a vector."""
-        self.node_frame = None
-        """The original nodes frame."""
-        self.edge_frame = None
-        """The original edges frame."""
-        super().__init__(root, transform=None, pre_transform=None)
+    def __init__(self, root='/tmp'):
+        super().__init__(root=root, )
         self.data, self.slices = torch.load(self.processed_paths[0])
 
     @property
     def raw_file_names(self):
         return ["soc-pokec-profiles.txt.gz", "soc-pokec-relationships.txt.gz"]
-
-    @property
-    def processed_file_names(self):
-        return ["pokec.pt"]
-
-    def __repr__(self):
-        return f'{self.name.capitalize()}()'
 
     def download(self):
         download_url("https://snap.stanford.edu/data/soc-pokec-profiles.txt.gz", self.raw_dir)
@@ -81,9 +74,9 @@ class Pokec(InMemoryDataset):
         print("Loading data frames")
         hdf_path = os.path.join(self.processed_dir, "frames.h5")
         if os.path.exists(hdf_path):
-            self.node_frame = pd.read_hdf(hdf_path, "/dfn")
-            self.edge_frame = pd.read_hdf(hdf_path, "/dfe")
-            return self.node_frame, self.edge_frame
+            node_frame = pd.read_hdf(hdf_path, "/dfn")
+            edge_frame = pd.read_hdf(hdf_path, "/dfe")
+            return node_frame, edge_frame
         node_fields = [
             "public",
             "completion_percentage",
@@ -145,18 +138,15 @@ class Pokec(InMemoryDataset):
             "more",
             ""
         ]
-        dfn = pd.read_csv(self.raw_paths[0], sep="\t", names=node_fields, nrows=None)
+        dfn = pd.read_csv(self.raw_paths[0], sep="\t", names=node_fields, nrows=None)[["gender", "AGE"]]
         dfe = pd.read_csv(self.raw_paths[1], sep="\t", names=["source", "target"], nrows=None)
-        dfn = dfn[["gender", "AGE"]]
-        dfn["age"] = dfn["AGE"]
-
-        dfn = dfn.drop(columns=["AGE"])
+        dfn["age"] = dfn["AGE"].drop(columns=["AGE"])
         dfn = dfn.astype({'gender': 'float', 'age': 'float'})
 
         # transform edges
         dfe = dfe.astype({'source': 'str', 'target': 'str'})
-        self.node_frame = dfn
-        self.edge_frame = dfe
+        node_frame = dfn
+        edge_frame = dfe
 
         # save as hdf
         store = pd.HDFStore(hdf_path)
@@ -164,74 +154,31 @@ class Pokec(InMemoryDataset):
         store["dfe"] = dfe
         store.close()
         print("Save data frames to 'frames.h5'.")
-        return dfn, dfe
+        return node_frame, edge_frame
 
-    def __transform_nodes(self):
+    def __transform_nodes(self, node_frame):
         print("Transforming nodes")
-        if self.node_frame is None:
-            self.node_frame, self.edge_frame = self.load_frames()
         # sorting the index does not make sense here
-        self.node_index_map = {str(index): i for i, index in enumerate(self.node_frame.index.unique())}
-        gender_series = self.node_frame["gender"]
-        gender_tensor = torch.zeros(len(gender_series), 2, dtype = torch.float)
-        for i, v in enumerate(gender_series.values):
-            gender_tensor[i, 0 if np.isnan(v) else int(v)] = 1.0
-        age_tensor = torch.tensor(self.node_frame['age'].values, dtype = torch.float).reshape(len(gender_series), -1)
-        x = torch.cat((gender_tensor, age_tensor), dim=-1)  # 1x3 tensor
-        return x, self.node_index_map
+        node_index_map = {str(index): i for i, index in enumerate(node_frame.index.unique())}
+        # filling nans with 0
+        gender_series = node_frame["gender"].fillna(0.).values.astype(int)
+        gender_tensor = torch.from_numpy(gender_series).unsqueeze(-1)
+        age_tensor = torch.from_numpy(node_frame['age'].fillna(17.0).values.astype(np.float32)).unsqueeze(-1)
+        x = torch.cat((gender_tensor, age_tensor), dim=1)
+        return x, node_index_map
 
-    def __transform_edges(self):
+    def __transform_edges(self, edge_frame, node_index_map):
         print("Transforming edges")
-
-        src = [self.node_index_map[src_id] if src_id in self.node_index_map else -1 for src_id in self.edge_frame.source]
-        dst = [self.node_index_map[tgt_id] if tgt_id in self.node_index_map else -1 for tgt_id in self.edge_frame.target]
-        edge_index = torch.tensor([src, dst])
-        return edge_index, None
-
-    @staticmethod
-    def create_node_masks(d):
-        print("Creating classification masks")
-        cnt = len(d.x)
-        # actually the index to the nodes
-        nums = np.arange(cnt)
-        np.random.shuffle(nums)
-
-        train_size = int(cnt * 0.75)
-        test_size = int(cnt * 0.25)
-
-        train_set = nums[0:train_size]
-        test_set = nums[train_size:train_size + test_size]
-
-        assert abs(len(train_set) + len(test_set) - cnt) <= 1, "The split should be coherent. {} + {} != {}".format(len(train_set), len(test_set), cnt)
-
-        train_mask = torch.zeros(cnt, dtype=torch.long, device=DEVICE)
-        for i in train_set:
-            train_mask[i] = 1.
-
-        test_mask = torch.zeros(cnt, dtype=torch.long, device=DEVICE)
-        for i in test_set:
-            test_mask[i] = 1.
-        d.train_mask = train_mask
-        d.test_mask = test_mask
+        src = [node_index_map[src_id] if src_id in node_index_map else -1 for src_id in edge_frame.source]
+        dst = [node_index_map[tgt_id] if tgt_id in node_index_map else -1 for tgt_id in edge_frame.target]
+        return torch.tensor([src, dst])
 
     def process(self):
-        self.load_frames()
-        nodes_x, nodes_mapping = self.__transform_nodes()
-        edges_index, edges_label = self.__transform_edges()
-
-        d = Data(x=nodes_x, edge_index=edges_index, edge_attr=edges_label, y=None)
-
-        if self.pre_filter is not None:
-            d = self.pre_filter(d)
-
-        if self.pre_transform is not None:
-            d = self.pre_transform(d)
+        node_frame, edge_frame = self.load_frames()
+        nodes_x, nodes_mapping = self.__transform_nodes(node_frame)
+        edges_index = self.__transform_edges(edge_frame, nodes_mapping)
+        d = Data(x=nodes_x, edge_index=edges_index, edge_attr=None, y=None)
         Pokec.create_node_masks(d)
         print("Saving data to Pyg file")
         torch.save(self.collate([d]), self.processed_paths[0])
         self.data, self.slices = self.collate([d])
-
-    def describe(self):
-        print("Pokec Pyg Dataset")
-        print("Nodes:", len(self.data.x), "Edges:", len(self.data.edge_index[0]))
-
