@@ -15,7 +15,7 @@ from torch_geometric.utils import negative_sampling
 from utils.model_utils import GraphConvolutionLayer, GraphAttentionLayer
 from utils.utils import CONSTANTS
 from utils.config import *
-from utils.dataset import Pokec
+from utils.geometric_datasets import Pokec
 import torch_geometric.transforms as T
 from torch_geometric.nn import GCNConv
 from torch_geometric.loader import NeighborLoader
@@ -106,7 +106,7 @@ def load_model(run_id):
     """
     if not os.path.exists(f"model_{run_id}"):
         raise Exception(f"Model id '{run_id}' does not exist.")
-    model = LinkPrediction(data.num_features, 128, 64).to(DEVICE)
+    model = LinkPrediction(in_channels=data.num_features, out_channels=128, hidden_channels=64).to(DEVICE)
     model.load_state_dict(torch.load(f"model_{run_id}"))
     model.eval()
     return model
@@ -121,12 +121,13 @@ def predictions(run_id, max=1000, threshold=0.99):
     pred_edges = []
     model = load_model(run_id)
 
-    loader = NeighborLoader(data, num_neighbors = [10] * 2, shuffle = True, input_nodes = None, batch_size = BATCH_SIZE)
-    threshold_tensor = torch.tensor([threshold])
+    loader = NeighborLoader(data, batch_size=BATCH_SIZE, shuffle=True, num_neighbors=[NUM_NEIGHBORS] * 2, input_nodes=None)
+    threshold_tensor = torch.tensor([threshold]).to(DEVICE)
     for batch in tqdm(loader):
+        batch = batch.to(DEVICE)
         z = model.encode(batch.x, batch.edge_index)
         # collecting negative edge tuples ensure that the decode are actual non-existing edges
-        neg_edge_index = negative_sampling(edge_index = batch.edge_index, num_nodes = None, num_neg_samples = None, method = 'sparse')
+        neg_edge_index = negative_sampling(edge_index=batch.edge_index, num_nodes = None, num_neg_samples=None, method='sparse')
         out = model.decode(z, neg_edge_index).view(-1).sigmoid()
         pred = ((out > threshold_tensor).float() * 1).cpu().numpy()
         found = np.argwhere(pred == 1)
@@ -169,15 +170,15 @@ def run():
                 break
     writer.close()
     torch.save(model.state_dict(), f"model_{run_id}")
-    # time_elapsed = datetime.now() - start_time
-    # print("Creating predictions")
-    # predictions(run_id)
-    # print(f"\nRun {run_id}:")
-    # print(f"\tEpochs: {epoch}")
-    # print(f"\tTime: {time_elapsed}")
-    # print(f"\tAccuracy: {val_acc * 100:.01f}")
-    # print(f"\tParameters saved to 'model_{run_id}'.")
-    # print(f"\tPredictions saved to 'predictions_{run_id}.csv'.")
+    time_elapsed = datetime.now() - start_time
+    print("Creating predictions")
+    predictions(run_id)
+    print(f"\nRun {run_id}:")
+    print(f"\tEpochs: {epoch}")
+    print(f"\tTime: {time_elapsed}")
+    print(f"\tAccuracy: {val_acc * 100:.01f}")
+    print(f"\tParameters saved to 'model_{run_id}'.")
+    print(f"\tPredictions saved to 'predictions_{run_id}.csv'.")
 
 
 if __name__ == "__main__":

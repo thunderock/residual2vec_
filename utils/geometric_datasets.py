@@ -1,4 +1,4 @@
-# @Filename:    dataset.py
+# @Filename:    geometric_datasets.py
 # @Author:      Ashutosh Tiwari
 # @Email:       checkashu@gmail.com
 # @Time:        8/2/22 12:47 PM
@@ -7,6 +7,28 @@ from torch_geometric.data import InMemoryDataset
 from torch_geometric.data import Data, download_url
 import pandas as pd
 from utils.config import *
+
+
+class GeometricDataset(InMemoryDataset):
+    def __init__(self, root='/tmp'):
+        super(GeometricDataset, self).__init__(root=root, transform=None, pre_transform=None)
+        self.data, self.slices = torch.load(self.processed_paths[0])
+
+    @property
+    def processed_file_names(self):
+        return ['data.pt']
+
+    def __repr__(self): return str(self.name.capitalize())
+
+    def load_dfs(self):
+        raise NotImplementedError("this needs to return two dfs. One with data and other with edges!")
+
+    def process(self):
+        pass
+
+    @property
+    def name(self):
+        raise NotImplementedError("need to implement this!")
 
 # https://github.com/Orbifold/pyg-link-prediction
 class Pokec(InMemoryDataset):
@@ -123,10 +145,8 @@ class Pokec(InMemoryDataset):
             "more",
             ""
         ]
-        dfn = pd.read_csv(self.raw_paths[0], sep = "\t", names = node_fields, nrows = None)
-        dfe = pd.read_csv(self.raw_paths[1], sep = "\t", names = ["source", "target"], nrows = None)
-
-        # transform nodes, only keep gender and age
+        dfn = pd.read_csv(self.raw_paths[0], sep="\t", names=node_fields, nrows=None)
+        dfe = pd.read_csv(self.raw_paths[1], sep="\t", names=["source", "target"], nrows=None)
         dfn = dfn[["gender", "AGE"]]
         dfn["age"] = dfn["AGE"]
 
@@ -166,7 +186,6 @@ class Pokec(InMemoryDataset):
         src = [self.node_index_map[src_id] if src_id in self.node_index_map else -1 for src_id in self.edge_frame.source]
         dst = [self.node_index_map[tgt_id] if tgt_id in self.node_index_map else -1 for tgt_id in self.edge_frame.target]
         edge_index = torch.tensor([src, dst])
-
         return edge_index, None
 
     @staticmethod
@@ -192,8 +211,6 @@ class Pokec(InMemoryDataset):
         test_mask = torch.zeros(cnt, dtype=torch.long, device=DEVICE)
         for i in test_set:
             test_mask[i] = 1.
-
-        print("REACHED HERE!")
         d.train_mask = train_mask
         d.test_mask = test_mask
 
