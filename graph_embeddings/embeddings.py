@@ -224,6 +224,8 @@ class Glove:
         else:
             return self.in_vec
 
+class CrossWalk(object):
+    pass
 
 class Fairwalk(Node2Vec):
     def __init__(self, group_membership=None, **params):
