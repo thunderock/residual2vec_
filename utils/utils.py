@@ -33,3 +33,12 @@ def normalize_row_wise(mx):
     r_mat_inv = sp.diags(r_inv)
     mx = r_mat_inv.dot(mx)
     return mx
+
+
+def check_if_symmetric(m):
+    """
+    Check if a matrix is symmetric
+    Only accepts numpy matrices
+    """
+    assert isinstance(m, np.ndarray)
+    return np.allclose(m, m.T)

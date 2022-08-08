@@ -21,4 +21,4 @@ print(type(G.edge_weights))
 weighted = 'random_walk_3_bndry_0.7_exp_4.0'
 G.attr = group_ids
 graph.set_weights(G, weighted)
-print(type(G.edge_weights))
+# print(G.edge_weights)
