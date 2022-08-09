@@ -4,6 +4,7 @@
 # @Time:        7/31/22 5:32 PM
 import numpy as np
 import scipy.sparse as sp
+from scipy.sparse import issparse
 import torch
 
 
@@ -40,5 +41,6 @@ def check_if_symmetric(m):
     Check if a matrix is symmetric
     Only accepts numpy matrices
     """
-    assert isinstance(m, np.ndarray)
+    if issparse(m):
+        m = m.todense()
     return np.allclose(m, m.T)
