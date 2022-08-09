@@ -4,8 +4,8 @@
 # @Time:        8/6/22 8:47 PM
 import numpy as np
 
-from graph_embeddings import Fairwalk, Node2Vec
-from graph_embeddings.utils import to_adjacency_matrix, sample_center_context_pair
+from graph_embeddings import Node2Vec
+from graph_embeddings.utils import to_adjacency_matrix
 from residual2vec import random_walk_sampler
 from utils import graph
 
@@ -43,6 +43,5 @@ class Crosswalk(Node2Vec):
 
         self.sampler = random_walk_sampler.RandomWalkSampler(A)
         self.sampler.walks = self.sampler.sampling(start=nodes)
-
         self.sampler.window_length = self.window_length
         return self
