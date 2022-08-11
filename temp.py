@@ -60,36 +60,36 @@ window_length = 5
 num_walks = 10
 dim = 128
 
-# models["unbiased"] = graph_embeddings.DeepWalk(window_length=window_length, num_walks=num_walks, restart_prob=0)
+models["unbiased"] = graph_embeddings.DeepWalk(window_length=window_length, num_walks=num_walks, restart_prob=0)
 
-# models["degree-unbiased"] = rv.residual2vec_sgd(
-#     noise_sampler=rv.ConfigModelNodeSampler(),
-#     window_length=window_length,
-#     num_walks=num_walks,
-#     cuda=True,
-#     walk_length=80
-# )
+models["degree-unbiased"] = rv.residual2vec_sgd(
+    noise_sampler=rv.ConfigModelNodeSampler(),
+    window_length=window_length,
+    num_walks=num_walks,
+    cuda=True,
+    walk_length=80
+)
 
-# models["group-unbiased"] = rv.residual2vec_sgd(
-#     noise_sampler=rv.SBMNodeSampler(
-#         group_membership=group_ids, window_length=window_length,
-#     ),
-#     window_length=window_length,
-#     num_walks=num_walks,
-#     cuda=True,
-#     walk_length=80,
-# )
+models["group-unbiased"] = rv.residual2vec_sgd(
+    noise_sampler=rv.SBMNodeSampler(
+        group_membership=group_ids, window_length=window_length,
+    ),
+    window_length=window_length,
+    num_walks=num_walks,
+    cuda=True,
+    walk_length=80,
+)
 
-# models["fairwalk"] = graph_embeddings.Fairwalk(window_length=window_length, num_walks=num_walks)
-# models["fairwalk-group-unbiased"] = graph_embeddings.Fairwalk(
-#     window_length=window_length, num_walks=num_walks, group_membership=group_ids
-# )
-# models['GCN'] = graph_embeddings.GCN()
-# models["gcn-doubleK"] = graph_embeddings.GCN(num_default_features=dim * 2)
-# models["graphsage"] = graph_embeddings.GraphSage()
-# models["graphsage-doubleK"] = graph_embeddings.GraphSage(num_default_features=dim * 2)
-# models["gat"] = graph_embeddings.GAT(layer_sizes=[64, 256])
-# models["gat-doubleK"] = graph_embeddings.GAT(num_default_features=dim * 2)
+models["fairwalk"] = graph_embeddings.Fairwalk(window_length=window_length, num_walks=num_walks)
+models["fairwalk-group-unbiased"] = graph_embeddings.Fairwalk(
+    window_length=window_length, num_walks=num_walks, group_membership=group_ids
+)
+models['GCN'] = graph_embeddings.GCN()
+models["gcn-doubleK"] = graph_embeddings.GCN(num_default_features=dim * 2)
+models["graphsage"] = graph_embeddings.GraphSage()
+models["graphsage-doubleK"] = graph_embeddings.GraphSage(num_default_features=dim * 2)
+models["gat"] = graph_embeddings.GAT(layer_sizes=[64, 256])
+models["gat-doubleK"] = graph_embeddings.GAT(num_default_features=dim * 2)
 
 models['crosswalk'] = Crosswalk(group_membership=group_ids, window_length=window_length, num_walks=num_walks)
 
@@ -101,3 +101,27 @@ for k, model in tqdm(models.items()):
     emb = model.fit(A).transform(dim=dim)
 #     sys.stdout = sys.__stdout__
     embs[k] = emb
+
+
+def reconstruct_graph(emb, n, m):
+    # choose top m edges to reconstruct the graph
+    S = emb @ emb.T
+    S = np.triu(S, k=1)
+    r, c, v = sparse.find(S)
+    idx = np.argsort(-v)[:m]
+    r, c, v = r[idx], c[idx], v[idx]
+    B = sparse.csr_matrix((v, (r, c)), shape=(n, n))
+    B = B + B.T
+    B.data = B.data * 0 + 1
+    return nx.from_scipy_sparse_matrix(B + B.T)
+
+n_edges = int(A.sum() / 2)
+n_nodes = A.shape[0]
+rgraphs = {}
+for k, emb in embs.items():
+    rgraphs[k] = reconstruct_graph(emb, n_nodes, n_edges)
+
+scores = {}
+for k, graph in rgraphs.items():
+    scores[k] = statistical_parity(graph, group_ids)
+    print("class score: ", k, scores[k])

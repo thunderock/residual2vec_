@@ -144,7 +144,7 @@ class residual2vec_sgd:
         self.sampler.fit(adjmat)
         return self
 
-    def transform(self, dim):
+    def transform(self, model):
         """Generate embedding vectors.
 
         :param dim: Dimension
@@ -156,9 +156,9 @@ class residual2vec_sgd:
 
         # Set up the embedding model
         PADDING_IDX = self.n_nodes
-        model = Word2Vec(
-            vocab_size=self.n_nodes + 1, embedding_size=dim, padding_idx=PADDING_IDX
-        )
+        # model = Word2Vec(
+        #     vocab_size=self.n_nodes + 1, embedding_size=dim, padding_idx=PADDING_IDX
+        # )
         neg_sampling = NegativeSampling(embedding=model)
         if self.cuda:
             model = model.cuda()

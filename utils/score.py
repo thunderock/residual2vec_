@@ -4,7 +4,6 @@
 # @Time:        7/29/22 9:46 PM
 import numpy as np
 import networkx as nx
-from tqdm import trange
 
 
 def accuracy(y_pred, y_true):
@@ -21,7 +20,7 @@ def statistical_parity(G, y):
 
     score = {}
 
-    for class_i in trange(len(classes)):
+    for class_i in range(len(classes)):
         class_i_vertices = set(np.where(y == class_i)[0])
         class_scores = np.zeros(len(class_i_vertices))
         # Statistical Parity
