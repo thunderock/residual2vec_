@@ -126,14 +126,8 @@ class residual2vec_sgd:
         self.miniters = miniters
         self.context_window_type = context_window_type
 
+    # add feature matrix here
     def fit(self, adjmat):
-        """Learn the graph structure to generate the node embeddings.
-
-        :param adjmat: Adjacency matrix of the graph.
-        :type adjmat: numpy.ndarray or scipy sparse matrix format (csr).
-        :return: self
-        :rtype: self
-        """
 
         # Convert to scipy.sparse.csr_matrix format
         adjmat = utils.to_adjacency_matrix(adjmat)
@@ -144,14 +138,10 @@ class residual2vec_sgd:
         self.sampler.fit(adjmat)
         return self
 
-    def transform(self, model):
-        """Generate embedding vectors.
-
-        :param dim: Dimension
-        :type dim: int
-        :return: Embedding vectors
-        :rtype: numpy.ndarray of shape (num_nodes, dim), where num_nodes is the number of nodes.
-          Each ith row in the array corresponds to the embedding of the ith node.
+    def transform(self, X, model):
+        """
+        * model is the model to be used with the framework
+        * x are the node features
         """
 
         # Set up the embedding model
@@ -223,35 +213,14 @@ class TripletDataset(Dataset):
         window_length,
         noise_sampler,
         padding_id,
+        X=None,
         walk_length=40,
         p=1.0,
         q=1.0,
         context_window_type="double",
         buffer_size=100000,
     ):
-        """Dataset for training word2vec with negative sampling.
 
-        :param adjmat: Adjacency matrix of the graph.
-        :type adjmat: scipy sparse matrix format (csr).
-        :param num_walks: Number of random walkers per node
-        :type num_walks: int
-        :param window_length: length of the context window
-        :type window_length: int
-        :param noise_sampler: Noise sampler
-        :type noise_sampler: NodeSampler
-        :param padding_id: Index of the padding node
-        :type padding_id: int
-        :param walk_length: length per walk, defaults to 40
-        :type walk_length: int, optional
-        :param p: node2vec parameter p (1/p is the weights of the edge to previously visited node), defaults to 1
-        :type p: float, optional
-        :param q: node2vec parameter q (1/q) is the weights of the edges to nodes that are not directly connected to the previously visted node, defaults to 1
-        :type q: float, optional
-        :param context_window_type: The type of context window. `context_window_type="double"` specifies a context window that extends both left and right of a focal node. context_window_type="left" and ="right" specifies that extends left and right, respectively.
-        :type context_window_type: str, optional
-        :param buffer_size: Buffer size for sampled center and context pairs, defaults to 10000
-        :type buffer_size: int, optional
-        """
         self.adjmat = adjmat
         self.num_walks = num_walks
         self.window_length = window_length
@@ -279,7 +248,7 @@ class TripletDataset(Dataset):
         self.contexts = None
         self.centers = None
         self.random_contexts = None
-
+        self.X = X
         # Initialize
         self._generate_samples()
 
@@ -295,8 +264,10 @@ class TripletDataset(Dataset):
         rand_cont = self.random_contexts[self.sample_id].astype(np.int64)
 
         self.sample_id += 1
-
-        return center, cont, rand_cont
+        # print(center, cont, rand_cont)
+        if self.X:
+            return center, cont, rand_cont, self.X
+        return center, cont, rand_cont,
 
     def _generate_samples(self):
         next_scanned_node_id = np.minimum(
@@ -401,3 +372,4 @@ def _get_center_single_context_window(
                     break
                 contexts[start:end, i] = walks[:, t_walk + 1 + i]
     return centers, contexts
+

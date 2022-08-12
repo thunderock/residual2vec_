@@ -1,8 +1,3 @@
-"""Embedding module for Residual2Vec.
-
-This module is a modified version of the Word2Vec module in
-https://github.com/theeluwin/pytorch-sgn
-"""
 import numpy as np
 import torch
 import torch.nn as nn

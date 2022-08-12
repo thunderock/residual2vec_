@@ -14,12 +14,13 @@ import torch
 
 # TODO (ashutiwa): This should take a data loader
 
+
 class NodeClassification(nn.Module):
 
     def __repr__(self):
         return self.__class__.__name__ + ' (' + str(self.semi_supervised) + ' -> ' + str(self.layer_units) + ')'
 
-    def __init__(self, n_nodes, embedding_size, layer_units, semi_supervised=False, local_clf=None, dropout=DROPOUT, classsification=False):
+    def __init__(self, n_nodes, embedding_size, layer_units, padding_idx, semi_supervised=False, local_clf=None, dropout=DROPOUT, classsification=False):
         assert (semi_supervised is False) == (local_clf is None), "semi_supervised and local_clf must be None or both not None"
         super(NodeClassification, self).__init__()
         self.semi_supervised = semi_supervised
@@ -28,8 +29,8 @@ class NodeClassification(nn.Module):
         self.dropout = dropout
         self.embedding_size = embedding_size
         self.n_nodes = n_nodes
-        self.ivectors = nn.Embedding(n_nodes, self.embedding_size)
-        self.ovectors = nn.Embedding(n_nodes, self.embedding_size)
+        self.ivectors = nn.Embedding(n_nodes, self.embedding_size, padding_idx=padding_idx)
+        self.ovectors = nn.Embedding(n_nodes, self.embedding_size, padding_idx=padding_idx)
         self.classification = classsification
         self.ivectors.weight = nn.Parameter(
             torch.cat(
@@ -100,14 +101,14 @@ class NodeClassification(nn.Module):
                 print("loss_test:", loss_test.item())
         return self
 
-        def forward_common(self, X, adj_list):
-            raise NotImplementedError("forward_common must be implemented")
+    def forward_common(self, X, adj_list):
+        raise NotImplementedError("forward_common must be implemented")
 
 
 class GAT(NodeClassification):
 
-    def __init__(self, n_feat, n_nodes, n_hids, nheads, embedding_size=None, classification=False, semi_supervised=False, local_clf=None, n_classes=None):
-        super(GAT, self).__init__(n_nodes=n_nodes, embedding_size=embedding_size, classsification=classification, layer_units=nheads, semi_supervised=semi_supervised, local_clf=local_clf)
+    def __init__(self, n_feat, n_nodes, n_hids, nheads, padding_idx, embedding_size=None, classification=False, semi_supervised=False, local_clf=None, n_classes=None):
+        super(GAT, self).__init__(n_nodes=n_nodes, embedding_size=embedding_size, classsification=classification, layer_units=nheads, semi_supervised=semi_supervised, local_clf=local_clf, padding_idx=padding_idx)
         self.att = [GraphAttentionLayer(n_feat, n_hids) for _ in range(nheads)]
         for idx, att in enumerate(self.att):
             self.add_module("att_" + str(idx), att)
@@ -125,8 +126,8 @@ class GAT(NodeClassification):
 
 class GCN(NodeClassification):
 
-    def __init__(self, n_feat, n_nodes, n_hids, embedding_size=None, n_classes=None, classification=False, semi_supervised=False, local_clf=None):
-        super(GCN, self).__init__(n_nodes=n_nodes, embedding_size=embedding_size, classsification=classification, layer_units=[n_feat] + n_hids, semi_supervised=semi_supervised, local_clf=local_clf)
+    def __init__(self, n_feat, n_nodes, n_hids, padding_idx, embedding_size=None, n_classes=None, classification=False, semi_supervised=False, local_clf=None, ):
+        super(GCN, self).__init__(n_nodes=n_nodes, embedding_size=embedding_size, classsification=classification, layer_units=[n_feat] + n_hids, semi_supervised=semi_supervised, local_clf=local_clf, padding_idx=padding_idx)
         self.graph_layers = nn.ModuleList(
             [GraphConvolutionLayer(self.layer_units[idx], self.layer_units[idx + 1]) for idx in range(len(self.layer_units) - 1)])
         self.output_layer = GraphConvolutionLayer(self.layer_units[-1], n_nodes)

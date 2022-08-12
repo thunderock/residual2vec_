@@ -81,8 +81,6 @@ class LinkPrediction(nn.Module):
         return X
 
 
-
-
 class GATLinkPrediction(LinkPrediction):
     def __init__(self, in_channels, hidden_channels, out_channels, num_layers=2, num_heads=2, dropout=DROPOUT):
         assert num_layers >= 2 and num_heads >= 1
