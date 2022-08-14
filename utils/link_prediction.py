@@ -18,6 +18,7 @@ class LinkPrediction(nn.Module):
         super(LinkPrediction, self).__init__()
         self.dropout = dropout
         self.prediction_threshold = prediction_threshold
+        # self.fc = nn.Linear(out_channels, 2)
 
     @property
     def params(self): return sum([np.prod(p.size()) for p in filter(lambda p: p.requires_grad, self.parameters())])
@@ -26,6 +27,14 @@ class LinkPrediction(nn.Module):
     def decode(z, edge_label_index):
         # cosine similarity
         return (z[edge_label_index[0]] * z[edge_label_index[1]]).sum(dim=1)
+
+    def forward(self, X, edge_index):
+        X = F.elu(self.in_layer(X, edge_index))
+        for idx in range(len(self.layers)):
+            X = F.relu(self.layers[idx](X, edge_index))
+        X = F.dropout(X, self.dropout, training=self.training)
+        X = F.elu(self.out_layer(X, edge_index))
+        return X
 
     @torch.no_grad()
     def transform(self, loader, scorer=f1_score, log=False):
@@ -38,7 +47,7 @@ class LinkPrediction(nn.Module):
         threshold = torch.tensor([self.prediction_threshold]).to(DEVICE)
         for batch in tqdm(loader, desc='Transforming', leave=True):
             batch = batch.to(DEVICE)
-            z = self.encode(batch.x, batch.edge_index)
+            z = self.forward(batch.x, batch.edge_index)
             out = self.decode(z, batch.edge_index).view(-1).sigmoid()
             pred = (out > threshold).float() * 1
             if log:
@@ -56,7 +65,7 @@ class LinkPrediction(nn.Module):
                 batch = batch.to(DEVICE)
                 optimizer.zero_grad()
                 batch_size = batch.batch_size
-                z = self.encode(batch.x, batch.edge_index)
+                z = self.forward(batch.x, batch.edge_index)
                 neg_edge_idx = negative_sampling(edge_index=batch.edge_index, num_nodes=batch.num_nodes, num_neg_samples=None, method='sparse')
                 edge_label_idx = torch.cat([batch.edge_index, neg_edge_idx], dim=-1, )
                 edge_label = torch.cat([torch.ones(batch.edge_index.size(1)), torch.zeros(neg_edge_idx.size(1))], dim=0).to(DEVICE)
@@ -71,14 +80,6 @@ class LinkPrediction(nn.Module):
             if test_loader:
                 self.transform(loader=test_loader, log=log, scorer=scorer)
         return self
-
-    def encode(self, X, edge_index):
-        X = F.elu(self.in_layer(X, edge_index))
-        for idx in range(len(self.layers)):
-            X = F.elu(self.layers[idx](X, edge_index))
-            X = F.dropout(X, self.dropout, training=self.training)
-        X = F.elu(self.out_layer(X, edge_index))
-        return X
 
 
 class GATLinkPrediction(LinkPrediction):

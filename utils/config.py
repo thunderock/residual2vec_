@@ -20,7 +20,7 @@ except AttributeError:
 CUDA = torch.cuda.is_available()
 TRAIN_TEST_SPLIT = .2
 RANDOM_SEED = 2022
-DROPOUT = .5
+DROPOUT = .2
 torch.manual_seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
 DEVICE = torch.device("cpu")

@@ -127,23 +127,43 @@
 #     scores[k] = statistical_parity(graph, group_ids)
 #     print("class score: ", k, scores[k])
 
-import networkx as nx
-import residual2vec as rv
-from torch.utils.data import DataLoader
-from residual2vec.residual2vec_sgd import TripletDataset
+# import networkx as nx
+# import residual2vec as rv
+# from torch.utils.data import DataLoader
+# from residual2vec.residual2vec_sgd import TripletDataset
+#
+# data_file = 'data/polbooks.gml'
+# G = nx.read_gml(data_file)
+# G = nx.relabel.convert_node_labels_to_integers(G, first_label=0, ordering='default')
+# A = nx.adjacency_matrix(G).asfptype()
+# sampler = rv.ConfigModelNodeSampler()
+# sampler.fit(A)
+# dataset = TripletDataset(adjmat=A, num_walks=10, window_length=5, noise_sampler=sampler, padding_id=A.shape[0], walk_length=80, p=1, q=1, buffer_size=100000, context_window_type="double")
+#
+# dataloader = DataLoader(dataset, batch_size=2, shuffle=False, num_workers=1, pin_memory=True)
+#
+# for i, data in enumerate(dataloader):
+#     print(data)
+#     if i == 10:
+#         break
 
-data_file = 'data/polbooks.gml'
-G = nx.read_gml(data_file)
-G = nx.relabel.convert_node_labels_to_integers(G, first_label=0, ordering='default')
-A = nx.adjacency_matrix(G).asfptype()
-sampler = rv.ConfigModelNodeSampler()
-sampler.fit(A)
-dataset = TripletDataset(adjmat=A, num_walks=10, window_length=5, noise_sampler=sampler, padding_id=A.shape[0], walk_length=80, p=1, q=1, buffer_size=100000, context_window_type="double")
 
-dataloader = DataLoader(dataset, batch_size=2, shuffle=False, num_workers=1, pin_memory=True)
+import torch
+from utils.config import *
+from utils.geometric_datasets import Pokec
+from torch_geometric.loader import NeighborLoader
+from utils.link_prediction import *
 
-for i, data in enumerate(dataloader):
-    print(data)
-    if i == 10:
-        break
+data = Pokec().data
+train_loader = NeighborLoader(data, batch_size=BATCH_SIZE, shuffle=True, num_neighbors=[NUM_NEIGHBORS] * 2, input_nodes=data.train_mask)
+test_loader = NeighborLoader(data, batch_size=BATCH_SIZE, shuffle=False, num_neighbors=[NUM_NEIGHBORS] * 2, input_nodes=data.test_mask)
 
+models = [
+    GCNLinkPrediction(in_channels=data.num_features, out_channels=128, hidden_channels=64, num_layers=3).to(DEVICE),
+    GATLinkPrediction(in_channels=data.num_features, out_channels=128, hidden_channels=64, num_layers=3).to(DEVICE),
+]
+
+for model in models:
+    print("model_name: {}, params: {}".format(model.__class__.__name__, model.params))
+    optimizer = torch.optim.Adam(model.parameters(), lr=LR)
+    model.fit(train_loader=train_loader, test_loader=test_loader, optimizer=optimizer, log=True, epochs=3)
