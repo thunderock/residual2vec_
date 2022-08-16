@@ -138,7 +138,7 @@ class residual2vec_sgd:
         self.sampler.fit(adjmat)
         return self
 
-    def transform(self, X, model):
+    def transform(self, model):
         """
         * model is the model to be used with the framework
         * x are the node features
@@ -213,7 +213,6 @@ class TripletDataset(Dataset):
         window_length,
         noise_sampler,
         padding_id,
-        X=None,
         walk_length=40,
         p=1.0,
         q=1.0,
@@ -248,7 +247,7 @@ class TripletDataset(Dataset):
         self.contexts = None
         self.centers = None
         self.random_contexts = None
-        self.X = X
+
         # Initialize
         self._generate_samples()
 
@@ -264,10 +263,8 @@ class TripletDataset(Dataset):
         rand_cont = self.random_contexts[self.sample_id].astype(np.int64)
 
         self.sample_id += 1
-        # print(center, cont, rand_cont)
-        if self.X:
-            return center, cont, rand_cont, self.X
-        return center, cont, rand_cont,
+
+        return center, cont, rand_cont
 
     def _generate_samples(self):
         next_scanned_node_id = np.minimum(

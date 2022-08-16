@@ -14,11 +14,11 @@ import torch.nn.functional as F
 
 class LinkPrediction(nn.Module):
 
-    def __init__(self, dropout, prediction_threshold=PREDICTION_THRESHOLD):
+    def __init__(self, dropout, prediction_threshold=PREDICTION_THRESHOLD, classification=False):
         super(LinkPrediction, self).__init__()
         self.dropout = dropout
         self.prediction_threshold = prediction_threshold
-        # self.fc = nn.Linear(out_channels, 2)
+        self.classification = classification
 
     @property
     def params(self): return sum([np.prod(p.size()) for p in filter(lambda p: p.requires_grad, self.parameters())])
@@ -29,6 +29,9 @@ class LinkPrediction(nn.Module):
         return (z[edge_label_index[0]] * z[edge_label_index[1]]).sum(dim=1)
 
     def forward(self, X, edge_index):
+        return self.forward_i(X, edge_index)
+
+    def forward_i(self, X, edge_index):
         X = F.elu(self.in_layer(X, edge_index))
         for idx in range(len(self.layers)):
             X = F.relu(self.layers[idx](X, edge_index))
@@ -83,22 +86,23 @@ class LinkPrediction(nn.Module):
 
 
 class GATLinkPrediction(LinkPrediction):
-    def __init__(self, in_channels, hidden_channels, out_channels, num_layers=2, num_heads=2, dropout=DROPOUT):
+    def __init__(self, in_channels, hidden_channels, embedding_size, num_layers=2, num_heads=2, dropout=DROPOUT, classification=False):
         assert num_layers >= 2 and num_heads >= 1
-        super(GATLinkPrediction, self).__init__(dropout=dropout)
+        super(GATLinkPrediction, self).__init__(dropout=dropout, classification=classification)
         self.in_layer = GATConv(in_channels=in_channels, out_channels=hidden_channels, heads=num_heads,)
         self.layers = [GATConv(in_channels=hidden_channels * 2, out_channels=hidden_channels, heads=num_heads, ) for _ in range(num_layers - 2)]
-        self.out_layer = GATConv(in_channels=hidden_channels * 2, out_channels=out_channels, heads=num_heads,)
+        # see if we need an embedding layer as ivector and ovector
+        self.out_layer = GATConv(in_channels=hidden_channels * 2, out_channels=embedding_size // 2, heads=num_heads,)
         for idx, att in enumerate(self.layers):
             self.add_module('att_{}'.format(idx), att)
 
 
 class GCNLinkPrediction(LinkPrediction):
-    def __init__(self, in_channels, hidden_channels, out_channels, dropout=DROPOUT, num_layers=2):
+    def __init__(self, in_channels, hidden_channels, embedding_size, dropout=DROPOUT, num_layers=2, classification=False):
         assert num_layers >= 2
-        super(GCNLinkPrediction, self).__init__(dropout=dropout)
+        super(GCNLinkPrediction, self).__init__(dropout=dropout, classification=classification)
         self.in_layer = GCNConv(in_channels=in_channels, out_channels=hidden_channels)
         self.layers = [GCNConv(in_channels=hidden_channels * 1, out_channels=hidden_channels,) for _ in range(num_layers - 2)]
-        self.out_layer = GCNConv(in_channels=hidden_channels * 1, out_channels=out_channels)
+        self.out_layer = GCNConv(in_channels=hidden_channels * 1, out_channels=embedding_size,)
         for idx, att in enumerate(self.layers):
             self.add_module('cnn_{}'.format(idx), att)

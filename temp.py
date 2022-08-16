@@ -147,23 +147,30 @@
 #     if i == 10:
 #         break
 
+# from utils.geometric_datasets import Pokec
+# from torch_geometric.loader import NeighborLoader
+# from utils.link_prediction import *
+#
+# data = Pokec().data
+# train_loader = NeighborLoader(data, batch_size=BATCH_SIZE, shuffle=True, num_neighbors=[NUM_NEIGHBORS] * 2, input_nodes=data.train_mask)
+# test_loader = NeighborLoader(data, batch_size=BATCH_SIZE, shuffle=False, num_neighbors=[NUM_NEIGHBORS] * 2, input_nodes=data.test_mask)
+#
+# models = [
+#     GCNLinkPrediction(in_channels=data.num_features, embedding_size=128, hidden_channels=64, num_layers=3).to(DEVICE),
+#     GATLinkPrediction(in_channels=data.num_features, embedding_size=128, hidden_channels=64, num_layers=3).to(DEVICE),
+# ]
+#
+# for model in models:
+#     print("model_name: {}, params: {}".format(model.__class__.__name__, model.params))
+#     optimizer = torch.optim.Adam(model.parameters(), lr=LR)
+#     model.fit(train_loader=train_loader, test_loader=test_loader, optimizer=optimizer, log=True, epochs=3)
 
-import torch
-from utils.config import *
-from utils.geometric_datasets import Pokec
-from torch_geometric.loader import NeighborLoader
-from utils.link_prediction import *
+from torch.utils.data import DataLoader
+from datasets import triplet_dataset
 
-data = Pokec().data
-train_loader = NeighborLoader(data, batch_size=BATCH_SIZE, shuffle=True, num_neighbors=[NUM_NEIGHBORS] * 2, input_nodes=data.train_mask)
-test_loader = NeighborLoader(data, batch_size=BATCH_SIZE, shuffle=False, num_neighbors=[NUM_NEIGHBORS] * 2, input_nodes=data.test_mask)
-
-models = [
-    GCNLinkPrediction(in_channels=data.num_features, out_channels=128, hidden_channels=64, num_layers=3).to(DEVICE),
-    GATLinkPrediction(in_channels=data.num_features, out_channels=128, hidden_channels=64, num_layers=3).to(DEVICE),
-]
-
-for model in models:
-    print("model_name: {}, params: {}".format(model.__class__.__name__, model.params))
-    optimizer = torch.optim.Adam(model.parameters(), lr=LR)
-    model.fit(train_loader=train_loader, test_loader=test_loader, optimizer=optimizer, log=True, epochs=3)
+d = triplet_dataset.TripletPokecDataset('/tmp/')
+ds = DataLoader(d, batch_size=1, shuffle=True, num_workers=1, pin_memory=True)
+for i, data in enumerate(ds):
+    print(data[0].shape, data[1].shape, data[2].shape)
+    if i == 10:
+        break
