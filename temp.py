@@ -126,7 +126,7 @@
 # for k, graph in rgraphs.items():
 #     scores[k] = statistical_parity(graph, group_ids)
 #     print("class score: ", k, scores[k])
-
+###########################################################
 # import networkx as nx
 # import residual2vec as rv
 # from torch.utils.data import DataLoader
@@ -146,7 +146,7 @@
 #     print(data)
 #     if i == 10:
 #         break
-
+###########################################################
 # from utils.geometric_datasets import Pokec
 # from torch_geometric.loader import NeighborLoader
 # from utils.link_prediction import *
@@ -164,13 +164,13 @@
 #     print("model_name: {}, params: {}".format(model.__class__.__name__, model.params))
 #     optimizer = torch.optim.Adam(model.parameters(), lr=LR)
 #     model.fit(train_loader=train_loader, test_loader=test_loader, optimizer=optimizer, log=True, epochs=3)
-
+###########################################################
 from torch.utils.data import DataLoader
 from datasets import triplet_dataset
 
 d = triplet_dataset.TripletPokecDataset('/tmp/')
 ds = DataLoader(d, batch_size=1, shuffle=True, num_workers=1, pin_memory=True)
 for i, data in enumerate(ds):
-    print(data[0].shape, data[1].shape, data[2].shape)
+    print(data[0].shape, data[1].shape, data[2].shape, data[3].shape)
     if i == 10:
         break

@@ -86,7 +86,7 @@ class residual2vec_sgd:
         walk_length=40,
         p=1,
         q=1,
-        cuda=False,
+        cuda=True,
         buffer_size=100000,
         context_window_type="double",
         miniters=200,

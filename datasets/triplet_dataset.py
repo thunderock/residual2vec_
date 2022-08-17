@@ -115,7 +115,7 @@ class TripletPokecDataset(Dataset):
     def _get_node_edges_from_source(self, idx, edge_index=None, two_dim=False):
         edge_index = edge_index if edge_index is not None else self.edge_index
         mask = edge_index[0, :] == idx
-        ret = edge_index[1, mask]
+        ret = edge_index[1, mask].squeeze()
         if two_dim:
             return torch.cat([torch.full_like(ret, idx).reshape(-1, 1), ret.reshape(-1, 1)], dim=1).T
         return ret
@@ -124,32 +124,36 @@ class TripletPokecDataset(Dataset):
         # index = self.idx_mapping[idx]
         return self.X[idx]
 
-    def _select_random_node(self, source, neg=False):
+    def _select_random_neighbor(self, source, neg=False):
         edge_index = self.neg_edge_index if neg else self.edge_index
         nodes = self._get_node_edges_from_source(source, edge_index)
         if nodes.shape[0] == 0:
             # this should happen rarely, this means that the node has no edges
             # in that case we randomly sample a node with an edge
-            return False
-        return nodes[torch.randint(nodes.shape[0], (1,))]
+            return None
+        return nodes[torch.randint(nodes.shape[0], (1,))].squeeze()
 
     def __getitem__(self, idx):
         """
         returns a, p, n tuple for this idx where a is the current node, p is the positive node and n is the randomly sampled negative node
         """
+        # print(type(idx))
         # select a node with positive edge
-        p_node = self._select_random_node(idx)
-        n_node = self._select_random_node(idx, neg=True)
+        p_node = self._select_random_neighbor(idx)
+        n_node = self._select_random_neighbor(idx, neg=True)
         if p_node and n_node:
-            return self._get_features_for_node(idx), self._get_features_for_node(p_node), self._get_features_for_node(n_node)
+            return self._get_features_for_node(idx), self._get_features_for_node(p_node), self._get_features_for_node(n_node), torch.tensor([1])
 
+        idx = torch.randint(self.edge_index.shape[0], (1,))
+        # print("randomly selected a_idx", idx)
+        # idx = 102
         # select nodes randomly here
-        a = np.random.choice(self.edge_index[0])
+        a = self._get_features_for_node(self.edge_index[0, idx].item())
         # p cannot be none now
-        p = self._get_features_for_node(self._select_random_node(idx))
+        p = self._get_features_for_node(self._select_random_neighbor(idx))
         # this can still result in failure but haven't seen it yet, this means that negative sampling couldn't generate a negative node for this source node
-        n = self._get_features_for_node(self._select_random_node(idx, neg=True))
-        return a, p, n
+        n = self._get_features_for_node(self._select_random_neighbor(idx, neg=True))
+        return a, p, n, torch.tensor([0])
 
 
 
