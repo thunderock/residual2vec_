@@ -9,6 +9,8 @@ from torch_geometric.data import download_url
 import torch
 from sklearn.preprocessing import LabelEncoder
 from torch_geometric.utils import negative_sampling
+from torch_geometric.loader.neighbor_sampler import EdgeIndex
+from torch_sparse import SparseTensor
 
 class TripletPokecDataset(Dataset):
     def __init__(self, root='/tmp/',):
@@ -101,12 +103,13 @@ class TripletPokecDataset(Dataset):
         self.X = torch.cat([torch.from_numpy(dfn[col].values.reshape(-1, 1)) for col in feature_cols], dim=1)
         dfe = dfe.astype({'source': 'int', 'target': 'int'})
         dfe = dfe.drop_duplicates()
+        self.num_features = self.X.shape[1]
 
         # -1 because of we want to node ids to start from 0
         dfe = dfe[dfe.source != dfe.target] - 1
-        # dfe = dfe[(dfe.source.isin(idx_mapping)) & (dfe.target.isin(idx_mapping))] - 1
         self.edge_index = torch.cat([torch.from_numpy(dfe[col].values.reshape(-1, 1)) for col in ["source", "target"]], dim=1).T
         self.neg_edge_index = negative_sampling(edge_index=self.edge_index, num_nodes=self.X.shape[0], num_neg_samples=None, method='sparse', force_undirected=True)
+
 
     def __len__(self):
         # assumes that all the nodes ids are present starting from 0 to the max number of nodes
@@ -120,7 +123,7 @@ class TripletPokecDataset(Dataset):
             return torch.cat([torch.full_like(ret, idx).reshape(-1, 1), ret.reshape(-1, 1)], dim=1).T
         return ret
 
-    def _get_features_for_node(self, idx):
+    def _ret_features_for_node(self, idx):
         # index = self.idx_mapping[idx]
         return self.X[idx]
 
@@ -142,18 +145,49 @@ class TripletPokecDataset(Dataset):
         p_node = self._select_random_neighbor(idx)
         n_node = self._select_random_neighbor(idx, neg=True)
         if p_node and n_node:
-            return self._get_features_for_node(idx), self._get_features_for_node(p_node), self._get_features_for_node(n_node), torch.tensor([1])
+            return (self._ret_features_for_node(idx), self._ret_features_for_node(p_node), self._ret_features_for_node(n_node))
 
         idx = torch.randint(self.edge_index.shape[0], (1,))
         # print("randomly selected a_idx", idx)
         # idx = 102
         # select nodes randomly here
-        a = self._get_features_for_node(self.edge_index[0, idx].item())
+        a = self._ret_features_for_node(self.edge_index[0, idx].item())
         # p cannot be none now
-        p = self._get_features_for_node(self._select_random_neighbor(idx))
+        p = self._ret_features_for_node(self._select_random_neighbor(idx))
         # this can still result in failure but haven't seen it yet, this means that negative sampling couldn't generate a negative node for this source node
-        n = self._get_features_for_node(self._select_random_neighbor(idx, neg=True))
-        return a, p, n, torch.tensor([0])
+        n = self._ret_features_for_node(self._select_random_neighbor(idx, neg=True))
+        return (a, p, n)
 
 
+class NeighborEdgeSampler(torch.utils.data.DataLoader):
+    def __init__(self, dataset, sample_size=NUM_NEIGHBORS, **kwargs):
 
+        edge_index = dataset.edge_index
+        num_nodes = len(dataset)
+        self.adj_t = SparseTensor(row=edge_index[0], col=edge_index[1],
+                                  value=torch.arange(edge_index.size(1)),
+                                  sparse_sizes=(num_nodes, num_nodes)).t()
+        self.adj_t.storage.rowptr()
+        node_idx = torch.arange(self.adj_t.sparse_size(0))
+        self.sample_size = torch.tensor(sample_size)
+        super().__init__(dataset=node_idx.view(-1).tolist(), collate_fn=self.sample, **kwargs)
+
+    def sample(self, batch):
+        # print(batch[0])
+        # if not isinstance(batch, torch.Tensor):
+        #     batch = torch.tensor(batch)
+        batch_size = len(batch)
+
+        print(batch_size)
+        adjs = []
+        print(batch)
+        a, p, n = batch
+
+        for n_id in (a, p, n):
+            adj_t, node_id = self.adj_t.sample_adj(n_id, self.sample_size, replace=False)
+            e_id = adj_t.storage.value()
+            size = adj_t.sparse_size()[::-1]
+            row, col, _ = adj_t.coo()
+            edge_index = torch.stack([row, col], dim=0)
+            adjs.append(EdgeIndex(edge_index, e_id, size))
+        return (batch_size, (a, adjs[0]), (p, adjs[1]), (n, adjs[2]))

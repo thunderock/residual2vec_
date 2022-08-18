@@ -60,6 +60,7 @@ class NegativeSampling(nn.Module):
         self.logsigmoid = nn.LogSigmoid()
 
     def forward(self, iword, owords, nwords):
+        # these can be tuple of tensors or single tensor
         ivectors = self.embedding.forward_i(iword)
         ovectors = self.embedding.forward_o(owords)
         nvectors = self.embedding.forward_o(nwords)

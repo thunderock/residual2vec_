@@ -14,11 +14,42 @@ import torch.nn.functional as F
 
 class LinkPrediction(nn.Module):
 
-    def __init__(self, dropout, prediction_threshold=PREDICTION_THRESHOLD, classification=False):
+    def __init__(self, dropout, prediction_threshold=PREDICTION_THRESHOLD, classification=False, embedding_size=EMBEDDING_DIM, padding_idx=None):
         super(LinkPrediction, self).__init__()
         self.dropout = dropout
         self.prediction_threshold = prediction_threshold
         self.classification = classification
+        self.embedding_size = embedding_size
+        self.layers = nn.ModuleList()
+        self.ivectors = nn.Embedding(
+            self.embedding_size, self.embedding_size, padding_idx=padding_idx
+        )
+        self.ovectors = nn.Embedding(
+            self.embedding_size, self.embedding_size, padding_idx=padding_idx
+        )
+        self.ivectors.weight = nn.Parameter(
+            torch.cat(
+                [
+                    torch.zeros(1, self.embedding_size),
+                    torch.FloatTensor(self.embedding_size, self.embedding_size).uniform_(
+                        -0.5 / self.embedding_size, 0.5 / self.embedding_size
+                    ),
+                ]
+            )
+        )
+        self.ovectors.weight = nn.Parameter(
+            torch.cat(
+                [
+                    torch.zeros(1, self.embedding_size),
+                    torch.FloatTensor(self.embedding_size, self.embedding_size).uniform_(
+                        -0.5 / self.embedding_size, 0.5 / self.embedding_size
+                    ),
+                ]
+            )
+        )
+        self.ivectors.weight.requires_grad = True
+        self.ovectors.weight.requires_grad = True
+
 
     @property
     def params(self): return sum([np.prod(p.size()) for p in filter(lambda p: p.requires_grad, self.parameters())])
@@ -28,16 +59,22 @@ class LinkPrediction(nn.Module):
         # cosine similarity
         return (z[edge_label_index[0]] * z[edge_label_index[1]]).sum(dim=1)
 
-    def forward(self, X, edge_index):
-        return self.forward_i(X, edge_index)
+    def forward(self, X, adj):
+        return self.forward_i(X, adj)
 
-    def forward_i(self, X, edge_index):
-        X = F.elu(self.in_layer(X, edge_index))
+    def _forward_common(self, X, edge_index):
         for idx in range(len(self.layers)):
             X = F.relu(self.layers[idx](X, edge_index))
-        X = F.dropout(X, self.dropout, training=self.training)
-        X = F.elu(self.out_layer(X, edge_index))
+            X = F.dropout(X, self.dropout, training=self.training)
         return X
+
+    def forward_i(self, X, adj):
+        X = self._forward_common(X, adj)
+        return self.ivectors(X)
+
+    def forward_o(self, X, adj):
+        X = self._forward_common(X, adj)
+        return self.ovectors(X)
 
     @torch.no_grad()
     def transform(self, loader, scorer=f1_score, log=False):
@@ -60,15 +97,14 @@ class LinkPrediction(nn.Module):
             print('Test Average {} score: {}'.format(scorer.__name__, np.mean(scores)))
         return np.concatenate(preds)
 
-    def fit(self, train_loader, optimizer, test_loader=None, loss=CONSTANTS.BCE_LOSS, log=False, epochs=EPOCHS, scorer=f1_score):
+    def fit(self, train_loader, optimizer, test_loader=None, loss=CONSTANTS.BCE_LOSS, log=False, epochs=EPOCHS, scorer=f1_score, batch_size=BATCH_SIZE):
         for epoch in range(epochs):
             self.train()
             total_loss = examples = 0
             for batch in tqdm(train_loader, desc='Training', leave=True):
-                batch = batch.to(DEVICE)
+                a, p, n = batch[0], batch[1], batch[2]
                 optimizer.zero_grad()
-                batch_size = batch.batch_size
-                z = self.forward(batch.x, batch.edge_index)
+                z = self.forward(a[0], a[1])
                 neg_edge_idx = negative_sampling(edge_index=batch.edge_index, num_nodes=batch.num_nodes, num_neg_samples=None, method='sparse')
                 edge_label_idx = torch.cat([batch.edge_index, neg_edge_idx], dim=-1, )
                 edge_label = torch.cat([torch.ones(batch.edge_index.size(1)), torch.zeros(neg_edge_idx.size(1))], dim=0).to(DEVICE)
@@ -88,21 +124,21 @@ class LinkPrediction(nn.Module):
 class GATLinkPrediction(LinkPrediction):
     def __init__(self, in_channels, hidden_channels, embedding_size, num_layers=2, num_heads=2, dropout=DROPOUT, classification=False):
         assert num_layers >= 2 and num_heads >= 1
-        super(GATLinkPrediction, self).__init__(dropout=dropout, classification=classification)
-        self.in_layer = GATConv(in_channels=in_channels, out_channels=hidden_channels, heads=num_heads,)
-        self.layers = [GATConv(in_channels=hidden_channels * 2, out_channels=hidden_channels, heads=num_heads, ) for _ in range(num_layers - 2)]
-        # see if we need an embedding layer as ivector and ovector
-        self.out_layer = GATConv(in_channels=hidden_channels * 2, out_channels=embedding_size // 2, heads=num_heads,)
-        for idx, att in enumerate(self.layers):
-            self.add_module('att_{}'.format(idx), att)
+        super(GATLinkPrediction, self).__init__(dropout=dropout, classification=classification, embedding_size=embedding_size)
+        self.layers.append(GATConv(in_channels=in_channels, out_channels=hidden_channels, heads=num_heads,))
+        for _ in range(num_layers - 2):
+            self.layers.append(GATConv(in_channels=hidden_channels * num_heads, out_channels=hidden_channels, heads=num_heads, concat=False))
+
+        self.layers.append(
+            GATConv(in_channels=hidden_channels * num_heads, out_channels=embedding_size, heads=num_heads,))
 
 
 class GCNLinkPrediction(LinkPrediction):
     def __init__(self, in_channels, hidden_channels, embedding_size, dropout=DROPOUT, num_layers=2, classification=False):
         assert num_layers >= 2
-        super(GCNLinkPrediction, self).__init__(dropout=dropout, classification=classification)
-        self.in_layer = GCNConv(in_channels=in_channels, out_channels=hidden_channels)
-        self.layers = [GCNConv(in_channels=hidden_channels * 1, out_channels=hidden_channels,) for _ in range(num_layers - 2)]
-        self.out_layer = GCNConv(in_channels=hidden_channels * 1, out_channels=embedding_size,)
-        for idx, att in enumerate(self.layers):
-            self.add_module('cnn_{}'.format(idx), att)
+        super(GCNLinkPrediction, self).__init__(dropout=dropout, classification=classification, embedding_size=embedding_size)
+        self.layers.append(GCNConv(in_channels=in_channels, out_channels=hidden_channels))
+        for _ in range(num_layers - 2):
+            self.layers.append(GCNConv(in_channels=hidden_channels * 1, out_channels=hidden_channels,))
+        self.layers.append(GCNConv(in_channels=in_channels, out_channels=embedding_size))
+

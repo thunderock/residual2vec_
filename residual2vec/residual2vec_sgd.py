@@ -63,7 +63,7 @@ from residual2vec import utils
 from residual2vec.random_walk_sampler import RandomWalkSampler
 from residual2vec.word2vec import NegativeSampling, Word2Vec
 
-
+from utils.config import *
 class residual2vec_sgd:
     """Residual2Vec based on the stochastic gradient descent.
 
@@ -86,7 +86,7 @@ class residual2vec_sgd:
         walk_length=40,
         p=1,
         q=1,
-        cuda=True,
+        cuda=DEVICE,
         buffer_size=100000,
         context_window_type="double",
         miniters=200,
@@ -138,7 +138,7 @@ class residual2vec_sgd:
         self.sampler.fit(adjmat)
         return self
 
-    def transform(self, model):
+    def transform(self, model, dataloader: torch.utils.data.DataLoader):
         """
         * model is the model to be used with the framework
         * x are the node features
@@ -150,38 +150,7 @@ class residual2vec_sgd:
         #     vocab_size=self.n_nodes + 1, embedding_size=dim, padding_idx=PADDING_IDX
         # )
         neg_sampling = NegativeSampling(embedding=model)
-        if self.cuda:
-            model = model.cuda()
-
-        # Set up the Training dataset
-        adjusted_num_walks = np.ceil(
-            self.num_walks
-            * np.maximum(
-                1,
-                self.batch_size
-                * self.miniters
-                / (self.n_nodes * self.num_walks * self.walk_length),
-            )
-        ).astype(int)
-        dataset = TripletDataset(
-            adjmat=self.adjmat,
-            num_walks=adjusted_num_walks,
-            window_length=self.window_length,
-            noise_sampler=self.sampler,
-            padding_id=PADDING_IDX,
-            walk_length=self.walk_length,
-            p=self.p,
-            q=self.q,
-            buffer_size=self.buffer_size,
-            context_window_type=self.context_window_type,
-        )
-        dataloader = DataLoader(
-            dataset,
-            batch_size=self.batch_size,
-            shuffle=False,
-            num_workers=1,
-            pin_memory=True,
-        )
+        model.to(self.cuda)
 
         # Training
         optim = Adam(model.parameters(), lr=0.003)
