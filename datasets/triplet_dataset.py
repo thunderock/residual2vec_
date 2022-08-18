@@ -145,7 +145,7 @@ class TripletPokecDataset(Dataset):
         p_node = self._select_random_neighbor(idx)
         n_node = self._select_random_neighbor(idx, neg=True)
         if p_node and n_node:
-            return (self._ret_features_for_node(idx), self._ret_features_for_node(p_node), self._ret_features_for_node(n_node))
+            return torch.cat((self._ret_features_for_node(idx), self._ret_features_for_node(p_node), self._ret_features_for_node(n_node)))
 
         idx = torch.randint(self.edge_index.shape[0], (1,))
         # print("randomly selected a_idx", idx)
@@ -156,7 +156,7 @@ class TripletPokecDataset(Dataset):
         p = self._ret_features_for_node(self._select_random_neighbor(idx))
         # this can still result in failure but haven't seen it yet, this means that negative sampling couldn't generate a negative node for this source node
         n = self._ret_features_for_node(self._select_random_neighbor(idx, neg=True))
-        return (a, p, n)
+        return torch.cat((a, p, n))
 
 
 class NeighborEdgeSampler(torch.utils.data.DataLoader):
