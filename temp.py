@@ -168,10 +168,11 @@
 from torch.utils.data import DataLoader
 from datasets import triplet_dataset
 from utils.link_prediction import *
+from torch.utils.data import DataLoader
 
 batch_size = 2
 d = triplet_dataset.TripletPokecDataset('/tmp/')
-ds = triplet_dataset.NeighborEdgeSampler(d, batch_size=batch_size, shuffle=True, num_workers=1, pin_memory=True)
+ds = triplet_dataset.NeighborEdgeSampler(d, batch_size=4, shuffle=True, num_workers=1)
 models = [
     GCNLinkPrediction(in_channels=d.num_features, embedding_size=128, hidden_channels=64, num_layers=3).to(DEVICE),
     GATLinkPrediction(in_channels=d.num_features, embedding_size=128, hidden_channels=64, num_layers=3).to(DEVICE),
@@ -183,6 +184,10 @@ models = [
 #     model.fit(train_loader=ds, optimizer=optimizer, log=True, epochs=3, batch_size=batch_size)
 #
 for i in ds:
-    print(i)
+    a, p, n = i
+    print(a)
+    print(p)
+    print(n)
     break
 
+from torch_geometric.loader.neighbor_sampler import NeighborSampler
