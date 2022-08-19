@@ -125,7 +125,7 @@ class TripletPokecDataset(Dataset):
     def _select_random_neighbor(self, source, neg=False):
         edge_index = self.neg_edge_index if neg else self.edge_index
         nodes = self._get_node_edges_from_source(source, edge_index)
-        if nodes.shape[0] == 0:
+        if nodes.dim() == 0 or nodes.shape[0] == 0:
             # this should happen rarely, this means that the node has no edges
             # in that case we randomly sample a node with an edge
             return None
@@ -151,7 +151,6 @@ class TripletPokecDataset(Dataset):
             # this can still result in failure but haven't seen it yet, this means that negative sampling couldn't generate a negative node for this source node
             n = self._ret_features_for_node(self._select_random_neighbor(idx, neg=True))
         return torch.tensor([a, p, n])
-
 
 
 class NeighborEdgeSampler(torch.utils.data.DataLoader):
@@ -194,9 +193,9 @@ class NeighborEdgeSampler(torch.utils.data.DataLoader):
             adjs.append(edge_index)
             nids.append(node_ids)
         # get this features from dataset itself in future
-        return (self.dataset.X[nids[0]], adjs[0]), \
-               (self.dataset.X[nids[1]], adjs[1]), \
-               (self.dataset.X[nids[2]], adjs[2])
+        return (self.dataset.X[a].to(torch.long), self.dataset.X[nids[0]], adjs[0]), \
+               (self.dataset.X[p].to(torch.long), self.dataset.X[nids[1]], adjs[1]), \
+               (self.dataset.X[n].to(torch.long), self.dataset.X[nids[2]], adjs[2])
 
     def __repr__(self) -> str:
         return '{}({}, batch_size={})'.format(self.__class__.__name__, len(self.dataset), self.batch_size)

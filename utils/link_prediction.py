@@ -2,6 +2,7 @@
 # @Author:      Ashutosh Tiwari
 # @Email:       checkashu@gmail.com
 # @Time:        8/01/22 8:17 PM
+import torch
 from tqdm import tqdm
 import torch.nn as nn
 from torch_geometric.utils import negative_sampling
@@ -15,12 +16,37 @@ from layers.layers import GATConvMean, GCNConvMean
 
 class LinkPrediction(nn.Module):
 
-    def __init__(self, prediction_threshold=PREDICTION_THRESHOLD, classification=False, embedding_size=EMBEDDING_DIM, dropout=DROPOUT):
+    def __init__(self, num_embeddings, prediction_threshold=PREDICTION_THRESHOLD, classification=False, embedding_size=EMBEDDING_DIM, dropout=DROPOUT):
         super(LinkPrediction, self).__init__()
         self.dropout = dropout
         self.prediction_threshold = prediction_threshold
         self.classification = classification
         self.embedding_size = embedding_size
+        self.num_embeddings = num_embeddings
+        self.ivectors = nn.Embedding(self.num_embeddings, self.embedding_size, )
+        self.ovectors = nn.Embedding(self.num_embeddings, self.embedding_size, )
+        # self.ivectors.weight = nn.Parameter(
+        #     torch.cat(
+        #         [
+        #             torch.zeros(1, self.embedding_size),
+        #             torch.FloatTensor(self.vocab_size, self.embedding_size).uniform_(
+        #                 -0.5 / self.embedding_size, 0.5 / self.embedding_size
+        #             ),
+        #         ]
+        #     )
+        # )
+        # self.ovectors.weight = nn.Parameter(
+        #     torch.cat(
+        #         [
+        #             torch.zeros(1, self.embedding_size),
+        #             torch.FloatTensor(self.vocab_size, self.embedding_size).uniform_(
+        #                 -0.5 / self.embedding_size, 0.5 / self.embedding_size
+        #             ),
+        #         ]
+        #     )
+        # )
+        self.ivectors.weight.requires_grad = True
+        self.ovectors.weight.requires_grad = True
 
     @property
     def params(self): return sum([np.prod(p.size()) for p in filter(lambda p: p.requires_grad, self.parameters())])
@@ -29,32 +55,35 @@ class LinkPrediction(nn.Module):
     def decode(x, y):
         # cosine similarity
         # x * 128
-        return torch.dot(x, y)
+        return torch.dot(x.mean(dim=0), y.mean(dim=0))
 
-    def forward(self, X, edge_index):
-        return self.forward_i(X, edge_index)
+    def forward(self, node, X, edge_index):
+        return self.forward_i(node, X, edge_index)
 
     def _forward_common(self, X, edge_index):
         X = F.elu(self.in_layer(X, edge_index))
         for idx in range(len(self.layers)):
             X = F.relu(self.layers[idx](X, edge_index))
         X = F.dropout(X, self.dropout, training=self.training)
-        return X
+        return F.relu(self.out_layer(X, edge_index))
 
-    def forward_o(self, X, edge_index):
+    def forward_o(self, node, X, edge_index):
         # X = X.to(torch.int64)
         # X = self.ivectors(X)
-        X = self._forward_common(X, edge_index)
-        X = F.relu(self.ovectors(X, edge_index))
+        x = self.ovectors(node)
+        x = x.view(x.size(0), -1)
+        y = self._forward_common(X, edge_index)
+        # X = F.relu(self.ovectors(X, edge_index))
         # X = X.to(torch.long)
-        return X
+        return self.lin(torch.cat([x, y]))
 
-    def forward_i(self, X, edge_index):
+    def forward_i(self, node, X, edge_index):
         # X = X.to(torch.int64)
-        # X = self.ivectors(X)
-        X = self._forward_common(X, edge_index)
-        X = F.relu(self.ivectors(X, edge_index))
-        return X
+        x = self.ivectors(node)
+        x = x.view(x.size(0), -1)
+        y = self._forward_common(X, edge_index)
+        # X = F.relu(self.ivectors(X, edge_index))
+        return self.lin(torch.cat([x, y]))
         # X = X.to(torch.long)
         # return torch.mean(X, dim=0)
 
@@ -113,8 +142,11 @@ class GATLinkPrediction(LinkPrediction):
         self.in_layer = GATConv(in_channels=in_channels, out_channels=hidden_channels, heads=num_heads,)
         self.layers = [GATConv(in_channels=hidden_channels * num_heads, out_channels=hidden_channels, heads=num_heads, ) for _ in range(num_layers - 2)]
         # see if we need an embedding layer as ivector and ovector
-        self.ivectors = GATConvMean(in_channels=hidden_channels * num_heads, out_channels=self.embedding_size // num_heads, heads=num_heads,)
-        self.ovectors = GATConvMean(in_channels=hidden_channels * num_heads, out_channels=self.embedding_size // num_heads, heads=num_heads, )
+        # self.ivectors = GATConvMean(in_channels=hidden_channels * num_heads, out_channels=self.embedding_size // num_heads, heads=num_heads,)
+        # self.ovectors = GATConvMean(in_channels=hidden_channels * num_heads, out_channels=self.embedding_size // num_heads, heads=num_heads, )
+        self.out_layer = GATConv(in_channels=hidden_channels * num_heads, out_channels=self.embedding_size, heads=num_heads, )
+        self.lin = torch.nn.Linear(self.embedding_size * num_heads, self.embedding_size, )
+
         for idx, att in enumerate(self.layers):
             self.add_module('att_{}'.format(idx), att)
 
@@ -125,7 +157,9 @@ class GCNLinkPrediction(LinkPrediction):
         super(GCNLinkPrediction, self).__init__(**kwargs)
         self.in_layer = GCNConv(in_channels=in_channels, out_channels=hidden_channels)
         self.layers = [GCNConv(in_channels=hidden_channels * 1, out_channels=hidden_channels,) for _ in range(num_layers - 2)]
-        self.ivectors = GCNConvMean(in_channels=hidden_channels * 1, out_channels=self.embedding_size,)
-        self.ovectors = GCNConvMean(in_channels=hidden_channels * 1, out_channels=self.embedding_size, )
+        self.out_layer = GCNConv(in_channels=hidden_channels * 1, out_channels=self.embedding_size * in_channels)
+        # self.ivectors = GCNConvMean(in_channels=hidden_channels * 1, out_channels=self.embedding_size,)
+        # self.ovectors = GCNConvMean(in_channels=hidden_channels * 1, out_channels=self.embedding_size, )
         for idx, att in enumerate(self.layers):
             self.add_module('cnn_{}'.format(idx), att)
+        self.lin = torch.nn.Linear(self.embedding_size * in_channels, self.embedding_size, )

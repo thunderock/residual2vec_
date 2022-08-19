@@ -183,23 +183,24 @@ a, p, n = batch
 # edge_list = batch.edge_index
 
 
-model = GATLinkPrediction(in_channels=d.num_features, embedding_size=128, num_heads=2, num_layers=3, hidden_channels=64, )
+model = GATLinkPrediction(in_channels=d.num_features, embedding_size=128, num_heads=5, num_layers=3, hidden_channels=64, num_embeddings=int(torch.max(d.X)))
 
-x = model.forward_i(a[0], a[1])
-y1 = model.forward_o(p[0], p[1])
-y2 = model.forward_o(n[0], n[1])
+x = model.forward_i(a[0], a[1], a[2])
+y1 = model.forward_o(p[0], p[1], p[2])
+y2 = model.forward_o(n[0], n[1], n[2])
 Y1 = model.decode(x, y1)
 Y2 = model.decode(x, y2)
 
 print(x.shape, y1.shape, y2.shape, Y1, Y2)
 
-model = GCNLinkPrediction(in_channels=d.num_features, embedding_size=128, hidden_channels=64, num_layers=3, )
+model = GCNLinkPrediction(in_channels=d.num_features, embedding_size=128, hidden_channels=64, num_layers=3, num_embeddings=int(torch.max(d.X)))
 
-x = model.forward_i(a[0], a[1])
-y1 = model.forward_o(p[0], p[1])
-y2 = model.forward_o(n[0], n[1])
+x = model.forward_i(a[0], a[1], a[2])
+y1 = model.forward_o(p[0], p[1], p[2])
+y2 = model.forward_o(n[0], n[1], n[2])
 Y1 = model.decode(x, y1)
 Y2 = model.decode(x, y2)
+
 
 print(x.shape, y1.shape, y2.shape, Y1, Y2)
 
