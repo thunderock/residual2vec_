@@ -64,6 +64,7 @@ class NegativeSampling(nn.Module):
         ivectors = self.embedding.forward_i(iword)
         ovectors = self.embedding.forward_o(owords)
         nvectors = self.embedding.forward_o(nwords)
+        # print("shapes: ", ivectors.shape, ovectors.shape, nvectors.shape)
         oloss = self.logsigmoid((ovectors * ivectors).sum(dim=1))
         nloss = self.logsigmoid((nvectors * ivectors).sum(dim=1).neg())
         return -(oloss + nloss).mean()

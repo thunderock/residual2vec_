@@ -58,32 +58,32 @@ class LinkPrediction(nn.Module):
         return torch.dot(x.mean(dim=0), y.mean(dim=0))
 
     def forward(self, node, X, edge_index):
-        return self.forward_i(node, X, edge_index)
+        return self.forward_i((node, X, edge_index))
 
     def _forward_common(self, X, edge_index):
+        # print("edge_index", X.shape)
         X = F.elu(self.in_layer(X, edge_index))
         for idx in range(len(self.layers)):
             X = F.relu(self.layers[idx](X, edge_index))
         X = F.dropout(X, self.dropout, training=self.training)
         return F.relu(self.out_layer(X, edge_index))
 
-    def forward_o(self, node, X, edge_index):
-        # X = X.to(torch.int64)
-        # X = self.ivectors(X)
+    def forward_o(self, X):
+        node, X, edge_index = X[0].to(DEVICE), X[1].to(DEVICE), X[2].to(DEVICE)
         x = self.ovectors(node)
-        x = x.view(x.size(0), -1)
+        batch_size = x.size(0)
         y = self._forward_common(X, edge_index)
-        # X = F.relu(self.ovectors(X, edge_index))
-        # X = X.to(torch.long)
-        return self.lin(torch.cat([x, y]))
+        X = self.lin(torch.cat([x.view(x.size(0), -1).repeat(1, self.repeat_val), y.mean(dim=0).expand(batch_size, -1)], dim=1))
+        return X
 
-    def forward_i(self, node, X, edge_index):
+    def forward_i(self, X):
         # X = X.to(torch.int64)
+        node, X, edge_index = X[0].to(DEVICE), X[1].to(DEVICE), X[2].to(DEVICE)
         x = self.ivectors(node)
-        x = x.view(x.size(0), -1)
+        batch_size = x.size(0)
         y = self._forward_common(X, edge_index)
-        # X = F.relu(self.ivectors(X, edge_index))
-        return self.lin(torch.cat([x, y]))
+        X = self.lin(torch.cat([x.view(x.size(0), -1).repeat(1, self.repeat_val), y.mean(dim=0).expand(batch_size, -1)], dim=1))
+        return X
         # X = X.to(torch.long)
         # return torch.mean(X, dim=0)
 
@@ -137,7 +137,7 @@ class LinkPrediction(nn.Module):
 
 class GATLinkPrediction(LinkPrediction):
     def __init__(self, in_channels, hidden_channels, num_layers=2, num_heads=2, **kwargs):
-        assert num_layers >= 2 and num_heads >= 1
+        assert num_layers >= 2 and num_heads >= 1 and in_channels <= 5
         super(GATLinkPrediction, self).__init__(**kwargs)
         self.in_layer = GATConv(in_channels=in_channels, out_channels=hidden_channels, heads=num_heads,)
         self.layers = [GATConv(in_channels=hidden_channels * num_heads, out_channels=hidden_channels, heads=num_heads, ) for _ in range(num_layers - 2)]
@@ -145,15 +145,16 @@ class GATLinkPrediction(LinkPrediction):
         # self.ivectors = GATConvMean(in_channels=hidden_channels * num_heads, out_channels=self.embedding_size // num_heads, heads=num_heads,)
         # self.ovectors = GATConvMean(in_channels=hidden_channels * num_heads, out_channels=self.embedding_size // num_heads, heads=num_heads, )
         self.out_layer = GATConv(in_channels=hidden_channels * num_heads, out_channels=self.embedding_size, heads=num_heads, )
-        self.lin = torch.nn.Linear(self.embedding_size * num_heads, self.embedding_size, )
+        self.lin = torch.nn.Linear(self.embedding_size * num_heads * 2, self.embedding_size, )
 
         for idx, att in enumerate(self.layers):
             self.add_module('att_{}'.format(idx), att)
+        self.repeat_val = 5 // in_channels
 
 
 class GCNLinkPrediction(LinkPrediction):
     def __init__(self, in_channels, hidden_channels, num_layers=2, **kwargs):
-        assert num_layers >= 2
+        assert num_layers >= 2 and in_channels <= 5
         super(GCNLinkPrediction, self).__init__(**kwargs)
         self.in_layer = GCNConv(in_channels=in_channels, out_channels=hidden_channels)
         self.layers = [GCNConv(in_channels=hidden_channels * 1, out_channels=hidden_channels,) for _ in range(num_layers - 2)]
@@ -162,4 +163,5 @@ class GCNLinkPrediction(LinkPrediction):
         # self.ovectors = GCNConvMean(in_channels=hidden_channels * 1, out_channels=self.embedding_size, )
         for idx, att in enumerate(self.layers):
             self.add_module('cnn_{}'.format(idx), att)
-        self.lin = torch.nn.Linear(self.embedding_size * in_channels, self.embedding_size, )
+        self.lin = torch.nn.Linear(self.embedding_size * in_channels * 2, self.embedding_size, )
+        self.repeat_val = 1

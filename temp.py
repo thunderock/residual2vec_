@@ -166,12 +166,12 @@
 #     model.fit(train_loader=train_loader, test_loader=test_loader, optimizer=optimizer, log=True, epochs=3)
 ###########################################################
 from utils.link_prediction import *
-from datasets import triplet_dataset
+from dataset import triplet_dataset
 from utils.geometric_datasets import Pokec
 from torch_geometric.loader import NeighborLoader
 
 d = triplet_dataset.TripletPokecDataset()
-ds = triplet_dataset.NeighborEdgeSampler(d, batch_size=4, shuffle=True, num_workers=1)
+ds = triplet_dataset.NeighborEdgeSampler(d, batch_size=256, shuffle=True, num_workers=1)
 batch = next(iter(ds))
 a, p, n = batch
 

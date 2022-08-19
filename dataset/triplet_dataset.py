@@ -104,6 +104,7 @@ class TripletPokecDataset(Dataset):
         dfe = dfe[dfe.source != dfe.target] - 1
         self.edge_index = torch.cat([torch.from_numpy(dfe[col].values.reshape(-1, 1)) for col in ["source", "target"]], dim=1).T
         self.neg_edge_index = negative_sampling(edge_index=self.edge_index, num_nodes=self.X.shape[0], num_neg_samples=None, method='sparse', force_undirected=True)
+        self.num_embeddings = int(torch.max(self.X).item())
 
     def __len__(self):
         # assumes that all the nodes ids are present starting from 0 to the max number of nodes
@@ -154,28 +155,31 @@ class TripletPokecDataset(Dataset):
 
 
 class NeighborEdgeSampler(torch.utils.data.DataLoader):
-    def __init__(self, dataset, egde_sample_size=None, **kwargs):
+    def __init__(self, dataset, edge_sample_size=None, **kwargs):
         # investigate dual calling behaviour here, ideal case is calling this class with node_id range dataset
         # node_idx = torch.arange(self.adj_t.sparse_size(0))
 
         super().__init__(dataset=dataset, collate_fn=self.sample, **kwargs)
         self.features = self.dataset.num_features
         edge_index = dataset.edge_index
-        num_nodes = len(dataset)
+        # print(dataset.edge_index.dtype)
+        num_nodes = self.dataset.X.shape[0]
         self.features = dataset.num_features
         self.adj_t = self._get_adj_t(edge_index, num_nodes)
         self.neg_adj_t = self._get_adj_t(dataset.neg_edge_index, num_nodes)
         self.neg_adj_t.storage.rowptr()
         self.adj_t.storage.rowptr()
-        if not egde_sample_size:
-            egde_sample_size = num_nodes // 2
-        self.edge_sample_size = torch.tensor(egde_sample_size)
+        if not edge_sample_size:
+            edge_sample_size = num_nodes // 2
+        self.edge_sample_size = torch.tensor(edge_sample_size)
 
     def _get_adj_t(self, edge_index, num_nodes):
         return SparseTensor(row=edge_index[0], col=edge_index[1], value=torch.arange(edge_index.size(1)), sparse_sizes=(num_nodes, num_nodes)).t()
 
     def sample(self, batch):
         # make sure this is a list of tensors
+        if not isinstance(batch[0], torch.Tensor):
+            batch = [torch.tensor(b) for b in batch]
         batch = torch.stack(batch)
         a, p, n = batch[:, 0], batch[:, 1], batch[:, 2]
         adjs, nids = [], []

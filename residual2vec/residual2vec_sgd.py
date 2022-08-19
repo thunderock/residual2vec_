@@ -51,19 +51,17 @@ class CustomNodeSampler(rv.NodeSampler):
 """
 import random
 
-import numpy as np
-import torch
 from numba import njit
-from scipy import sparse
 from torch.optim import Adam
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 
 from residual2vec import utils
 from residual2vec.random_walk_sampler import RandomWalkSampler
-from residual2vec.word2vec import NegativeSampling, Word2Vec
-
+from residual2vec.word2vec import NegativeSampling
+from torch_geometric.utils import negative_sampling
 from utils.config import *
+
 class residual2vec_sgd:
     """Residual2Vec based on the stochastic gradient descent.
 
@@ -91,29 +89,6 @@ class residual2vec_sgd:
         context_window_type="double",
         miniters=200,
     ):
-        """Residual2Vec based on the stochastic gradient descent.
-
-        :param noise_sampler: Noise sampler
-        :type noise_sampler: NodeSampler
-        :param window_length: length of the context window, defaults to 10
-        :type window_length: int
-        :param batch_size: Number of batches for the SGD, defaults to 4
-        :type batch_size: int
-        :param num_walks: Number of random walkers per node, defaults to 100
-        :type num_walks: int
-        :param walk_length: length per walk, defaults to 80
-        :type walk_length: int, optional
-        :param p: node2vec parameter p (1/p is the weights of the edge to previously visited node), defaults to 1
-        :type p: float, optional
-        :param q: node2vec parameter q (1/q) is the weights of the edges to nodes that are not directly connected to the previously visted node, defaults to 1
-        :type q: float, optional
-        :param buffer_size: Buffer size for sampled center and context pairs, defaults to 10000
-        :type buffer_size: int, optional
-        :param context_window_type: The type of context window. `context_window_type="double"` specifies a context window that extends both left and right of a focal node. context_window_type="left" and ="right" specifies that extends left and right, respectively.
-        :type context_window_type: str, optional
-        :param miniter: Minimum number of iterations, defaults to 200
-        :type miniter: int, optional
-        """
         self.window_length = window_length
         self.sampler = noise_sampler
         self.cuda = cuda
@@ -172,12 +147,13 @@ class residual2vec_sgd:
         return self.in_vec
 
 
-class TripletDataset(Dataset):
+class TripletSimpleDataset(Dataset):
     """Dataset for training word2vec with negative sampling."""
 
     def __init__(
         self,
         adjmat,
+        group_ids,
         num_walks,
         window_length,
         noise_sampler,
@@ -190,7 +166,13 @@ class TripletDataset(Dataset):
     ):
 
         self.adjmat = adjmat
+        self.num_features = 1
+        self.X = torch.from_numpy(group_ids).unsqueeze(-1).to(torch.float32)
         self.num_walks = num_walks
+        rows, cols = self.adjmat.nonzero()
+        self.edge_index = torch.from_numpy(np.stack([rows, cols], axis=0)).to(torch.int64)
+        self.neg_edge_index = negative_sampling(edge_index=self.edge_index, num_nodes=self.X.shape[0],
+                                                num_neg_samples=None, method='sparse', force_undirected=True)
         self.window_length = window_length
         self.noise_sampler = noise_sampler
         self.walk_length = walk_length
@@ -216,6 +198,7 @@ class TripletDataset(Dataset):
         self.contexts = None
         self.centers = None
         self.random_contexts = None
+        self.num_embeddings = len(np.unique(group_ids))
 
         # Initialize
         self._generate_samples()
