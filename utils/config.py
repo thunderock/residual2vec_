@@ -36,3 +36,6 @@ if CUDA:
     DEVICE = torch.device("cuda")
 LOGGER = logging.getLogger(__name__)
 LOGFORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+
+
+from torch_geometric.loader import NeighborSampler
