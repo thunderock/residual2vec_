@@ -198,7 +198,7 @@ class TripletSimpleDataset(Dataset):
         self.contexts = None
         self.centers = None
         self.random_contexts = None
-        self.num_embeddings = len(np.unique(group_ids))
+        self.num_embeddings = len(np.unique(group_ids)) + 1
 
         # Initialize
         self._generate_samples()

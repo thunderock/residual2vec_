@@ -104,7 +104,7 @@ class TripletPokecDataset(Dataset):
         dfe = dfe[dfe.source != dfe.target] - 1
         self.edge_index = torch.cat([torch.from_numpy(dfe[col].values.reshape(-1, 1)) for col in ["source", "target"]], dim=1).T
         self.neg_edge_index = negative_sampling(edge_index=self.edge_index, num_nodes=self.X.shape[0], num_neg_samples=None, method='sparse', force_undirected=True)
-        self.num_embeddings = int(torch.max(self.X).item())
+        self.num_embeddings = int(torch.max(self.X).item()) + 1
 
     def __len__(self):
         # assumes that all the nodes ids are present starting from 0 to the max number of nodes
