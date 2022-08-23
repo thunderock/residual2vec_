@@ -25,26 +25,26 @@ class LinkPrediction(nn.Module):
         self.num_embeddings = num_embeddings
         self.ivectors = nn.Embedding(self.num_embeddings, self.embedding_size, )
         self.ovectors = nn.Embedding(self.num_embeddings, self.embedding_size, )
-        # self.ivectors.weight = nn.Parameter(
-        #     torch.cat(
-        #         [
-        #             torch.zeros(1, self.embedding_size),
-        #             torch.FloatTensor(self.vocab_size, self.embedding_size).uniform_(
-        #                 -0.5 / self.embedding_size, 0.5 / self.embedding_size
-        #             ),
-        #         ]
-        #     )
-        # )
-        # self.ovectors.weight = nn.Parameter(
-        #     torch.cat(
-        #         [
-        #             torch.zeros(1, self.embedding_size),
-        #             torch.FloatTensor(self.vocab_size, self.embedding_size).uniform_(
-        #                 -0.5 / self.embedding_size, 0.5 / self.embedding_size
-        #             ),
-        #         ]
-        #     )
-        # )
+        self.ivectors.weight = nn.Parameter(
+            torch.cat(
+                [
+                    torch.zeros(1, self.embedding_size),
+                    torch.FloatTensor(self.num_embeddings, self.embedding_size).uniform_(
+                        -0.5 / self.embedding_size, 0.5 / self.embedding_size
+                    ),
+                ]
+            )
+        )
+        self.ovectors.weight = nn.Parameter(
+            torch.cat(
+                [
+                    torch.zeros(1, self.embedding_size),
+                    torch.FloatTensor(self.num_embeddings, self.embedding_size).uniform_(
+                        -0.5 / self.embedding_size, 0.5 / self.embedding_size
+                    ),
+                ]
+            )
+        )
         self.ivectors.weight.requires_grad = True
         self.ovectors.weight.requires_grad = True
 
