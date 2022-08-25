@@ -20,7 +20,7 @@ except AttributeError:
 CUDA = torch.cuda.is_available()
 TRAIN_TEST_SPLIT = .2
 RANDOM_SEED = 2022
-DROPOUT = .5
+DROPOUT = .2
 torch.manual_seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
 DEVICE = torch.device("cpu")
@@ -29,9 +29,13 @@ BATCH_SIZE = 2048
 EPOCHS = 5
 PREDICTION_THRESHOLD = .7
 NUM_NEIGHBORS = 10
+EMBEDDING_DIM = 128
 LR = .01
 if CUDA:
     torch.cuda.manual_seed(RANDOM_SEED)
     DEVICE = torch.device("cuda")
 LOGGER = logging.getLogger(__name__)
 LOGFORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+
+
+from torch_geometric.loader import NeighborSampler

@@ -164,7 +164,7 @@ class Pokec(GeometricDataset):
         gender_series = node_frame["gender"].fillna(0.).values.astype(int)
         gender_tensor = torch.from_numpy(gender_series).unsqueeze(-1)
         age_tensor = torch.from_numpy(node_frame['age'].fillna(17.0).values.astype(np.float32)).unsqueeze(-1)
-        x = torch.cat((gender_tensor, age_tensor), dim=1)
+        x = torch.cat((gender_tensor, age_tensor, gender_tensor, age_tensor, gender_tensor), dim=1)
         return x, node_index_map
 
     def __transform_edges(self, edge_frame, node_index_map):

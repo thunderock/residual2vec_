@@ -51,18 +51,16 @@ class CustomNodeSampler(rv.NodeSampler):
 """
 import random
 
-import numpy as np
-import torch
 from numba import njit
-from scipy import sparse
 from torch.optim import Adam
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 
 from residual2vec import utils
 from residual2vec.random_walk_sampler import RandomWalkSampler
-from residual2vec.word2vec import NegativeSampling, Word2Vec
-
+from residual2vec.word2vec import NegativeSampling
+from torch_geometric.utils import negative_sampling
+from utils.config import *
 
 class residual2vec_sgd:
     """Residual2Vec based on the stochastic gradient descent.
@@ -86,34 +84,11 @@ class residual2vec_sgd:
         walk_length=40,
         p=1,
         q=1,
-        cuda=False,
+        cuda=DEVICE,
         buffer_size=100000,
         context_window_type="double",
         miniters=200,
     ):
-        """Residual2Vec based on the stochastic gradient descent.
-
-        :param noise_sampler: Noise sampler
-        :type noise_sampler: NodeSampler
-        :param window_length: length of the context window, defaults to 10
-        :type window_length: int
-        :param batch_size: Number of batches for the SGD, defaults to 4
-        :type batch_size: int
-        :param num_walks: Number of random walkers per node, defaults to 100
-        :type num_walks: int
-        :param walk_length: length per walk, defaults to 80
-        :type walk_length: int, optional
-        :param p: node2vec parameter p (1/p is the weights of the edge to previously visited node), defaults to 1
-        :type p: float, optional
-        :param q: node2vec parameter q (1/q) is the weights of the edges to nodes that are not directly connected to the previously visted node, defaults to 1
-        :type q: float, optional
-        :param buffer_size: Buffer size for sampled center and context pairs, defaults to 10000
-        :type buffer_size: int, optional
-        :param context_window_type: The type of context window. `context_window_type="double"` specifies a context window that extends both left and right of a focal node. context_window_type="left" and ="right" specifies that extends left and right, respectively.
-        :type context_window_type: str, optional
-        :param miniter: Minimum number of iterations, defaults to 200
-        :type miniter: int, optional
-        """
         self.window_length = window_length
         self.sampler = noise_sampler
         self.cuda = cuda
@@ -126,14 +101,8 @@ class residual2vec_sgd:
         self.miniters = miniters
         self.context_window_type = context_window_type
 
+    # add feature matrix here
     def fit(self, adjmat):
-        """Learn the graph structure to generate the node embeddings.
-
-        :param adjmat: Adjacency matrix of the graph.
-        :type adjmat: numpy.ndarray or scipy sparse matrix format (csr).
-        :return: self
-        :rtype: self
-        """
 
         # Convert to scipy.sparse.csr_matrix format
         adjmat = utils.to_adjacency_matrix(adjmat)
@@ -144,54 +113,19 @@ class residual2vec_sgd:
         self.sampler.fit(adjmat)
         return self
 
-    def transform(self, dim):
-        """Generate embedding vectors.
-
-        :param dim: Dimension
-        :type dim: int
-        :return: Embedding vectors
-        :rtype: numpy.ndarray of shape (num_nodes, dim), where num_nodes is the number of nodes.
-          Each ith row in the array corresponds to the embedding of the ith node.
+    def transform(self, model, dataloader: torch.utils.data.DataLoader):
+        """
+        * model is the model to be used with the framework
+        * x are the node features
         """
 
         # Set up the embedding model
         PADDING_IDX = self.n_nodes
-        model = Word2Vec(
-            vocab_size=self.n_nodes + 1, embedding_size=dim, padding_idx=PADDING_IDX
-        )
+        # model = Word2Vec(
+        #     vocab_size=self.n_nodes + 1, embedding_size=dim, padding_idx=PADDING_IDX
+        # )
         neg_sampling = NegativeSampling(embedding=model)
-        if self.cuda:
-            model = model.cuda()
-
-        # Set up the Training dataset
-        adjusted_num_walks = np.ceil(
-            self.num_walks
-            * np.maximum(
-                1,
-                self.batch_size
-                * self.miniters
-                / (self.n_nodes * self.num_walks * self.walk_length),
-            )
-        ).astype(int)
-        dataset = TripletDataset(
-            adjmat=self.adjmat,
-            num_walks=adjusted_num_walks,
-            window_length=self.window_length,
-            noise_sampler=self.sampler,
-            padding_id=PADDING_IDX,
-            walk_length=self.walk_length,
-            p=self.p,
-            q=self.q,
-            buffer_size=self.buffer_size,
-            context_window_type=self.context_window_type,
-        )
-        dataloader = DataLoader(
-            dataset,
-            batch_size=self.batch_size,
-            shuffle=False,
-            num_workers=1,
-            pin_memory=True,
-        )
+        model.to(self.cuda)
 
         # Training
         optim = Adam(model.parameters(), lr=0.003)
@@ -213,12 +147,13 @@ class residual2vec_sgd:
         return self.in_vec
 
 
-class TripletDataset(Dataset):
+class TripletSimpleDataset(Dataset):
     """Dataset for training word2vec with negative sampling."""
 
     def __init__(
         self,
         adjmat,
+        group_ids,
         num_walks,
         window_length,
         noise_sampler,
@@ -229,31 +164,15 @@ class TripletDataset(Dataset):
         context_window_type="double",
         buffer_size=100000,
     ):
-        """Dataset for training word2vec with negative sampling.
 
-        :param adjmat: Adjacency matrix of the graph.
-        :type adjmat: scipy sparse matrix format (csr).
-        :param num_walks: Number of random walkers per node
-        :type num_walks: int
-        :param window_length: length of the context window
-        :type window_length: int
-        :param noise_sampler: Noise sampler
-        :type noise_sampler: NodeSampler
-        :param padding_id: Index of the padding node
-        :type padding_id: int
-        :param walk_length: length per walk, defaults to 40
-        :type walk_length: int, optional
-        :param p: node2vec parameter p (1/p is the weights of the edge to previously visited node), defaults to 1
-        :type p: float, optional
-        :param q: node2vec parameter q (1/q) is the weights of the edges to nodes that are not directly connected to the previously visted node, defaults to 1
-        :type q: float, optional
-        :param context_window_type: The type of context window. `context_window_type="double"` specifies a context window that extends both left and right of a focal node. context_window_type="left" and ="right" specifies that extends left and right, respectively.
-        :type context_window_type: str, optional
-        :param buffer_size: Buffer size for sampled center and context pairs, defaults to 10000
-        :type buffer_size: int, optional
-        """
         self.adjmat = adjmat
+        self.num_features = 1
+        self.X = torch.from_numpy(group_ids).unsqueeze(-1).to(torch.float32)
         self.num_walks = num_walks
+        rows, cols = self.adjmat.nonzero()
+        self.edge_index = torch.from_numpy(np.stack([rows, cols], axis=0)).to(torch.int64)
+        self.neg_edge_index = negative_sampling(edge_index=self.edge_index, num_nodes=self.X.shape[0],
+                                                num_neg_samples=None, method='sparse', force_undirected=True)
         self.window_length = window_length
         self.noise_sampler = noise_sampler
         self.walk_length = walk_length
@@ -279,6 +198,7 @@ class TripletDataset(Dataset):
         self.contexts = None
         self.centers = None
         self.random_contexts = None
+        self.num_embeddings = len(np.unique(group_ids)) + 1
 
         # Initialize
         self._generate_samples()
@@ -401,3 +321,4 @@ def _get_center_single_context_window(
                     break
                 contexts[start:end, i] = walks[:, t_walk + 1 + i]
     return centers, contexts
+
