@@ -4,6 +4,7 @@
 # @Time:        7/31/22 5:32 PM
 import numpy as np
 import scipy.sparse as sp
+from scipy.sparse import issparse
 import torch
 
 
@@ -33,3 +34,13 @@ def normalize_row_wise(mx):
     r_mat_inv = sp.diags(r_inv)
     mx = r_mat_inv.dot(mx)
     return mx
+
+
+def check_if_symmetric(m):
+    """
+    Check if a matrix is symmetric
+    Only accepts numpy matrices
+    """
+    if issparse(m):
+        m = m.todense()
+    return np.allclose(m, m.T)

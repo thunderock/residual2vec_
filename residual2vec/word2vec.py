@@ -1,8 +1,3 @@
-"""Embedding module for Residual2Vec.
-
-This module is a modified version of the Word2Vec module in
-https://github.com/theeluwin/pytorch-sgn
-"""
 import numpy as np
 import torch
 import torch.nn as nn
@@ -65,9 +60,11 @@ class NegativeSampling(nn.Module):
         self.logsigmoid = nn.LogSigmoid()
 
     def forward(self, iword, owords, nwords):
+        # these can be tuple of tensors or single tensor
         ivectors = self.embedding.forward_i(iword)
         ovectors = self.embedding.forward_o(owords)
         nvectors = self.embedding.forward_o(nwords)
+        # print("shapes: ", ivectors.shape, ovectors.shape, nvectors.shape)
         oloss = self.logsigmoid((ovectors * ivectors).sum(dim=1))
         nloss = self.logsigmoid((nvectors * ivectors).sum(dim=1).neg())
         return -(oloss + nloss).mean()

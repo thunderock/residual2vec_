@@ -45,6 +45,8 @@ class RandomWalkSampler:
         if self.weighted:
             data = adjmat.data / adjmat.sum(axis=1).A1.repeat(np.diff(self.indptr))
             self.data = utils._csr_row_cumsum(self.indptr, data)
+        self.walks = None
+        self.window_length = None
 
     def sampling(self, start):
         """Sample a random walk path.
