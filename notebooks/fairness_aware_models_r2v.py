@@ -18,6 +18,7 @@ import pandas as pd
 from scipy import sparse
 import networkx as nx
 from torch.utils.data import DataLoader
+import torch
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -97,6 +98,7 @@ dataloader = DataLoader(
 models[k] = model
 m = Word2Vec(vocab_size=A.shape[0] + 1, embedding_size=dim, padding_idx=A.shape[0])
 embs[k] = models[k].transform(model=m, dataloader=dataloader)
+torch.save(m.state_dict(), k)
 
 
 # # group-unbiased
@@ -145,6 +147,7 @@ dataloader = DataLoader(
 models[k] = model
 m = Word2Vec(vocab_size=A.shape[0] + 1, embedding_size=dim, padding_idx=A.shape[0])
 embs[k] = models[k].transform(model=m, dataloader=dataloader)
+torch.save(m.state_dict(), k)
 
 
 # In[7]:
@@ -166,6 +169,7 @@ dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size,
 models[k] = model
 m = GATLinkPrediction(in_channels=d.num_features, embedding_size=128, num_heads=5, num_layers=3, hidden_channels=64, num_embeddings=d.num_embeddings)
 embs[k] = models[k].transform(model=m, dataloader=dataloader)
+torch.save(m.state_dict(), k)
 
 
 # In[8]:
@@ -186,14 +190,16 @@ m = GCNLinkPrediction(in_channels=d.num_features, embedding_size=128, hidden_cha
 embs[k] = models[k].transform(model=m, dataloader=dataloader)
 
 
+torch.save(m.state_dict(), k)
 
-# In[9]:
+
+# In[ ]:
 
 
 d = triplet_dataset.TripletPokecDataset()
 
 
-# In[10]:
+# In[ ]:
 
 
 
@@ -212,6 +218,7 @@ dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size,
 models[k] = model
 m = GATLinkPrediction(in_channels=d.num_features, embedding_size=128, num_heads=5, num_layers=5, hidden_channels=64, num_embeddings=d.num_embeddings)
 embs[k] = models[k].transform(model=m, dataloader=dataloader)
+torch.save(m.state_dict(), k)
 
 
 # In[ ]:
@@ -232,6 +239,8 @@ m = GCNLinkPrediction(in_channels=d.num_features, embedding_size=128, hidden_cha
 embs[k] = models[k].transform(model=m, dataloader=dataloader)
 
 
+torch.save(m.state_dict(), k)
+
 
 # In[ ]:
 
@@ -243,6 +252,12 @@ for k,i in embs.items():
 # In[ ]:
 
 
-import pickle as pkl
-pkl.dump(embs, open("/tmp/embs.pkl", "wb"))
+# import pickle as pkl
+# pkl.dump(embs, open("/tmp/embs.pkl", "wb"))
+
+
+# In[ ]:
+
+
+
 

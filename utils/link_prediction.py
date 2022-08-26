@@ -53,7 +53,6 @@ class LinkPrediction(nn.Module):
 
     @staticmethod
     def decode(x, y):
-        # cosine similarity
         # x * 128
         return torch.dot(x.mean(dim=0), y.mean(dim=0))
 
