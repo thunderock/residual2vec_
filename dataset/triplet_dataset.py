@@ -155,7 +155,7 @@ class TripletPokecDataset(Dataset):
 
 
 class NeighborEdgeSampler(torch.utils.data.DataLoader):
-    def __init__(self, dataset, edge_sample_size=None, **kwargs):
+    def __init__(self, dataset, edge_sample_size=None, transforming=False, **kwargs):
         # investigate dual calling behaviour here, ideal case is calling this class with node_id range dataset
         # node_idx = torch.arange(self.adj_t.sparse_size(0))
 
@@ -172,6 +172,7 @@ class NeighborEdgeSampler(torch.utils.data.DataLoader):
         if not edge_sample_size:
             edge_sample_size = num_nodes // 2
         self.edge_sample_size = torch.tensor(edge_sample_size)
+        self.transforming = transforming
 
     def _get_adj_t(self, edge_index, num_nodes):
         return SparseTensor(row=edge_index[0], col=edge_index[1], value=torch.arange(edge_index.size(1)), sparse_sizes=(num_nodes, num_nodes)).t()
@@ -183,19 +184,33 @@ class NeighborEdgeSampler(torch.utils.data.DataLoader):
         batch = torch.stack(batch)
         a, p, n = batch[:, 0], batch[:, 1], batch[:, 2]
         adjs, nids = [], []
-        for idx, n_id in enumerate((a, p, n)):
-            if idx == 2:
-                # in case of negativly sampled node
-                adj_t, node_ids = self.neg_adj_t.sample_adj(n_id, self.edge_sample_size, replace=False)
-            else:
-                adj_t, node_ids = self.adj_t.sample_adj(n_id, self.edge_sample_size, replace=False)
+        if self.transforming:
+            # idx = 0
+            # n_id = a
+            adj_t, node_ids = self.adj_t.sample_adj(a, self.edge_sample_size, replace=False)
             # e_id = adj_t.storage.value()
             # size = adj_t.sparse_sizes()[::-1]
             row, col, _ = adj_t.coo()
             edge_index = torch.stack([row, col], dim=0)
             # adjs.append(EdgeIndex(edge_index, e_id, size))
-            adjs.append(edge_index)
-            nids.append(node_ids)
+            # adjs = [edge_index] * 3
+            # nids = [n_id] * 3
+            x = (self.dataset.X[a].to(torch.long), self.dataset.X[node_ids], edge_index)
+            return x, x, x
+        else:
+            for idx, n_id in enumerate((a, p, n)):
+                if idx == 2:
+                    # in case of negativly sampled node
+                    adj_t, node_ids = self.neg_adj_t.sample_adj(n_id, self.edge_sample_size, replace=False)
+                else:
+                    adj_t, node_ids = self.adj_t.sample_adj(n_id, self.edge_sample_size, replace=False)
+                # e_id = adj_t.storage.value()
+                # size = adj_t.sparse_sizes()[::-1]
+                row, col, _ = adj_t.coo()
+                edge_index = torch.stack([row, col], dim=0)
+                # adjs.append(EdgeIndex(edge_index, e_id, size))
+                adjs.append(edge_index)
+                nids.append(node_ids)
         # get this features from dataset itself in future
         return (self.dataset.X[a].to(torch.long), self.dataset.X[nids[0]], adjs[0]), \
                (self.dataset.X[p].to(torch.long), self.dataset.X[nids[1]], adjs[1]), \
