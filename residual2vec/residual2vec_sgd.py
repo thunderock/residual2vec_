@@ -138,7 +138,7 @@ class residual2vec_sgd:
             # with torch.cuda.amp.autocast():
             loss = neg_sampling(iword, owords, nwords)
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
+            # torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
             optim.step()
             pbar.set_postfix(loss=loss.item())
 
