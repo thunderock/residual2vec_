@@ -5,7 +5,7 @@ from scipy.io import loadmat
 from scipy.sparse import issparse
 from six import iterkeys
 from six.moves import range, zip
-
+from tqdm import tqdm
 from utils.utils import check_if_symmetric
 
 
@@ -69,7 +69,7 @@ def _ramdomwalk_colorfulness(G, v, l):
     return res / l
 
 
-def _node_colorfulness(G, v, l):
+def _node_colorfulness(G, v, l=2):
     res = 0.001 + np.mean([_ramdomwalk_colorfulness(G, v, l) for _ in range(1000)])
     return (v, res)
 
@@ -83,7 +83,7 @@ def _colorfulness(G, l):
 
     # pool = multiprocessing.Pool(multiprocessing.cpu_count())
     # map_results = pool.starmap(_node_colorfulness, [(G, v) for v in G])
-    map_results = [_node_colorfulness(G, v, l) for v in G]
+    map_results = [_node_colorfulness(G, v, l) for v in tqdm(G, desc='assigning_color')]
     # pool.close()
     cfn = {k: v for k, v in map_results}
     # print(cfn)
@@ -98,7 +98,7 @@ def set_weights(G, exp_, p_bndry, l):
     # assert( (s_method[3] in ['bndry', 'revbndry']) and (s_method[5] == 'exp'))
     cfn = _colorfulness(G, l)
     G.edge_weights = dict()
-    for v in G:
+    for v in tqdm(G, desc='assigning_weights'):
         nei_colors = np.unique([G.attr[u] for u in G[v]])
         if nei_colors.size == 0:
             continue
@@ -160,12 +160,12 @@ def load_matfile(file_, variable_name="network", undirected=True):
 
 def from_numpy(x, undirected=True):
     G = Graph()
-    if issparse(x) and check_if_symmetric(x):
+    if issparse(x):
         cx = x.tocoo()
         for i, j, v in zip(cx.row, cx.col, cx.data):
             G[i].append(j)
     else:
-        raise Exception("Only Dense matrices and undirected graphs are supported at this time not yet supported.")
+        raise Exception("Only Sparse metrices and undirected graphs are supported at this time.")
     # check if this works for directed graphs as well
     if undirected:
         G.make_undirected()

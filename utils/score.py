@@ -4,11 +4,13 @@
 # @Time:        7/29/22 9:46 PM
 import numpy as np
 import networkx as nx
-
+from scipy.sparse import issparse
 
 def accuracy(y_pred, y_true):
     return y_pred.max(1)[1].eq(y_true).double().mean().numpy()
 
+def equal_opportunity_sparse(sp_mt, y):
+    pass
 
 def statistical_parity(G, y):
     classes, counts = np.unique(y, return_counts=True)
@@ -46,3 +48,11 @@ def statistical_parity(G, y):
         score[class_i] = np.var(np.abs(class_scores))
         # print(f"Class {class_i} has score {score[class_i]}")
     return np.mean(list(score.values()))
+
+
+## 1) need to check if this implementation of statistical parity is correct
+## 2) need to implement a sparse version of statistical parity
+## 3) need to implement a sparse version of equal opportunity
+
+## need to then create out vectors for gcn and gat for pokec
+## use node2vec with crosswalk to create embeddings for pokec

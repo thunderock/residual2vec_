@@ -105,10 +105,11 @@ class TripletPokecDataset(Dataset):
         self.edge_index = torch.cat([torch.from_numpy(dfe[col].values.reshape(-1, 1)) for col in ["source", "target"]], dim=1).T
         self.neg_edge_index = negative_sampling(edge_index=self.edge_index, num_nodes=self.X.shape[0], num_neg_samples=None, method='sparse', force_undirected=True)
         self.num_embeddings = int(torch.max(self.X).item()) + 1
+        self.n_nodes = self.X.shape[0]
 
     def __len__(self):
         # assumes that all the nodes ids are present starting from 0 to the max number of nodes
-        return self.X.shape[0]
+        return self.n_nodes
 
     def _get_node_edges_from_source(self, idx, edge_index=None, two_dim=False):
         edge_index = edge_index if edge_index is not None else self.edge_index
@@ -117,6 +118,9 @@ class TripletPokecDataset(Dataset):
         if two_dim:
             return torch.cat([torch.full_like(ret, idx).reshape(-1, 1), ret.reshape(-1, 1)], dim=1).T
         return ret
+
+    def get_adjacency_mt(self):
+        pass
 
     def _ret_features_for_node(self, idx):
         # index = self.idx_mapping[idx]self.features

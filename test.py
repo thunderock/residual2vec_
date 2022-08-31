@@ -37,7 +37,7 @@ models, embs = {}, {}
 
 from utils.link_prediction import *
 from dataset import triplet_dataset
-k = "degree-unbiased-gat"
+k = "degree-unbiased-gcn-outvector"
 
 model = rv.residual2vec_sgd(
     noise_sampler=rv.ConfigModelNodeSampler(),
@@ -75,13 +75,14 @@ dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=BS, shuffle=False
 models[k] = model
 # m = GATLinkPrediction(in_channels=d.num_features, embedding_size=128, num_heads=5, num_layers=3, hidden_channels=64, num_embeddings=d.num_embeddings)
 
-m = GATLinkPrediction(in_channels=d.num_features, embedding_size=128, num_heads=5, num_layers=5, hidden_channels=64, num_embeddings=d.num_embeddings)
+# m = GATLinkPrediction(in_channels=d.num_features, embedding_size=128, num_heads=5, num_layers=5, hidden_channels=64, num_embeddings=d.num_embeddings)
+m = GCNLinkPrediction(in_channels=d.num_features, embedding_size=128, hidden_channels=64, num_layers=5, num_embeddings=d.num_embeddings)
 m.load_state_dict(torch.load('notebooks/{}'.format(k)))
 m.to(DEVICE)
 m.eval()
-emb = np.empty((len(d), 128))
-for idx, batch in enumerate(tqdm(dataloader)):
-    with torch.no_grad():
+emb = np.zeros((len(d), 128))
+with torch.no_grad():
+    for idx, batch in enumerate(tqdm(dataloader)):
         # emb[idx, :]= m.forward_i(batch[0]).detach().cpu().numpy()
         emb[idx * BS: (idx + 1) * BS, :] = m.forward_i(batch[0]).detach().cpu().numpy()
 embs[k] = emb.copy()
