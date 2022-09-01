@@ -5,7 +5,7 @@ from scipy.io import loadmat
 from scipy.sparse import issparse
 from six import iterkeys
 from six.moves import range, zip
-from tqdm import tqdm
+from tqdm import tqdm, trange
 from utils.utils import check_if_symmetric
 
 
@@ -145,9 +145,7 @@ def edge_weights_to_sparse(G, sp_mt, ):
     assert issparse(sp_mt), 'sp_mt is not sparse'
     ret = sp_mt.copy()
     n = len(G)
-    # assert n == sp_mt.shape[0] and check_if_symmetric(
-    #     edge_weights), 'edge_weights is not symmetric, i.e. graph is not undirected'
-    for i in range(n):
+    for i in trange(n, desc="assigning final weights"):
         ret.data[sp_mt.indptr[i]:sp_mt.indptr[i + 1]] = np.array(G[i])
     return ret
 

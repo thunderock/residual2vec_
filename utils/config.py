@@ -25,7 +25,8 @@ torch.manual_seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
 DEVICE = torch.device("cpu")
 ALPHA = .2
-BATCH_SIZE = 2048
+BATCH_SIZE = 128
+NUM_WORKERS = 4
 EPOCHS = 5
 PREDICTION_THRESHOLD = .7
 NUM_NEIGHBORS = 10
@@ -36,6 +37,3 @@ if CUDA:
     DEVICE = torch.device("cuda")
 LOGGER = logging.getLogger(__name__)
 LOGFORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-
-
-from torch_geometric.loader import NeighborSampler
