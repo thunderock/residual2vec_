@@ -34,6 +34,7 @@ EMBEDDING_DIM = 128
 LR = .01
 if CUDA:
     torch.cuda.manual_seed(RANDOM_SEED)
-    DEVICE = torch.device("cuda")
+    DEVICE = os.environ.get("SET_GPU", "cuda:0")
+    print(f"Using GPU: {DEVICE}")
 LOGGER = logging.getLogger(__name__)
 LOGFORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'

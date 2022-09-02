@@ -1,19 +1,27 @@
+import os
 from os.path import join as j
 
+ENV = config.get('env', 'remote')
+DATA_ROOT = "/data/sg/ashutiwa/residual2vec_"
+if ENV == 'local':
+    DATA_ROOT = "data"
 
 rule train_gcn_with_nodevec:
+    # snakemake -R --until train_gcn_with_nodevec  -call --config env=local
     input:
-        weighted_adj = j("/data/sg/ashutiwa/residual2vec_", "pokec_crosswalk_adj.npz"),
+        weighted_adj = j(DATA_ROOT, "pokec_crosswalk_adj.npz"),
     output:
-        model_weights = j("/data/sg/ashutiwa/residual2vec_", "pokec_crosswalk_gcn_nodevec.h5"),
-        node2vec_weights = j("/data/sg/ashutiwa/residual2vec_", "pokec_crosswalk_gcn_node2vec.h5"),
-    threads: 16
+        model_weights = j(DATA_ROOT, "pokec_crosswalk_gcn_nodevec.h5"),
+        node2vec_weights = j(DATA_ROOT, "pokec_crosswalk_gcn_node2vec.h5"),
+    threads: 4 if ENV == 'local' else 20
     params:
         BATCH_SIZE = 128,
         NODE_TO_VEC_DIM = 16,
         NODE_TO_VEC_EPOCHS = 5,
-        NUM_WORKERS = 4
+        NUM_WORKERS = 4 if ENV == 'local' else 16,
+        SET_DEVICE = "cuda:1"
     run:
+        os.environ["SET_GPU"] = params.SET_DEVICE
         import torch
         from models.weighted_node2vec import WeightedNode2Vec
         from dataset import triplet_dataset, pokec_data
@@ -23,14 +31,12 @@ rule train_gcn_with_nodevec:
         from utils.link_prediction import GCNLinkPrediction
         import residual2vec as rv
         import warnings
-
         warnings.filterwarnings("ignore")
         gc.enable()
-
         window_length = 5
         num_walks = 10
         dim = 128
-        walk_length = 80
+        walk_length = 5
 
         d = pokec_data.PokecDataFrame()
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
@@ -62,18 +68,20 @@ rule train_gcn_with_nodevec:
 
 rule train_gat_with_nodevec:
     input:
-        weighted_adj=j("/data/sg/ashutiwa/residual2vec_","pokec_crosswalk_adj.npz"),
+        weighted_adj=j(DATA_ROOT,"pokec_crosswalk_adj.npz"),
     output:
-        model_weights = j("/data/sg/ashutiwa/residual2vec_","pokec_crosswalk_gat_nodevec.h5"),
-        node2vec_weights=j("/data/sg/ashutiwa/residual2vec_","pokec_crosswalk_gat_node2vec.h5"),
+        model_weights = j(DATA_ROOT, "pokec_crosswalk_gat_nodevec.h5"),
+        node2vec_weights=j(DATA_ROOT, "pokec_crosswalk_gat_node2vec.h5"),
 
-    threads: 16
+    threads: 4 if ENV == 'local' else 20
     params:
         BATCH_SIZE = 128,
         NODE_TO_VEC_DIM=16,
         NODE_TO_VEC_EPOCHS=5,
-        NUM_WORKERS=4
+        NUM_WORKERS=4 if ENV == 'local' else 16,
+        SET_DEVICE= "cuda:0"
     run:
+        os.environ["SET_GPU"] = params.SET_DEVICE
         import torch
         from models.weighted_node2vec import WeightedNode2Vec
         from dataset import triplet_dataset,pokec_data
@@ -83,14 +91,12 @@ rule train_gat_with_nodevec:
         from utils.link_prediction import GATLinkPrediction
         import residual2vec as rv
         import warnings
-
         warnings.filterwarnings("ignore")
         gc.enable()
-
         window_length = 5
         num_walks = 10
         dim = 128
-        walk_length = 80
+        walk_length = 5
 
         d = pokec_data.PokecDataFrame()
         edge_index,num_nodes=d.edge_index,d.X.shape[0]
