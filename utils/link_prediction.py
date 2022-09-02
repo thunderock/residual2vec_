@@ -95,7 +95,7 @@ class GATLinkPrediction(LinkPrediction):
 
         for idx, att in enumerate(self.layers):
             self.add_module('att_{}'.format(idx), att)
-        self.repeat_val = 5 // in_channels
+        self.repeat_val = 2
 
 
 class GCNLinkPrediction(LinkPrediction):
