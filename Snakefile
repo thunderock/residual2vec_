@@ -133,14 +133,11 @@ rule train_gcn:
     threads: 4 if ENV == 'local' else 20
     params:
         NUM_WORKERS=6 if ENV == 'local' else 16,
-        SET_DEVICE= "cuda:0"
+        SET_DEVICE= "cuda:1"
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
         import torch
-        from models.weighted_node2vec import WeightedNode2Vec
         from dataset import triplet_dataset,pokec_data
-        from utils.config import DEVICE
-        from tqdm import tqdm,trange
         import gc
         from utils.link_prediction import GCNLinkPrediction
         import residual2vec as rv
@@ -183,10 +180,8 @@ rule train_gat:
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
         import torch
-        from models.weighted_node2vec import WeightedNode2Vec
         from dataset import triplet_dataset,pokec_data
-        from utils.config import DEVICE
-        from tqdm import tqdm,trange
+        from tqdm import tqdm, trange
         import gc
         from utils.link_prediction import GATLinkPrediction
         import residual2vec as rv
@@ -281,5 +276,6 @@ rule generate_embs_gat_crosswalk:
                 a, p, n = m.forward_i(a), m.forward_o(p), m.forward_o(n)
                 a, p, n = a.detach().cpu().numpy(), p.detach().cpu().numpy(), n.detach().cpu().numpy()
                 embs[idx * params.BATCH_SIZE:(idx + 1) * params.BATCH_SIZE, :] = np.concatenate((a, p, n), axis=1)
+                break
         import pickle as pkl
         pkl.dump(embs, open(str(output.embs), "wb"))
