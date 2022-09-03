@@ -215,7 +215,7 @@ rule generate_embs_gat_crosswalk:
         node2vec_weights=j(DATA_ROOT,"pokec_crosswalk_gat_node2vec.h5"),
         weighted_adj= j(DATA_ROOT,"pokec_crosswalk_adj.npz"),
     output:
-        embs = j(DATA_ROOT, "pokec_crosswalk_gat_embs.h5")
+        embs_file = j(DATA_ROOT, "pokec_crosswalk_gat_embs.h5")
     threads: 4 if ENV == 'local' else 20
     params:
         BATCH_SIZE= 128,
@@ -233,6 +233,8 @@ rule generate_embs_gat_crosswalk:
         from utils.link_prediction import GATLinkPrediction
         import residual2vec as rv
         import warnings
+        import gc
+        from tqdm import tqdm, trange
 
         warnings.filterwarnings("ignore")
         gc.enable()
@@ -249,7 +251,7 @@ rule generate_embs_gat_crosswalk:
             group_membership=d.get_grouped_col(),
             weighted_adj=str(input.weighted_adj),
             edge_index=edge_index,
-            embedding_size=params.NODE_TO_VEC_DIM,
+            embedding_dim=params.NODE_TO_VEC_DIM,
             walk_length=walk_length,
             context_size=2,
         ).to(DEVICE)
@@ -278,4 +280,4 @@ rule generate_embs_gat_crosswalk:
                 embs[idx * params.BATCH_SIZE:(idx + 1) * params.BATCH_SIZE, :] = np.concatenate((a, p, n), axis=1)
                 break
         import pickle as pkl
-        pkl.dump(embs, open(str(output.embs), "wb"))
+        pkl.dump(embs, open(str(output.embs_file), "wb"))
