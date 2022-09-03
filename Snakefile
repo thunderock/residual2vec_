@@ -1,9 +1,10 @@
 import os
 from os.path import join as j
-
+# os.environ["CUDA_VISIBLE_DEVICES"]=""
+# config = {"env": 'local'}
 ENV = config.get('env', 'remote')
 DATA_ROOT = "/data/sg/ashutiwa/residual2vec_"
-if ENV == 'local':
+if ENV in ('local', 'carbonate'):
     DATA_ROOT = "data"
 
 rule train_gcn_with_nodevec:
@@ -120,5 +121,91 @@ rule train_gat_with_nodevec:
         d = triplet_dataset.TripletGraphDataset(X=X,edge_index=edge_index,)
         dataloader = triplet_dataset.NeighborEdgeSampler(d,batch_size=model.batch_size,shuffle=True,num_workers=params.NUM_WORKERS,pin_memory=True)
         m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=params.NODE_TO_VEC_DIM)
+        model.transform(model=m,dataloader=dataloader)
+        torch.save(m.state_dict(),str(output.model_weights))
+
+rule train_gcn:
+    output:
+        model_weights = j(DATA_ROOT, "pokec_gcn.h5")
+
+    threads: 4 if ENV == 'local' else 20
+    params:
+        NUM_WORKERS=6 if ENV == 'local' else 16,
+        SET_DEVICE= "cuda:0"
+    run:
+        os.environ["SET_GPU"] = params.SET_DEVICE
+        import torch
+        from models.weighted_node2vec import WeightedNode2Vec
+        from dataset import triplet_dataset,pokec_data
+        from utils.config import DEVICE
+        from tqdm import tqdm,trange
+        import gc
+        from utils.link_prediction import GATLinkPrediction
+        import residual2vec as rv
+        import warnings
+        warnings.filterwarnings("ignore")
+        gc.enable()
+        window_length = 5
+        num_walks = 10
+        dim = 128
+        walk_length = 5
+
+        d = pokec_data.PokecDataFrame()
+        edge_index,num_nodes=d.edge_index,d.X.shape[0]
+
+        model = rv.residual2vec_sgd(
+        noise_sampler=rv.ConfigModelNodeSampler(),
+        window_length=window_length,
+        num_walks=num_walks,
+        walk_length=walk_length
+        ).fit()
+        X = d.X
+        d = triplet_dataset.TripletGraphDataset(X=X,edge_index=edge_index,)
+        dataloader = triplet_dataset.NeighborEdgeSampler(d,batch_size=model.batch_size,shuffle=True,num_workers=params.NUM_WORKERS,pin_memory=True)
+        # m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=d.num_features)
+        m = GCNLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=d.num_features)
+
+        model.transform(model=m,dataloader=dataloader)
+        torch.save(m.state_dict(),str(output.model_weights))
+
+rule train_gat:
+    output:
+        model_weights = j(DATA_ROOT, "pokec_gat.h5")
+
+    threads: 4 if ENV == 'local' else 20
+    params:
+        NUM_WORKERS=6 if ENV == 'local' else 16,
+        SET_DEVICE= "cuda:0"
+    run:
+        os.environ["SET_GPU"] = params.SET_DEVICE
+        import torch
+        from models.weighted_node2vec import WeightedNode2Vec
+        from dataset import triplet_dataset,pokec_data
+        from utils.config import DEVICE
+        from tqdm import tqdm,trange
+        import gc
+        from utils.link_prediction import GATLinkPrediction
+        import residual2vec as rv
+        import warnings
+        warnings.filterwarnings("ignore")
+        gc.enable()
+        window_length = 5
+        num_walks = 10
+        dim = 128
+        walk_length = 5
+
+        d = pokec_data.PokecDataFrame()
+        edge_index,num_nodes=d.edge_index,d.X.shape[0]
+
+        model = rv.residual2vec_sgd(
+        noise_sampler=rv.ConfigModelNodeSampler(),
+        window_length=window_length,
+        num_walks=num_walks,
+        walk_length=walk_length
+        ).fit()
+        X = d.X
+        d = triplet_dataset.TripletGraphDataset(X=X,edge_index=edge_index,)
+        dataloader = triplet_dataset.NeighborEdgeSampler(d,batch_size=model.batch_size,shuffle=True,num_workers=params.NUM_WORKERS,pin_memory=True)
+        m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=d.num_features)
         model.transform(model=m,dataloader=dataloader)
         torch.save(m.state_dict(),str(output.model_weights))
