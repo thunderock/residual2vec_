@@ -210,13 +210,13 @@ rule train_gat:
         torch.save(m.state_dict(),str(output.model_weights))
 
 rule generate_embs_crosswalk:
-    # snakemake -R --until generate_embs_crosswalk  -call --config env=local model="gat" --nolock
+    # snakemake -R --until generate_embs_crosswalk  -call --config env=local model=gat --nolock
     input:
         model_weights=j(DATA_ROOT,"pokec_crosswalk_{}_nodevec.h5".format(GNN_MODEL)),
         node2vec_weights=j(DATA_ROOT,"pokec_crosswalk_{}_node2vec.h5".format(GNN_MODEL)),
         weighted_adj= j(DATA_ROOT,"pokec_crosswalk_adj.npz"),
     output:
-        embs_file = j(DATA_ROOT, "pokec_crosswalk_{}_embs.h5".format(GNN_MODEL))
+        embs_file = j(DATA_ROOT, "pokec_crosswalk_{}_embs.npy".format(GNN_MODEL))
     threads: 4 if ENV == 'local' else 20
     params:
         BATCH_SIZE= 128,
@@ -276,12 +276,13 @@ rule generate_embs_crosswalk:
         m.load_state_dict(torch.load(str(input.model_weights)))
         m = m.to(DEVICE)
         m.eval()
+
         embs = torch.zeros((num_nodes, 128 * 3))
         with torch.no_grad():
-            for idx, batch in enumerate(tqdm(dataloader, desc="Generating node embeddings")):
+            for idx, batch in enumerate(tqdm(dataloader,desc="Generating node embeddings")):
                 a, p, n = batch
                 a, p, n = m.forward_i(a), m.forward_o(p), m.forward_o(n)
                 a, p, n = a.detach().cpu(), p.detach().cpu(), n.detach().cpu()
-                embs[idx * params.BATCH_SIZE:(idx + 1) * params.BATCH_SIZE, :] = torch.cat((a, p, n), dim=1)
+                embs[idx * params.BATCH_SIZE:(idx + 1) * params.BATCH_SIZE, :] = torch.cat((a, p, n),dim=1)
                 break
-        np.save(str(output.embs_file), embs.numpy())
+        np.save(str(output.embs_file),embs.numpy())
