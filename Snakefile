@@ -284,5 +284,4 @@ rule generate_embs_crosswalk:
                 a, p, n = m.forward_i(a), m.forward_o(p), m.forward_o(n)
                 a, p, n = a.detach().cpu(), p.detach().cpu(), n.detach().cpu()
                 embs[idx * params.BATCH_SIZE:(idx + 1) * params.BATCH_SIZE, :] = torch.cat((a, p, n),dim=1)
-                break
         np.save(str(output.embs_file),embs.numpy())
