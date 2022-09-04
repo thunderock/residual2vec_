@@ -2,12 +2,12 @@ import os
 from os.path import join as j
 # os.environ["CUDA_VISIBLE_DEVICES"]=""
 # config = {"env": 'local'}
-import numpy as np
-
 ENV = config.get('env', 'remote')
 DATA_ROOT = "/data/sg/ashutiwa/residual2vec_"
 if ENV in ('local', 'carbonate'):
     DATA_ROOT = "data"
+
+GNN_MODEL = config.get('model', "gat")
 
 rule train_gcn_with_nodevec:
     # snakemake -R --until train_gcn_with_nodevec  -call --config env=local
@@ -64,7 +64,7 @@ rule train_gcn_with_nodevec:
         X = node_to_vec.train_and_get_embs(loader, optimizer, params.NODE_TO_VEC_EPOCHS, str(output.node2vec_weights))
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index,)
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=True, num_workers=params.NUM_WORKERS, pin_memory=True)
-        m = GCNLinkPrediction(in_channels=d.num_features, embedding_size=128, hidden_channels=64,num_layers=5, num_embeddings=params.NODE_TO_VEC_DIM)
+        m = GCNLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=params.NODE_TO_VEC_DIM)
         model.transform(model=m, dataloader=dataloader)
         torch.save(m.state_dict(), str(output.model_weights))
 
@@ -209,20 +209,21 @@ rule train_gat:
         model.transform(model=m,dataloader=dataloader)
         torch.save(m.state_dict(),str(output.model_weights))
 
-rule generate_embs_gat_crosswalk:
+rule generate_embs_crosswalk:
+    # snakemake -R --until generate_embs_crosswalk  -call --config env=local model="gat" --nolock
     input:
-        model_weights=j(DATA_ROOT,"pokec_crosswalk_gat_nodevec.h5"),
-        node2vec_weights=j(DATA_ROOT,"pokec_crosswalk_gat_node2vec.h5"),
+        model_weights=j(DATA_ROOT,"pokec_crosswalk_{}_nodevec.h5".format(GNN_MODEL)),
+        node2vec_weights=j(DATA_ROOT,"pokec_crosswalk_{}_node2vec.h5".format(GNN_MODEL)),
         weighted_adj= j(DATA_ROOT,"pokec_crosswalk_adj.npz"),
     output:
-        embs_file = j(DATA_ROOT, "pokec_crosswalk_gat_embs.h5")
+        embs_file = j(DATA_ROOT, "pokec_crosswalk_{}_embs.h5".format(GNN_MODEL))
     threads: 4 if ENV == 'local' else 20
     params:
         BATCH_SIZE= 128,
         NODE_TO_VEC_DIM=16,
         NODE_TO_VEC_EPOCHS=5,
         NUM_WORKERS=4 if ENV == 'local' else 16,
-        SET_DEVICE="cuda:0"
+        SET_DEVICE="cuda:0" if GNN_MODEL == 'gat' else "cuda:1"
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
         import numpy as np
@@ -230,7 +231,7 @@ rule generate_embs_gat_crosswalk:
         from models.weighted_node2vec import WeightedNode2Vec
         from dataset import triplet_dataset, pokec_data
         from utils.config import DEVICE
-        from utils.link_prediction import GATLinkPrediction
+        from utils.link_prediction import GATLinkPrediction, GCNLinkPrediction
         import residual2vec as rv
         import warnings
         import gc
@@ -266,18 +267,21 @@ rule generate_embs_gat_crosswalk:
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index, )
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=params.BATCH_SIZE, shuffle=False,
             num_workers=params.NUM_WORKERS, pin_memory=True, transforming=True)
-        m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,
-            num_embeddings=params.NODE_TO_VEC_DIM)
+        if GNN_MODEL == 'gat':
+            m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=params.NODE_TO_VEC_DIM)
+        elif GNN_MODEL == 'gcn':
+            m = GCNLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=params.NODE_TO_VEC_DIM)
+        else:
+            raise ValueError("GNN_MODEL must be either gat or gcn")
         m.load_state_dict(torch.load(str(input.model_weights)))
         m = m.to(DEVICE)
         m.eval()
-        embs = np.zeros((num_nodes, 128 * 3))
+        embs = torch.zeros((num_nodes, 128 * 3))
         with torch.no_grad():
             for idx, batch in enumerate(tqdm(dataloader, desc="Generating node embeddings")):
                 a, p, n = batch
                 a, p, n = m.forward_i(a), m.forward_o(p), m.forward_o(n)
-                a, p, n = a.detach().cpu().numpy(), p.detach().cpu().numpy(), n.detach().cpu().numpy()
-                embs[idx * params.BATCH_SIZE:(idx + 1) * params.BATCH_SIZE, :] = np.concatenate((a, p, n), axis=1)
+                a, p, n = a.detach().cpu(), p.detach().cpu(), n.detach().cpu()
+                embs[idx * params.BATCH_SIZE:(idx + 1) * params.BATCH_SIZE, :] = torch.cat((a, p, n), dim=1)
                 break
-        import pickle as pkl
-        pkl.dump(embs, open(str(output.embs_file), "wb"))
+        np.save(str(output.embs_file), embs.numpy())
