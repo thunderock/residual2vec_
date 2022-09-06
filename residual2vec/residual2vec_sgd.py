@@ -51,11 +51,12 @@ class CustomNodeSampler(rv.NodeSampler):
 """
 import random
 
+import numpy as np
 from numba import njit
 from torch.optim import Adam
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
-
+from scipy import sparse
 from residual2vec import utils
 from residual2vec.random_walk_sampler import RandomWalkSampler
 from residual2vec.word2vec import NegativeSampling
@@ -103,7 +104,7 @@ class residual2vec_sgd:
 
     # add feature matrix here
     def fit(self, adjmat=None):
-        if not adjmat:
+        if not (sparse.isspmatrix(adjmat) or isinstance(adjmat, np.ndarray)):
             # dont need sampler in case of link prediction
             self.n_nodes = None
             return self
