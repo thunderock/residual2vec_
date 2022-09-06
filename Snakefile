@@ -213,7 +213,7 @@ rule generate_embs:
     input:
         model_weights=j(DATA_ROOT,"pokec_{}.h5".format(GNN_MODEL)),
     output:
-        embs_file = j(DATA_ROOT, "pokec_{}_embs.npy".format(GNN_MODEL))
+        embs_file = j(DATA_ROOT, "pokec_{}_embs_fixed.npy".format(GNN_MODEL))
     threads: 4 if ENV == 'local' else 20
     params:
         BATCH_SIZE= 128,
@@ -251,7 +251,7 @@ rule generate_embs:
         X = d.X
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index, )
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=params.BATCH_SIZE, shuffle=False,
-            num_workers=params.NUM_WORKERS, pin_memory=True, transforming=True)
+            num_workers=params.NUM_WORKERS, pin_memory=True, transforming=False)
         if GNN_MODEL == 'gat':
             m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=d.num_features)
         elif GNN_MODEL == 'gcn':
@@ -278,7 +278,7 @@ rule generate_embs_crosswalk:
         node2vec_weights=j(DATA_ROOT,"pokec_crosswalk_{}_node2vec.h5".format(GNN_MODEL)),
         weighted_adj= j(DATA_ROOT,"pokec_crosswalk_adj.npz"),
     output:
-        embs_file = j(DATA_ROOT, "pokec_crosswalk_{}_embs.npy".format(GNN_MODEL))
+        embs_file = j(DATA_ROOT, "pokec_crosswalk_{}_embs_fixed.npy".format(GNN_MODEL))
     threads: 4 if ENV == 'local' else 20
     params:
         BATCH_SIZE= 128,
@@ -328,7 +328,7 @@ rule generate_embs_crosswalk:
         X = node_to_vec.embedding.weight.detach().cpu()
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index, )
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=params.BATCH_SIZE, shuffle=False,
-            num_workers=params.NUM_WORKERS, pin_memory=True, transforming=True)
+            num_workers=params.NUM_WORKERS, pin_memory=True, transforming=False)
         if GNN_MODEL == 'gat':
             m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=params.NODE_TO_VEC_DIM)
         elif GNN_MODEL == 'gcn':
