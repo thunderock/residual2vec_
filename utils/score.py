@@ -77,7 +77,30 @@ def opportunity_difference(edges, y):
 #                                                   priv_group=priv_group, pos_label=pos_label)
 #     print(scores)
 #     return np.mean(np.abs(scores))
-def statistical_parity(edges, y):
+
+def gini(array, eps = 1e-32):
+    """Calculate the Gini coefficient of a numpy array."""
+    # based on bottom eq:
+    # http://www.statsdirect.com/help/generatedimages/equations/equation154.svg
+    # from:
+    # http://www.statsdirect.com/help/default.htm#nonparametric_methods/gini.htm
+    # All values are treated equally, arrays must be 1d:
+    array = array.flatten()
+    if np.amin(array) < 0:
+        # Values cannot be negative:
+        array -= np.amin(array)
+    # Values cannot be 0:
+    array += eps
+    # Values must be sorted:
+    array = np.sort(array)
+    # Index per array element:
+    index = np.arange(1,array.shape[0]+1)
+    # Number of array elements:
+    n = array.shape[0]
+    # Gini coefficient:
+    return ((np.sum((2 * index - n  - 1) * array)) / (n * np.sum(array)))
+
+def statistical_parity(edges, y, metric = "std"):
     # taken from https://github.com/thunderock/residual2vec_/pull/4
     """
     edges: edge df with source and target column
@@ -112,8 +135,14 @@ def statistical_parity(edges, y):
     Mdenom = np.outer(Nk, Nk) - np.diag(Nk)
     P = M / Mdenom
     # Calculate the statistical parity
-    parity = np.std(P[np.triu_indices(K)])
+    
+    probs = P[np.triu_indices(K)]
+    if metric == "std":
+        parity = np.std(probs)
+    elif metric == "gini":
+        parity = geni(probs)
     return parity
+
 ## 1) need to check if this implementation of statistical parity is correct
 ## 2) need to implement a sparse version of statistical parity
 ## 3) need to implement a sparse version of equal opportunity
