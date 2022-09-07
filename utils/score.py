@@ -5,7 +5,7 @@
 import numpy as np
 import networkx as nx
 import pandas as pd
-from scipy.sparse import issparse
+from scipy import sparse
 from aif360.sklearn.metrics import statistical_parity_difference, equal_opportunity_difference
 from tqdm import trange
 
@@ -56,28 +56,64 @@ def opportunity_difference(edges, y):
     return np.mean(np.abs(scores))
 
 
+# def statistical_parity(edges, y):
+#     """
+#     edges: edge df with source and target column
+#     y: original labels
+#     """
+#     assert isinstance(y, np.ndarray) and isinstance(edges, pd.DataFrame)
+#     classes, counts = np.unique(y, return_counts=True)
+#     # for each class figure out all the neighbors
+#     n_nodes = y.shape[0]
+#     # check if these are labels
+#     assert np.alltrue(y >= 0) and np.alltrue(y < counts.shape[0]) and y.dtype in [np.int64, np.int32]
+#     n_classes = len(classes)
+#     scores = np.empty(n_classes, dtype=np.float32)
+#     for i in range(n_classes):
+#         priv_group, pos_label = 1,1
+#         y_pred = _get_preds_for_parity_score(edges, i, n_nodes, y)
+#         scores[i] = statistical_parity_difference(y_true=pd.Series(y),
+#                                                   y_pred=y_pred,
+#                                                   priv_group=priv_group, pos_label=pos_label)
+#     print(scores)
+#     return np.mean(np.abs(scores))
 def statistical_parity(edges, y):
+    # taken from https://github.com/thunderock/residual2vec_/pull/4
     """
     edges: edge df with source and target column
     y: original labels
     """
-    assert isinstance(y, np.ndarray) and isinstance(edges, pd.DataFrame)
-    classes, counts = np.unique(y, return_counts=True)
-    # for each class figure out all the neighbors
-    n_nodes = y.shape[0]
-    # check if these are labels
-    assert np.alltrue(y >= 0) and np.alltrue(y < counts.shape[0]) and y.dtype in [np.int64, np.int32]
-    n_classes = len(classes)
-    scores = np.empty(n_classes, dtype=np.float32)
-    for i in range(n_classes):
-        priv_group, pos_label = 1,1
-        y_pred = _get_preds_for_parity_score(edges, i, n_nodes, y)
-        scores[i] = statistical_parity_difference(y_true=pd.Series(y),
-                                                  y_pred=y_pred,
-                                                  priv_group=priv_group, pos_label=pos_label)
-    print(scores)
-    return np.mean(np.abs(scores))
 
+    n_nodes = len(y) # number of nodes
+    n_edges = edges.shape[0] # number of nodes
+    uy, y = np.unique(y, return_inverse=True) # to ensure that the labels are continuous integers starting from zero
+    K = len(uy) # number of classes
+
+    # We need two groups at least
+    assert K >= 2
+
+    # Group membership matrix, where U[i,k] = 1 if node $i$ belongs to group $k$
+    U = sparse.csr_matrix((np.ones_like(y), (np.arange(n_nodes), y)), shape=(n_nodes, K))
+
+    # Number of nodes in each group
+    Nk = np.array(U.sum(axis = 0)).reshape(-1)
+
+    # Adjacency matrix
+    A = sparse.csr_matrix((np.ones(n_edges), (edges["source"].values, edges["target"].values)), shape=(n_nodes, n_nodes))
+
+    # Make sure that the adjacency matrix is symemtric
+    A = A + A.T
+    A.data = A.data *0 + 1
+
+    # Calculate the number of edges that appear in each group
+    M = U.T @ A @ U
+
+    # Calculate the edge density
+    Mdenom = np.outer(Nk, Nk) - np.diag(Nk)
+    P = M / Mdenom
+    # Calculate the statistical parity
+    parity = np.std(P[np.triu_indices(K)])
+    return parity
 ## 1) need to check if this implementation of statistical parity is correct
 ## 2) need to implement a sparse version of statistical parity
 ## 3) need to implement a sparse version of equal opportunity

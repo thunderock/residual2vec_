@@ -5,10 +5,10 @@
 import numpy as np
 import pandas as pd
 from scipy import sparse
-from utils.config import DEVICE, CUDA, GPU_ID
+from utils.config import GPU_ID
 import networkx as nx
-from tqdm import tqdm, trange
-import faiss
+from tqdm import tqdm
+
 
 def get_edge_df(G: nx.Graph):
     """
@@ -43,35 +43,20 @@ def reconstruct_graph(emb, n, m):
     return get_edge_df(nx.from_scipy_sparse_matrix(B + B.T))
 
 
-def get_edges_faiss(emb, k=10, batch_size=2000, weight=False, metric=faiss.METRIC_INNER_PRODUCT, exact=False):
+def get_edges_fastknn_faiss(emb, k=10, batch_size=2000):
     """
     emb: embedding matrix n * d
     k: number of top edges to pick for every node
     batch_size: number of nodes to process at a time
     weight: if True, return the weight of the edges
     """
-    assert not (weight and exact), "Not implemented yet"
-    assert CUDA, "this implementation is only for CUDA"
+    from models.fast_knn import FastkNN
+    assert GPU_ID >= 0, "only implemented for GPU for time being"
     n_nodes, embedding_size = emb.shape
+    knn = FastkNN(k=k, metric='cosine', exact=False, gpu_id=GPU_ID).fit(emb)
 
-    res = faiss.StandardGpuResources()
-    index = faiss.IndexFlatIP(embedding_size)
-
-    train_sample_size = np.minimum(1000000, n_nodes)
-    nlist = int(np.ceil(np.sqrt(train_sample_size)))
-
-    index = faiss.IndexIVFFlat(index, embedding_size, nlist, metric)
-    index = faiss.index_cpu_to_gpu(res, GPU_ID, index)
-    index.add(emb.copy())
-    targets = np.array([index.search(i, k=k) for i in tqdm(np.array_split(emb, n_nodes // batch_size))])
-    # if weight:
-    #     # dont use this right now, not normalized, only returns distance for now
-    #     weights = np.concatenate([i[0].flatten() for i in targets])
-    # else:
-    #     weights = np.ones(n_nodes * k)
-    targets = np.concatenate([i[1].flatten() for i in targets])
+    targets = np.concatenate([knn.predict(i).flatten() for i in tqdm(np.array_split(emb, n_nodes // batch_size))])
     return pd.DataFrame({
         "source": np.repeat(np.arange(n_nodes), k),
         "target": targets,
-        # "weight": weights
     })
