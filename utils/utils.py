@@ -36,11 +36,15 @@ def normalize_row_wise(mx):
     return mx
 
 
+def check_if_sparse_symmetric(A):
+    sym_err = A - A.T
+    return np.all(np.abs(sym_err.data) < 1e-10)
+
+
 def check_if_symmetric(m):
     """
     Check if a matrix is symmetric
-    Only accepts numpy matrices
     """
     if issparse(m):
-        m = m.todense()
+        return check_if_sparse_symmetric(m)
     return np.allclose(m, m.T)

@@ -137,3 +137,4 @@ embeddings
 *.pt
 wandb
 *.csv
+data/*

@@ -25,17 +25,18 @@ torch.manual_seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
 DEVICE = torch.device("cpu")
 ALPHA = .2
-BATCH_SIZE = 2048
+BATCH_SIZE = 128
+NUM_WORKERS = 4
 EPOCHS = 5
 PREDICTION_THRESHOLD = .7
 NUM_NEIGHBORS = 10
 EMBEDDING_DIM = 128
 LR = .01
+GPU_ID = -1
 if CUDA:
     torch.cuda.manual_seed(RANDOM_SEED)
-    DEVICE = torch.device("cuda")
+    DEVICE = os.environ.get("SET_GPU", "cuda:0")
+    GPU_ID = int(DEVICE.split(":")[1])
+    print(f"Using GPU: {DEVICE}")
 LOGGER = logging.getLogger(__name__)
 LOGFORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-
-
-from torch_geometric.loader import NeighborSampler

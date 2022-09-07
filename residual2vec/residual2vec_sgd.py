@@ -51,11 +51,12 @@ class CustomNodeSampler(rv.NodeSampler):
 """
 import random
 
+import numpy as np
 from numba import njit
 from torch.optim import Adam
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
-
+from scipy import sparse
 from residual2vec import utils
 from residual2vec.random_walk_sampler import RandomWalkSampler
 from residual2vec.word2vec import NegativeSampling
@@ -102,8 +103,11 @@ class residual2vec_sgd:
         self.context_window_type = context_window_type
 
     # add feature matrix here
-    def fit(self, adjmat):
-
+    def fit(self, adjmat=None):
+        if not (sparse.isspmatrix(adjmat) or isinstance(adjmat, np.ndarray)):
+            # dont need sampler in case of link prediction
+            self.n_nodes = None
+            return self
         # Convert to scipy.sparse.csr_matrix format
         adjmat = utils.to_adjacency_matrix(adjmat)
 
@@ -120,7 +124,7 @@ class residual2vec_sgd:
         """
 
         # Set up the embedding model
-        PADDING_IDX = self.n_nodes
+        PADDING_IDX = self.n_nodes if self.n_nodes else dataloader.dataset.n_nodes
         # model = Word2Vec(
         #     vocab_size=self.n_nodes + 1, embedding_size=dim, padding_idx=PADDING_IDX
         # )
@@ -138,7 +142,7 @@ class residual2vec_sgd:
             # with torch.cuda.amp.autocast():
             loss = neg_sampling(iword, owords, nwords)
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
+            # torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
             optim.step()
             pbar.set_postfix(loss=loss.item())
 
