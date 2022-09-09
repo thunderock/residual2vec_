@@ -45,9 +45,6 @@ class TripletGraphDataset(Dataset):
             return torch.cat([torch.full_like(ret, idx).reshape(-1, 1), ret.reshape(-1, 1)], dim=1).T
         return ret
 
-    def get_adjacency_mt(self):
-        pass
-
     def _ret_features_for_node(self, idx):
         # index = self.idx_mapping[idx]self.features
         return idx
