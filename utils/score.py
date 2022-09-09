@@ -114,9 +114,3 @@ def statistical_parity(edges, y):
     # Calculate the statistical parity
     parity = np.std(P[np.triu_indices(K)])
     return parity
-## 1) need to check if this implementation of statistical parity is correct
-## 2) need to implement a sparse version of statistical parity
-## 3) need to implement a sparse version of equal opportunity
-
-## need to then create out vectors for gcn and gat for pokec
-## use node2vec with crosswalk to create embeddings for pokec

@@ -71,3 +71,27 @@ class WeightedNode2Vec(Node2Vec):
         for j in range(num_walks_per_rw):
             walks.append(rw[:, j:j + self.context_size])
         return torch.cat(walks, dim=0)
+
+
+class UnWeightedNode2Vec(Node2Vec):
+    def __init__(self, **params):
+        Node2Vec.__init__(self, **params)
+
+    def train_and_get_embs(self, loader, optimizer, epochs=EPOCHS, save=None):
+        t = trange(epochs)
+        print("training node2vec")
+        for epoch in t:
+            self.train()
+            total_loss = 0
+            for pos_rw, neg_rw in loader:
+                optimizer.zero_grad()
+                loss = self.loss(pos_rw.to(DEVICE), neg_rw.to(DEVICE))
+                loss.backward()
+                optimizer.step()
+                total_loss += loss.item()
+                total_loss /= len(loader)
+            t.set_description(f'Epoch {epoch + 1:03d}, Loss: {total_loss:.4f}')
+            t.refresh()
+        if save:
+            torch.save(self.state_dict(), save)
+        return self.embedding.weight.detach().cpu()

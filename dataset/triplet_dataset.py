@@ -14,22 +14,13 @@ from torch_sparse import SparseTensor
 
 
 class TripletGraphDataset(Dataset):
-    def __init__(self, X: torch.Tensor, edge_index: torch.Tensor):
-        # if node2vec:
-        #     # train node2vec here
-        #     loader = node2vec.loader(batch_size=BATCH_SIZE, shuffle=True, num_workers=NUM_WORKERS)
-        #     optimizer = torch.optim.Adam(list(node2vec.parameters()), lr=0.01)
-        #     self.X = self._train_node2vec(node2vec, loader, optimizer)
-        #     self.edge_index = node2vec.edge_index
-        # else:
-        #     pokec = pokec_data.PokecDataFrame(root=root)
-        #     self.X = pokec.X
-        #     self.edge_index = pokec.edge_index
+    def __init__(self, X: torch.Tensor, edge_index: torch.Tensor, sampler=negative_sampling):
+        super().__init__()
         self.X = X
         self.edge_index = edge_index
         self.num_features = self.X.shape[1]
 
-        self.neg_edge_index = negative_sampling(edge_index=self.edge_index, num_nodes=self.X.shape[0], num_neg_samples=None, method='sparse', force_undirected=True)
+        self.neg_edge_index = sampler(edge_index=self.edge_index, num_nodes=self.X.shape[0], num_neg_samples=None, method='sparse', force_undirected=True)
         self.num_embeddings = int(torch.max(self.X).item()) + 1
         self.n_nodes = self.X.shape[0]
 

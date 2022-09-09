@@ -11,6 +11,12 @@ from torch_geometric.data import download_url
 
 class PokecDataFrame(object):
 
+    @staticmethod
+    def _get_proportional_series(column):
+        vals = column.value_counts(normalize=True, dropna=True)
+        return pd.Series(np.random.choice(vals.index.values, p=vals.values, size=column.shape[0]),
+                  index=column.index)
+
     def __init__(self, group_col: str = 'gender', root: str = '/tmp/'):
         download_url("https://snap.stanford.edu/data/soc-pokec-profiles.txt.gz", root)
         download_url("https://snap.stanford.edu/data/soc-pokec-relationships.txt.gz", root)
@@ -81,10 +87,10 @@ class PokecDataFrame(object):
         dfe = pd.read_csv(raw_paths[1], sep="\t", names=["source", "target"], nrows=None)
         dfn["age"] = dfn["AGE"].copy()
         dfn = dfn.drop(columns=["AGE"])
-        mx_freq_age = dfn["age"].value_counts().idxmax()
-        mx_freq_gender = dfn.gender.value_counts().idxmax()
-        dfn.age = dfn.age.fillna(mx_freq_age)
-        dfn.gender = dfn.gender.fillna(mx_freq_gender)
+        proportional_age = self._get_proportional_series(dfn.age)
+        propertional_gender = self._get_proportional_series(dfn.gender)
+        dfn.age = dfn.age.fillna(proportional_age)
+        dfn.gender = dfn.gender.fillna(propertional_gender)
         dfn.region = LabelEncoder().fit_transform(dfn.region)
         feature_cols[1] = "age"
 
