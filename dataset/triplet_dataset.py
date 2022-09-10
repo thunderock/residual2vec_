@@ -2,6 +2,7 @@
 # @Author:      Ashutosh Tiwari
 # @Email:       checkashu@gmail.com
 # @Time:        8/13/22 11:16 AM
+import numpy as np
 import pandas as pd
 from utils.config import *
 from torch.utils.data import Dataset
@@ -136,3 +137,35 @@ class NeighborEdgeSampler(torch.utils.data.DataLoader):
 
     def __repr__(self) -> str:
         return '{}({}, batch_size={})'.format(self.__class__.__name__, len(self.dataset), self.batch_size)
+
+
+
+class SbmSamplerWrapper(object):
+    def __init__(self, adj_path, group_membership, window_length, num_edges, use_weights=True, **params):
+        from residual2vec.node_samplers import SBMNodeSampler
+        from residual2vec.residual2vec_sgd import TripletSimpleDataset
+        from scipy import sparse
+        from residual2vec import utils
+        sampler = SBMNodeSampler(window_length=window_length, group_membership=group_membership, dcsbm=True)
+        adj = sparse.load_npz(adj_path)
+        if not use_weights:
+            adj.data = np.ones_like(adj.data)
+        n_nodes = adj.shape[0]
+        adj = utils.to_adjacency_matrix(adj)
+        sampler.fit(adj)
+        dataset = TripletSimpleDataset(adjmat=adj, group_ids=group_membership, noise_sampler=sampler, **params, buffer_size=n_nodes, window_length=window_length)
+        self.num_edges = num_edges
+        centers, contexts, random_contexts = dataset.centers, dataset.contexts, dataset.random_contexts
+        indices = np.random.choice(len(centers), num_edges, replace=False)
+        self.centers, contexts, self.random_contexts = centers[indices], contexts[indices], random_contexts[indices]
+        # be careful, cant call this again, contexts lost
+        self.edge_index = self._create_edge_index(self.centers, contexts)
+
+
+    def _create_edge_index(self, source: np.ndarray, dist: np.ndarray):
+        return torch.tensor([source, dist], dtype=torch.long)
+
+    def sample_neg_edges(self, edge_index, num_nodes, num_neg_samples, method,
+            force_undirected):
+        # none of these params used, only for compatibility
+        return self._create_edge_index(self.centers, self.random_contexts)

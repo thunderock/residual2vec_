@@ -170,13 +170,13 @@ class TripletSimpleDataset(Dataset):
     ):
 
         self.adjmat = adjmat
-        self.num_features = 1
-        self.X = torch.from_numpy(group_ids).unsqueeze(-1).to(torch.float32)
+        # self.num_features = 1
+        # self.X = torch.from_numpy(group_ids).unsqueeze(-1).to(torch.float32)
         self.num_walks = num_walks
-        rows, cols = self.adjmat.nonzero()
-        self.edge_index = torch.from_numpy(np.stack([rows, cols], axis=0)).to(torch.int64)
-        self.neg_edge_index = negative_sampling(edge_index=self.edge_index, num_nodes=self.X.shape[0],
-                                                num_neg_samples=None, method='sparse', force_undirected=True)
+        # rows, cols = self.adjmat.nonzero()
+        # self.edge_index = torch.from_numpy(np.stack([rows, cols], axis=0)).to(torch.int64)
+        # self.neg_edge_index = negative_sampling(edge_index=self.edge_index, num_nodes=self.X.shape[0],
+        #                                         num_neg_samples=None, method='sparse', force_undirected=True)
         self.window_length = window_length
         self.noise_sampler = noise_sampler
         self.walk_length = walk_length
@@ -202,7 +202,7 @@ class TripletSimpleDataset(Dataset):
         self.contexts = None
         self.centers = None
         self.random_contexts = None
-        self.num_embeddings = len(np.unique(group_ids)) + 1
+        # self.num_embeddings = len(np.unique(group_ids)) + 1
 
         # Initialize
         self._generate_samples()
