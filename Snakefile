@@ -77,7 +77,7 @@ rule train_gnn_with_nodevec_unweighted_baseline_generate_embs:
         model_weights = j(DATA_ROOT, "pokec_{}_nodevec.h5".format(GNN_MODEL)),
         node2vec_weights = j(DATA_ROOT, "pokec_{}_node2vec.h5".format(GNN_MODEL))
     output:
-        embs_file = j(DATA_ROOT, "pokec_{}_node2vec_embs.h5".format(GNN_MODEL))
+        embs_file = j(DATA_ROOT, "pokec_{}_node2vec_embs.npy".format(GNN_MODEL))
     threads: 4 if ENV == 'local' else 20
     params:
         BATCH_SIZE = 128,
@@ -119,7 +119,7 @@ rule train_gnn_with_nodevec_unweighted_baseline_generate_embs:
             num_walks=num_walks,
             walk_length=walk_length
         ).fit()
-        X = node_to_vec.embedding.detach().cpu()
+        X = node_to_vec.embedding.weight.detach().cpu()
         X = torch.cat([X, d.X], dim=1)
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index,)
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=True, num_workers=params.NUM_WORKERS, pin_memory=True)
@@ -130,6 +130,7 @@ rule train_gnn_with_nodevec_unweighted_baseline_generate_embs:
         else:
             raise ValueError("GNN_MODEL must be either gat or gcn")
         m.load_state_dict(torch.load(str(input.model_weights), map_location=DEVICE))
+	m = m.to(DEVICE)
         embs = torch.zeros((num_nodes, 128 * 3))
         batch_size = model.batch_size
         with torch.no_grad():
@@ -258,7 +259,7 @@ rule train_gnn_with_nodevec_crosswalk_baseline_generate_embs:
             walk_length=walk_length
         ).fit()
 
-        X = node_to_vec.embedding.detach().cpu()
+        X = node_to_vec.embedding.weight.detach().cpu()
         X = torch.cat([X, d.X], dim=1)
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index,)
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=True, num_workers=params.NUM_WORKERS, pin_memory=True)
@@ -269,6 +270,7 @@ rule train_gnn_with_nodevec_crosswalk_baseline_generate_embs:
         else:
             raise ValueError("GNN_MODEL must be either gat or gcn")
         m.load_state_dict(torch.load(str(input.model_weights), map_location=DEVICE))
+	m = m.to(DEVICE)
         embs = torch.zeros((num_nodes, 128 * 3))
         batch_size = model.batch_size
         with torch.no_grad():
@@ -400,7 +402,7 @@ rule train_gnn_with_nodevec_unweighted_r2v_generate_embs:
             walk_length=walk_length
         ).fit()
 
-        X = node_to_vec.embedding.detach().cpu()
+        X = node_to_vec.embedding.weight.detach().cpu()
         X = torch.cat([X, d.X], dim=1)
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index, sampler=sbm.sample_neg_edges)
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=True, num_workers=params.NUM_WORKERS, pin_memory=True)
@@ -412,6 +414,7 @@ rule train_gnn_with_nodevec_unweighted_r2v_generate_embs:
             raise ValueError("GNN_MODEL must be either gat or gcn")
 
         m.load_state_dict(torch.load(str(input.model_weights),map_location=DEVICE))
+	m = m.to(DEVICE)
         embs = torch.zeros((num_nodes, 128 * 3))
         batch_size = model.batch_size
         with torch.no_grad():
@@ -550,7 +553,7 @@ rule train_gnn_with_nodevec_crosswalk_r2v_generate_embs:
             num_walks=num_walks,
             walk_length=walk_length
         ).fit()
-        X = node_to_vec.embedding.detach().cpu()
+        X = node_to_vec.embedding.weight.detach().cpu()
         X = torch.cat([X, d.X], dim=1)
         d = triplet_dataset.TripletGraphDataset(X=X,edge_index=edge_index,sampler=sbm.sample_neg_edges)
 
@@ -563,6 +566,7 @@ rule train_gnn_with_nodevec_crosswalk_r2v_generate_embs:
             raise ValueError("GNN_MODEL must be either gat or gcn")
 
         m.load_state_dict(torch.load(str(input.model_weights),map_location=DEVICE))
+	m = m.to(DEVICE)
         embs = torch.zeros((num_nodes, 128 * 3))
         batch_size = model.batch_size
         with torch.no_grad():
