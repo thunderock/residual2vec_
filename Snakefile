@@ -130,7 +130,7 @@ rule train_gnn_with_nodevec_unweighted_baseline_generate_embs:
         else:
             raise ValueError("GNN_MODEL must be either gat or gcn")
         m.load_state_dict(torch.load(str(input.model_weights), map_location=DEVICE))
-	m = m.to(DEVICE)
+        m = m.to(DEVICE)
         embs = torch.zeros((num_nodes, 128 * 3))
         batch_size = model.batch_size
         with torch.no_grad():
@@ -270,7 +270,7 @@ rule train_gnn_with_nodevec_crosswalk_baseline_generate_embs:
         else:
             raise ValueError("GNN_MODEL must be either gat or gcn")
         m.load_state_dict(torch.load(str(input.model_weights), map_location=DEVICE))
-	m = m.to(DEVICE)
+        m = m.to(DEVICE)
         embs = torch.zeros((num_nodes, 128 * 3))
         batch_size = model.batch_size
         with torch.no_grad():
@@ -414,7 +414,7 @@ rule train_gnn_with_nodevec_unweighted_r2v_generate_embs:
             raise ValueError("GNN_MODEL must be either gat or gcn")
 
         m.load_state_dict(torch.load(str(input.model_weights),map_location=DEVICE))
-	m = m.to(DEVICE)
+        m = m.to(DEVICE)
         embs = torch.zeros((num_nodes, 128 * 3))
         batch_size = model.batch_size
         with torch.no_grad():
@@ -566,7 +566,7 @@ rule train_gnn_with_nodevec_crosswalk_r2v_generate_embs:
             raise ValueError("GNN_MODEL must be either gat or gcn")
 
         m.load_state_dict(torch.load(str(input.model_weights),map_location=DEVICE))
-	m = m.to(DEVICE)
+        m = m.to(DEVICE)
         embs = torch.zeros((num_nodes, 128 * 3))
         batch_size = model.batch_size
         with torch.no_grad():
