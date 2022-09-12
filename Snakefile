@@ -222,7 +222,7 @@ rule train_gnn_with_nodevec_crosswalk_baseline_generate_embs:
         NODE_TO_VEC_DIM = 16,
         NODE_TO_VEC_EPOCHS = 5,
         NUM_WORKERS = 16,
-        SET_DEVICE = "cuda:0" if GNN_MODEL == "gat" else "cuda:1"
+        SET_DEVICE = "cuda:0" if (ENV == 'local' or GNN_MODEL == "gat") else "cuda:1"
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
         import torch
@@ -364,7 +364,7 @@ rule train_gnn_with_nodevec_unweighted_r2v_generate_embs:
         NODE_TO_VEC_DIM = 16,
         NODE_TO_VEC_EPOCHS = 5,
         NUM_WORKERS = 16,
-        SET_DEVICE = "cuda:0" if GNN_MODEL == "gat" else "cuda:1",
+        SET_DEVICE = "cuda:0" if (GNN_MODEL == "gat" or ENV == 'local') else "cuda:1",
         RV_NUM_WALKS = 100
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
@@ -514,7 +514,7 @@ rule train_gnn_with_nodevec_crosswalk_r2v_generate_embs:
         NODE_TO_VEC_DIM = 16,
         NODE_TO_VEC_EPOCHS = 5,
         NUM_WORKERS = 16,
-        SET_DEVICE = "cuda:0" if GNN_MODEL == "gat" else "cuda:1",
+        SET_DEVICE = "cuda:0" if (ENV == 'local' or GNN_MODEL == "gat") else "cuda:1"
         RV_NUM_WALKS = 100
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
