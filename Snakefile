@@ -38,7 +38,7 @@ rule train_gnn_with_nodevec_unweighted_baseline:
         dim = 128
         walk_length = 5
 
-        d = pokec_data.PokecDataFrame()
+        d = pokec_data.SmallPokecDataFrame()
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
         node_to_vec = UnWeightedNode2Vec(
             num_nodes=num_nodes,
@@ -104,7 +104,7 @@ rule train_gnn_with_nodevec_unweighted_baseline_generate_embs:
         dim = 128
         walk_length = 5
 
-        d = pokec_data.PokecDataFrame()
+        d = pokec_data.SmallPokecDataFrame()
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
         node_to_vec = UnWeightedNode2Vec(
             num_nodes=num_nodes,
@@ -174,7 +174,7 @@ rule train_gnn_with_nodevec_crosswalk_baseline:
         dim = 128
         walk_length = 5
 
-        d = pokec_data.PokecDataFrame()
+        d = pokec_data.SmallPokecDataFrame()
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
         node_to_vec = WeightedNode2Vec(
             num_nodes=num_nodes,
@@ -241,8 +241,7 @@ rule train_gnn_with_nodevec_crosswalk_baseline_generate_embs:
         num_walks = 10
         dim = 128
         walk_length = 5
-
-        d = pokec_data.PokecDataFrame()
+        d = pokec_data.SmallPokecDataFrame()
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
         node_to_vec = WeightedNode2Vec(
             num_nodes=num_nodes,
@@ -315,7 +314,7 @@ rule train_gnn_with_nodevec_unweighted_r2v:
         dim = 128
         walk_length = 5
 
-        d = pokec_data.PokecDataFrame()
+        d = pokec_data.SmallPokecDataFrame()
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
         sbm = triplet_dataset.SbmSamplerWrapper(adj_path=str(input.weighted_adj), group_membership=d.get_grouped_col(),
             window_length=1, padding_id=num_nodes, num_walks=params.RV_NUM_WALKS, num_edges=edge_index.shape[1], use_weights=False)
@@ -385,7 +384,7 @@ rule train_gnn_with_nodevec_unweighted_r2v_generate_embs:
         dim = 128
         walk_length = 5
 
-        d = pokec_data.PokecDataFrame()
+        d = pokec_data.SmallPokecDataFrame()
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
         sbm = triplet_dataset.SbmSamplerWrapper(adj_path=str(input.weighted_adj), group_membership=d.get_grouped_col(),
             window_length=1, padding_id=num_nodes, num_walks=params.RV_NUM_WALKS, num_edges=edge_index.shape[1], use_weights=False)
@@ -460,7 +459,7 @@ rule train_gnn_with_nodevec_crosswalk_r2v:
         dim = 128
         walk_length = 5
 
-        d = pokec_data.PokecDataFrame()
+        d = pokec_data.SmallPokecDataFrame()
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
         sbm = triplet_dataset.SbmSamplerWrapper(adj_path=str(input.weighted_adj),group_membership=d.get_grouped_col(),
             window_length=1,padding_id=num_nodes,num_walks=params.RV_NUM_WALKS,num_edges=edge_index.shape[1])
@@ -534,8 +533,7 @@ rule train_gnn_with_nodevec_crosswalk_r2v_generate_embs:
         num_walks = 10
         dim = 128
         walk_length = 5
-
-        d = pokec_data.PokecDataFrame()
+        d = pokec_data.SmallPokecDataFrame()
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
         sbm = triplet_dataset.SbmSamplerWrapper(adj_path=str(input.weighted_adj),group_membership=d.get_grouped_col(),
             window_length=1,padding_id=num_nodes,num_walks=params.RV_NUM_WALKS,num_edges=edge_index.shape[1])
