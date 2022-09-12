@@ -133,6 +133,7 @@ rule train_gnn_with_nodevec_unweighted_baseline_generate_embs:
         m = m.to(DEVICE)
         embs = torch.zeros((num_nodes, 128 * 3))
         batch_size = model.batch_size
+        m.eval()
         with torch.no_grad():
             for idx, batch in enumerate(tqdm(dataloader,desc="Generating node embeddings")):
                 a, p, n = batch
@@ -273,6 +274,7 @@ rule train_gnn_with_nodevec_crosswalk_baseline_generate_embs:
         m = m.to(DEVICE)
         embs = torch.zeros((num_nodes, 128 * 3))
         batch_size = model.batch_size
+        m.eval()
         with torch.no_grad():
             for idx, batch in enumerate(tqdm(dataloader,desc="Generating node embeddings")):
                 a, p, n = batch
@@ -417,6 +419,7 @@ rule train_gnn_with_nodevec_unweighted_r2v_generate_embs:
         m = m.to(DEVICE)
         embs = torch.zeros((num_nodes, 128 * 3))
         batch_size = model.batch_size
+        m.eval()
         with torch.no_grad():
             for idx, batch in enumerate(tqdm(dataloader,desc="Generating node embeddings")):
                 a, p, n = batch
@@ -569,6 +572,7 @@ rule train_gnn_with_nodevec_crosswalk_r2v_generate_embs:
         m = m.to(DEVICE)
         embs = torch.zeros((num_nodes, 128 * 3))
         batch_size = model.batch_size
+        m.eval()
         with torch.no_grad():
             for idx, batch in enumerate(tqdm(dataloader,desc="Generating node embeddings")):
                 a, p, n = batch
