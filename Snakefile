@@ -14,12 +14,12 @@ rule train_gnn_with_nodevec_unweighted_baseline:
     output:
         model_weights = j(DATA_ROOT, "pokec_{}_nodevec.h5".format(GNN_MODEL)),
         node2vec_weights = j(DATA_ROOT, "pokec_{}_node2vec.h5".format(GNN_MODEL))
-    threads: 4 if ENV == 'local' else 20
+    threads: 20
     params:
         BATCH_SIZE = 128,
         NODE_TO_VEC_DIM = 16,
         NODE_TO_VEC_EPOCHS = 5,
-        NUM_WORKERS = 4 if ENV == 'local' else 16,
+        NUM_WORKERS = 16,
         SET_DEVICE = "cuda:0" if GNN_MODEL == "gat" else "cuda:1"
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
@@ -78,12 +78,12 @@ rule train_gnn_with_nodevec_unweighted_baseline_generate_embs:
         node2vec_weights = j(DATA_ROOT, "pokec_{}_node2vec.h5".format(GNN_MODEL))
     output:
         embs_file = j(DATA_ROOT, "pokec_{}_node2vec_embs.npy".format(GNN_MODEL))
-    threads: 4 if ENV == 'local' else 20
+    threads: 20
     params:
         BATCH_SIZE = 128,
         NODE_TO_VEC_DIM = 16,
         NODE_TO_VEC_EPOCHS = 5,
-        NUM_WORKERS = 4 if ENV == 'local' else 16,
+        NUM_WORKERS = 16,
         SET_DEVICE = "cuda:0" if (ENV == 'local' or GNN_MODEL == "gat") else "cuda:1"
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
@@ -149,12 +149,12 @@ rule train_gnn_with_nodevec_crosswalk_baseline:
         node2vec_weights = j(DATA_ROOT, "pokec_crosswalk_{}_node2vec.h5".format(GNN_MODEL))
     input:
         weighted_adj = j(DATA_ROOT, "pokec_crosswalk_adj.npz"),
-    threads: 4 if ENV == 'local' else 16
+    threads: 20
     params:
         BATCH_SIZE = 128,
         NODE_TO_VEC_DIM = 16,
         NODE_TO_VEC_EPOCHS = 5,
-        NUM_WORKERS = 4 if ENV == 'local' else 20,
+        NUM_WORKERS = 16,
         SET_DEVICE = "cuda:0" if GNN_MODEL == "gat" else "cuda:1"
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
@@ -215,12 +215,12 @@ rule train_gnn_with_nodevec_crosswalk_baseline_generate_embs:
         weighted_adj = j(DATA_ROOT, "pokec_crosswalk_adj.npz"),
     output:
         embs_file = j(DATA_ROOT, "pokec_crosswalk_{}_node2vec_embs.npy".format(GNN_MODEL))
-    threads: 4 if ENV == 'local' else 16
+    threads: 20
     params:
         BATCH_SIZE = 128,
         NODE_TO_VEC_DIM = 16,
         NODE_TO_VEC_EPOCHS = 5,
-        NUM_WORKERS = 4 if ENV == 'local' else 20,
+        NUM_WORKERS = 16,
         SET_DEVICE = "cuda:0" if GNN_MODEL == "gat" else "cuda:1"
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
@@ -288,12 +288,12 @@ rule train_gnn_with_nodevec_unweighted_r2v:
         node2vec_weights = j(DATA_ROOT, "pokec_{}_r2v_node2vec.h5".format(GNN_MODEL))
     input:
         weighted_adj = j(DATA_ROOT, "pokec_crosswalk_adj.npz"),
-    threads: 4 if ENV == 'local' else 20
+    threads: 20
     params:
         BATCH_SIZE = 128,
         NODE_TO_VEC_DIM = 16,
         NODE_TO_VEC_EPOCHS = 5,
-        NUM_WORKERS = 4 if ENV == 'local' else 16,
+        NUM_WORKERS = 16,
         SET_DEVICE = "cuda:0" if GNN_MODEL == "gat" else "cuda:1",
         RV_NUM_WALKS = 100
     run:
@@ -356,12 +356,12 @@ rule train_gnn_with_nodevec_unweighted_r2v_generate_embs:
         weighted_adj = j(DATA_ROOT, "pokec_crosswalk_adj.npz"),
     output:
         embs_file = j(DATA_ROOT, "pokec_{}_r2v_node2vec_embs.npy".format(GNN_MODEL))
-    threads: 4 if ENV == 'local' else 20
+    threads: 20
     params:
         BATCH_SIZE = 128,
         NODE_TO_VEC_DIM = 16,
         NODE_TO_VEC_EPOCHS = 5,
-        NUM_WORKERS = 4 if ENV == 'local' else 16,
+        NUM_WORKERS = 16,
         SET_DEVICE = "cuda:0" if GNN_MODEL == "gat" else "cuda:1",
         RV_NUM_WALKS = 100
     run:
@@ -432,12 +432,12 @@ rule train_gnn_with_nodevec_crosswalk_r2v:
         node2vec_weights = j(DATA_ROOT, "pokec_crosswalk_{}_r2v_node2vec.h5".format(GNN_MODEL))
     input:
         weighted_adj = j(DATA_ROOT, "pokec_crosswalk_adj.npz"),
-    threads: 4 if ENV == 'local' else 16
+    threads: 20
     params:
         BATCH_SIZE = 128,
         NODE_TO_VEC_DIM = 16,
         NODE_TO_VEC_EPOCHS = 5,
-        NUM_WORKERS = 4 if ENV == 'local' else 20,
+        NUM_WORKERS = 16,
         SET_DEVICE = "cuda:0" if GNN_MODEL == "gat" else "cuda:1",
         RV_NUM_WALKS = 100
     run:
@@ -505,12 +505,12 @@ rule train_gnn_with_nodevec_crosswalk_r2v_generate_embs:
         weighted_adj = j(DATA_ROOT, "pokec_crosswalk_adj.npz"),
     output:
         embs_file = j(DATA_ROOT, "pokec_crosswalk_{}_r2v_node2vec_embs.npy".format(GNN_MODEL))
-    threads: 4 if ENV == 'local' else 16
+    threads: 20
     params:
         BATCH_SIZE = 128,
         NODE_TO_VEC_DIM = 16,
         NODE_TO_VEC_EPOCHS = 5,
-        NUM_WORKERS = 4 if ENV == 'local' else 20,
+        NUM_WORKERS = 16,
         SET_DEVICE = "cuda:0" if GNN_MODEL == "gat" else "cuda:1",
         RV_NUM_WALKS = 100
     run:
