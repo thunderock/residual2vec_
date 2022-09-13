@@ -316,7 +316,7 @@ rule train_gnn_with_nodevec_unweighted_r2v:
 
         d = pokec_data.SmallPokecDataFrame()
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
-        sbm = triplet_dataset.SbmSamplerWrapper(adj_path=str(input.weighted_adj), group_membership=d.get_grouped_col(),
+        sbm = triplet_dataset.SbmSamplerWrapper(adj_path=str(input.weighted_adj), group_membership=torch.zeros_like(d.get_grouped_col()),
             window_length=1, padding_id=num_nodes, num_walks=params.RV_NUM_WALKS, num_edges=edge_index.shape[1], use_weights=False)
         edge_index = sbm.edge_index
         node_to_vec = UnWeightedNode2Vec(
@@ -386,7 +386,7 @@ rule train_gnn_with_nodevec_unweighted_r2v_generate_embs:
 
         d = pokec_data.SmallPokecDataFrame()
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
-        sbm = triplet_dataset.SbmSamplerWrapper(adj_path=str(input.weighted_adj), group_membership=d.get_grouped_col(),
+        sbm = triplet_dataset.SbmSamplerWrapper(adj_path=str(input.weighted_adj), group_membership=torch.zeros_like(d.get_grouped_col()),
             window_length=1, padding_id=num_nodes, num_walks=params.RV_NUM_WALKS, num_edges=edge_index.shape[1], use_weights=False)
         edge_index = sbm.edge_index
         node_to_vec = UnWeightedNode2Vec(
@@ -461,7 +461,7 @@ rule train_gnn_with_nodevec_crosswalk_r2v:
 
         d = pokec_data.SmallPokecDataFrame()
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
-        sbm = triplet_dataset.SbmSamplerWrapper(adj_path=str(input.weighted_adj),group_membership=d.get_grouped_col(),
+        sbm = triplet_dataset.SbmSamplerWrapper(adj_path=str(input.weighted_adj),group_membership=torch.zeros_like(d.get_grouped_col()),
             window_length=1,padding_id=num_nodes,num_walks=params.RV_NUM_WALKS,num_edges=edge_index.shape[1])
         edge_index = sbm.edge_index
 
@@ -535,7 +535,7 @@ rule train_gnn_with_nodevec_crosswalk_r2v_generate_embs:
         walk_length = 5
         d = pokec_data.SmallPokecDataFrame()
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
-        sbm = triplet_dataset.SbmSamplerWrapper(adj_path=str(input.weighted_adj),group_membership=d.get_grouped_col(),
+        sbm = triplet_dataset.SbmSamplerWrapper(adj_path=str(input.weighted_adj),group_membership=torch.zeros_like(d.get_grouped_col()),
             window_length=1,padding_id=num_nodes,num_walks=params.RV_NUM_WALKS,num_edges=edge_index.shape[1])
         edge_index = sbm.edge_index
 

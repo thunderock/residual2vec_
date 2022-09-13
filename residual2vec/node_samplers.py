@@ -104,6 +104,7 @@ class SBMNodeSampler(NodeSampler):
             self.group_membership[center_nodes], self.block2block
         )
         context = utils.csr_sampling(block_ids, self.block2node)
+        context = np.random.choice(len(self.group_membership), size=len(context), replace=True)
         return context.astype(np.int64)
 
 

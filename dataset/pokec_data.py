@@ -108,6 +108,7 @@ class PokecDataFrame(object):
         assert self.group_col is not None, "Group column not specified"
         return self.X[:, self.group_col]
 
+
 class SmallPokecDataFrame(PokecDataFrame):
 
     def __init__(self, group_col: str = 'gender', root: str = '/tmp/', filter_degree: int = 70):
@@ -115,11 +116,14 @@ class SmallPokecDataFrame(PokecDataFrame):
         degree_cnt = torch.zeros(self.X.shape[0], dtype=torch.int32)
         # counting degree from both source and target
         degree_cnt = degree_cnt.put_(self.edge_index.flatten().long(), torch.ones(self.edge_index.shape[1] * 2, dtype=torch.int32), accumulate=True)
-        # self.degree_cnt = degree_cnt
-
         mask = degree_cnt > filter_degree
-        self.X = self.X[mask]
         edge_index = self.edge_index[:, mask[self.edge_index[0].long()] & mask[self.edge_index[1].long()]]
+
+        # remove all nodes that are not connected to any other node
+        node_exists_mask = torch.zeros(self.X.shape[0], dtype=torch.bool)
+        node_exists_mask[edge_index.flatten().long()] = True
+        mask = torch.logical_and(mask, node_exists_mask)
+        self.X = self.X[mask]
         # change node index to 0, 1, 2, ...
         old_idx_to_new_idx = torch.zeros(mask.shape, dtype=torch.long)
         old_idx_to_new_idx[mask.nonzero().flatten()] = torch.arange(self.X.shape[0])
