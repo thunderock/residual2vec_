@@ -6,7 +6,6 @@ import numpy as np
 import networkx as nx
 import pandas as pd
 from scipy import sparse
-from aif360.sklearn.metrics import statistical_parity_difference, equal_opportunity_difference
 from tqdm import trange
 
 def accuracy(y_pred, y_true):
@@ -56,28 +55,29 @@ def opportunity_difference(edges, y):
     return np.mean(np.abs(scores))
 
 
-# def statistical_parity(edges, y):
-#     """
-#     edges: edge df with source and target column
-#     y: original labels
-#     """
-#     assert isinstance(y, np.ndarray) and isinstance(edges, pd.DataFrame)
-#     classes, counts = np.unique(y, return_counts=True)
-#     # for each class figure out all the neighbors
-#     n_nodes = y.shape[0]
-#     # check if these are labels
-#     assert np.alltrue(y >= 0) and np.alltrue(y < counts.shape[0]) and y.dtype in [np.int64, np.int32]
-#     n_classes = len(classes)
-#     scores = np.empty(n_classes, dtype=np.float32)
-#     for i in range(n_classes):
-#         priv_group, pos_label = 1,1
-#         y_pred = _get_preds_for_parity_score(edges, i, n_nodes, y)
-#         scores[i] = statistical_parity_difference(y_true=pd.Series(y),
-#                                                   y_pred=y_pred,
-#                                                   priv_group=priv_group, pos_label=pos_label)
-#     print(scores)
-#     return np.mean(np.abs(scores))
-def statistical_parity(edges, y):
+def gini(array, eps = 1e-32):
+    """Calculate the Gini coefficient of a numpy array."""
+    # based on bottom eq:
+    # http://www.statsdirect.com/help/generatedimages/equations/equation154.svg
+    # from:
+    # http://www.statsdirect.com/help/default.htm#nonparametric_methods/gini.htm
+    # All values are treated equally, arrays must be 1d:
+    array = array.flatten()
+    if np.amin(array) < 0:
+        # Values cannot be negative:
+        array -= np.amin(array)
+    # Values cannot be 0:
+    array += eps
+    # Values must be sorted:
+    array = np.sort(array)
+    # Index per array element:
+    index = np.arange(1,array.shape[0]+1)
+    # Number of array elements:
+    n = array.shape[0]
+    # Gini coefficient:
+    return ((np.sum((2 * index - n  - 1) * array)) / (n * np.sum(array)))
+
+def statistical_parity(edges, y, metric="std"):
     # taken from https://github.com/thunderock/residual2vec_/pull/4
     """
     edges: edge df with source and target column
@@ -112,5 +112,10 @@ def statistical_parity(edges, y):
     Mdenom = np.outer(Nk, Nk) - np.diag(Nk)
     P = M / Mdenom
     # Calculate the statistical parity
-    parity = np.std(P[np.triu_indices(K)])
+
+    probs = P[np.triu_indices(K)]
+    if metric == "std":
+        parity = np.std(probs)
+    elif metric == "gini":
+        parity = gini(probs)
     return parity

@@ -18,37 +18,37 @@ class FileResources(object):
     def node2vec_weights(self):
         if self.baseline:
             if self.crosswalk:
-                return str(j(self.root, "{}_crosswalk_{}_nodevec.h5".format(self.basename, self.model_name)))
+                return str(j(self.root, "node2vec_models", "{}_crosswalk_{}_nodevec.h5".format(self.basename, self.model_name)))
             else:
-                return str(j(self.root, "{}_{}_node2vec.h5".format(self.basename, self.model_name)))
+                return str(j(self.root, "node2vec_models", "{}_{}_node2vec.h5".format(self.basename, self.model_name)))
         else:
             if self.crosswalk:
-                return str(j(self.root, "{}_crosswalk_{}_r2v_node2vec.h5".format(self.basename, self.model_name)))
+                return str(j(self.root, "node2vec_models", "{}_crosswalk_{}_r2v_node2vec.h5".format(self.basename, self.model_name)))
             else:
-                return str(j(self.root, "{}_{}_r2v_node2vec.h5".format(self.basename, self.model_name)))
+                return str(j(self.root, "node2vec_models", "{}_{}_r2v_node2vec.h5".format(self.basename, self.model_name)))
 
     @property
     def model_weights(self):
         if self.baseline:
             if self.crosswalk:
-                return str(j(self.root, "{}_crosswalk_{}_nodevec.h5".format(self.basename, self.model_name)))
+                return str(j(self.root, "models", "{}_crosswalk_{}_nodevec.h5".format(self.basename, self.model_name)))
             else:
-                return str(j(self.root, "{}_{}_nodevec.h5".format(self.basename, self.model_name)))
+                return str(j(self.root, "models", "{}_{}_nodevec.h5".format(self.basename, self.model_name)))
         else:
             if self.crosswalk:
-                return str(j(self.root, "{}_crosswalk_{}_r2v_nodevec.h5".format(self.basename, self.model_name)))
+                return str(j(self.root, "models", "{}_crosswalk_{}_r2v_nodevec.h5".format(self.basename, self.model_name)))
             else:
-                return str(j(self.root, "{}_{}_r2v_nodevec.h5".format(self.basename, self.model_name)))
+                return str(j(self.root, "models", "{}_{}_r2v_nodevec.h5".format(self.basename, self.model_name)))
 
     @property
     def embs_file(self):
         if self.baseline:
             if self.crosswalk:
-                return str(j(self.root, "{}_crosswalk_{}_node2vec_embs.npy".format(self.basename, self.model_name)))
+                return str(j(self.root, "embs", "{}_crosswalk_{}_node2vec_embs.npy".format(self.basename, self.model_name)))
             else:
-                return str(j(self.root, "{}_{}_node2vec_embs.npy".format(self.basename, self.model_name)))
+                return str(j(self.root, "embs", "{}_{}_node2vec_embs.npy".format(self.basename, self.model_name)))
         else:
             if self.crosswalk:
-                return str(j(self.root, "{}_crosswalk_{}_r2v_node2vec_embs.npy".format(self.basename, self.model_name)))
+                return str(j(self.root, "embs", "{}_crosswalk_{}_r2v_node2vec_embs.npy".format(self.basename, self.model_name)))
             else:
-                return str(j(self.root, "{}_{}_r2v_node2vec_embs.npy".format(self.basename, self.model_name)))
+                return str(j(self.root, "embs", "{}_{}_r2v_node2vec_embs.npy".format(self.basename, self.model_name)))
