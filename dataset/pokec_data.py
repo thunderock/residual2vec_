@@ -5,7 +5,7 @@
 
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import LabelEncoder, StandardScaler
 import torch
 from torch_geometric.data import download_url
 from tqdm import tqdm, trange
@@ -96,6 +96,8 @@ class PokecDataFrame(object):
         feature_cols[1] = "age"
 
         dfn = dfn.astype({'gender': np.float32, 'age': np.float32, 'public': np.float32, 'completion_percentage': np.float32, 'region': np.float32}).sort_index()
+        # adding standard scaler
+        dfn[['age', 'completion_percentage']] = StandardScaler().fit_transform(dfn[['age', 'completion_percentage']])
         self.X = torch.cat([torch.from_numpy(dfn[col].values.reshape(-1, 1)) for col in feature_cols], dim=1, )
         dfe = dfe.astype({'source': 'int', 'target': 'int'})
         dfe = dfe.drop_duplicates()

@@ -120,7 +120,7 @@ rule train_gnn_with_nodevec_unweighted_baseline_generate_embs:
             walk_length=walk_length
         ).fit()
         X = node_to_vec.embedding.weight.detach().cpu()
-# X = torch.cat([X, d.X], dim=1)
+        # X = torch.cat([X, d.X], dim=1)
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index,)
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=False, num_workers=params.NUM_WORKERS, pin_memory=True)
         if GNN_MODEL == 'gat':
@@ -195,7 +195,7 @@ rule train_gnn_with_nodevec_crosswalk_baseline:
             num_workers=params.NUM_WORKERS,)
         optimizer = torch.optim.Adam(list(node_to_vec.parameters()),lr=0.01)
         X = node_to_vec.train_and_get_embs(loader, optimizer, params.NODE_TO_VEC_EPOCHS, str(output.node2vec_weights))
-# X = torch.cat([X, d.X], dim=1)
+        # X = torch.cat([X, d.X], dim=1)
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index,)
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=True, num_workers=params.NUM_WORKERS, pin_memory=True)
         if GNN_MODEL == 'gat':
@@ -260,7 +260,7 @@ rule train_gnn_with_nodevec_crosswalk_baseline_generate_embs:
         ).fit()
 
         X = node_to_vec.embedding.weight.detach().cpu()
-# X = torch.cat([X, d.X], dim=1)
+        # X = torch.cat([X, d.X], dim=1)
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index,)
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=False, num_workers=params.NUM_WORKERS, pin_memory=True)
         if GNN_MODEL == 'gat':
@@ -336,7 +336,7 @@ rule train_gnn_with_nodevec_unweighted_r2v:
             num_workers=params.NUM_WORKERS,)
         optimizer = torch.optim.Adam(list(node_to_vec.parameters()),lr=0.01)
         X = node_to_vec.train_and_get_embs(loader, optimizer, params.NODE_TO_VEC_EPOCHS, str(output.node2vec_weights))
-# X = torch.cat([X, d.X], dim=1)
+	    # X = torch.cat([X, d.X], dim=1)
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index, sampler=sbm.sample_neg_edges)
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=True, num_workers=params.NUM_WORKERS, pin_memory=True)
         if GNN_MODEL == 'gat':
@@ -404,7 +404,7 @@ rule train_gnn_with_nodevec_unweighted_r2v_generate_embs:
         ).fit()
 
         X = node_to_vec.embedding.weight.detach().cpu()
-# X = torch.cat([X, d.X], dim=1)
+	    # X = torch.cat([X, d.X], dim=1)
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index, sampler=sbm.sample_neg_edges)
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=False, num_workers=params.NUM_WORKERS, pin_memory=True)
         if GNN_MODEL == 'gat':
@@ -484,7 +484,7 @@ rule train_gnn_with_nodevec_crosswalk_r2v:
             num_workers=params.NUM_WORKERS,)
         optimizer = torch.optim.Adam(list(node_to_vec.parameters()),lr=0.01)
         X = node_to_vec.train_and_get_embs(loader, optimizer, params.NODE_TO_VEC_EPOCHS, str(output.node2vec_weights))
-# X = torch.cat([X, d.X], dim=1)
+        # X = torch.cat([X, d.X], dim=1)
         d = triplet_dataset.TripletGraphDataset(X=X,edge_index=edge_index,sampler=sbm.sample_neg_edges)
 
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=True, num_workers=params.NUM_WORKERS, pin_memory=True)
@@ -555,6 +555,7 @@ rule train_gnn_with_nodevec_crosswalk_r2v_generate_embs:
             walk_length=walk_length
         ).fit()
         X = node_to_vec.embedding.weight.detach().cpu()
+        # X = torch.cat([X, d.X], dim=1)
         d = triplet_dataset.TripletGraphDataset(X=X,edge_index=edge_index,sampler=sbm.sample_neg_edges)
 
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=False, num_workers=params.NUM_WORKERS, pin_memory=True)
