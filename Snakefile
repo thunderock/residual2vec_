@@ -20,7 +20,7 @@ rule train_gnn_with_nodevec_unweighted_baseline:
         NODE_TO_VEC_DIM = 16,
         NODE_TO_VEC_EPOCHS = 5,
         NUM_WORKERS = 16,
-        SET_DEVICE = "cuda:1"
+        SET_DEVICE = "cuda:0"
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
         import torch
@@ -38,7 +38,7 @@ rule train_gnn_with_nodevec_unweighted_baseline:
         dim = 128
         walk_length = 5
 
-        d = pokec_data.SmallPokecDataFrame()
+        d = pokec_data.PokecDataFrame()
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
         node_to_vec = UnWeightedNode2Vec(
             num_nodes=num_nodes,
@@ -61,9 +61,9 @@ rule train_gnn_with_nodevec_unweighted_baseline:
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index,)
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=True, num_workers=params.NUM_WORKERS, pin_memory=True)
         if GNN_MODEL == 'gat':
-            m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=params.NODE_TO_VEC_DIM)
+            m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=X.shape[1])
         elif GNN_MODEL == 'gcn':
-            m = GCNLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=params.NODE_TO_VEC_DIM)
+            m = GCNLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=X.shape[1])
         else:
             raise ValueError("GNN_MODEL must be either gat or gcn")
 
@@ -84,7 +84,7 @@ rule train_gnn_with_nodevec_unweighted_baseline_generate_embs:
         NODE_TO_VEC_DIM = 16,
         NODE_TO_VEC_EPOCHS = 5,
         NUM_WORKERS = 16,
-        SET_DEVICE = "cuda:1"
+        SET_DEVICE = "cuda:0"
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
         import torch
@@ -104,7 +104,7 @@ rule train_gnn_with_nodevec_unweighted_baseline_generate_embs:
         dim = 128
         walk_length = 5
 
-        d = pokec_data.SmallPokecDataFrame()
+        d = pokec_data.PokecDataFrame()
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
         node_to_vec = UnWeightedNode2Vec(
             num_nodes=num_nodes,
@@ -124,9 +124,9 @@ rule train_gnn_with_nodevec_unweighted_baseline_generate_embs:
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index,)
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=False, num_workers=params.NUM_WORKERS, pin_memory=True)
         if GNN_MODEL == 'gat':
-            m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=params.NODE_TO_VEC_DIM)
+            m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=pX.shape[1])
         elif GNN_MODEL == 'gcn':
-            m = GCNLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=params.NODE_TO_VEC_DIM)
+            m = GCNLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=X.shape[1])
         else:
             raise ValueError("GNN_MODEL must be either gat or gcn")
         m.load_state_dict(torch.load(str(input.model_weights), map_location=DEVICE))
@@ -156,7 +156,7 @@ rule train_gnn_with_nodevec_crosswalk_baseline:
         NODE_TO_VEC_DIM = 16,
         NODE_TO_VEC_EPOCHS = 5,
         NUM_WORKERS = 16,
-        SET_DEVICE = "cuda:1"
+        SET_DEVICE = "cuda:0"
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
         import torch
@@ -174,7 +174,7 @@ rule train_gnn_with_nodevec_crosswalk_baseline:
         dim = 128
         walk_length = 5
 
-        d = pokec_data.SmallPokecDataFrame()
+        d = pokec_data.PokecDataFrame()
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
         node_to_vec = WeightedNode2Vec(
             num_nodes=num_nodes,
@@ -199,9 +199,9 @@ rule train_gnn_with_nodevec_crosswalk_baseline:
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index,)
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=True, num_workers=params.NUM_WORKERS, pin_memory=True)
         if GNN_MODEL == 'gat':
-            m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=params.NODE_TO_VEC_DIM)
+            m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=X.shape[1])
         elif GNN_MODEL == 'gcn':
-            m = GCNLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=params.NODE_TO_VEC_DIM)
+            m = GCNLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=X.shape[1])
         else:
             raise ValueError("GNN_MODEL must be either gat or gcn")
 
@@ -222,7 +222,7 @@ rule train_gnn_with_nodevec_crosswalk_baseline_generate_embs:
         NODE_TO_VEC_DIM = 16,
         NODE_TO_VEC_EPOCHS = 5,
         NUM_WORKERS = 16,
-        SET_DEVICE = "cuda:1"
+        SET_DEVICE = "cuda:0"
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
         import torch
@@ -241,7 +241,7 @@ rule train_gnn_with_nodevec_crosswalk_baseline_generate_embs:
         num_walks = 10
         dim = 128
         walk_length = 5
-        d = pokec_data.SmallPokecDataFrame()
+        d = pokec_data.PokecDataFrame()
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
         node_to_vec = WeightedNode2Vec(
             num_nodes=num_nodes,
@@ -264,9 +264,9 @@ rule train_gnn_with_nodevec_crosswalk_baseline_generate_embs:
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index,)
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=False, num_workers=params.NUM_WORKERS, pin_memory=True)
         if GNN_MODEL == 'gat':
-            m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=params.NODE_TO_VEC_DIM)
+            m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=X.shape[1])
         elif GNN_MODEL == 'gcn':
-            m = GCNLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=params.NODE_TO_VEC_DIM)
+            m = GCNLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=X.shape[1])
         else:
             raise ValueError("GNN_MODEL must be either gat or gcn")
         m.load_state_dict(torch.load(str(input.model_weights), map_location=DEVICE))
@@ -295,7 +295,7 @@ rule train_gnn_with_nodevec_unweighted_r2v:
         NODE_TO_VEC_DIM = 16,
         NODE_TO_VEC_EPOCHS = 5,
         NUM_WORKERS = 16,
-        SET_DEVICE =  "cuda:1",
+        SET_DEVICE =  "cuda:0",
         RV_NUM_WALKS = 100
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
@@ -314,7 +314,7 @@ rule train_gnn_with_nodevec_unweighted_r2v:
         dim = 128
         walk_length = 5
 
-        d = pokec_data.SmallPokecDataFrame()
+        d = pokec_data.PokecDataFrame()
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
         sbm = triplet_dataset.SbmSamplerWrapper(adj_path=str(input.weighted_adj), group_membership=d.get_grouped_col(),
             window_length=1, padding_id=num_nodes, num_walks=params.RV_NUM_WALKS, num_edges=edge_index.shape[1], use_weights=False)
@@ -340,9 +340,9 @@ rule train_gnn_with_nodevec_unweighted_r2v:
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index, sampler=sbm.sample_neg_edges)
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=True, num_workers=params.NUM_WORKERS, pin_memory=True)
         if GNN_MODEL == 'gat':
-            m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=params.NODE_TO_VEC_DIM)
+            m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=X.shape[1])
         elif GNN_MODEL == 'gcn':
-            m = GCNLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=params.NODE_TO_VEC_DIM)
+            m = GCNLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=X.shape[1])
         else:
             raise ValueError("GNN_MODEL must be either gat or gcn")
 
@@ -363,7 +363,7 @@ rule train_gnn_with_nodevec_unweighted_r2v_generate_embs:
         NODE_TO_VEC_DIM = 16,
         NODE_TO_VEC_EPOCHS = 5,
         NUM_WORKERS = 16,
-        SET_DEVICE = "cuda:1",
+        SET_DEVICE = "cuda:0",
         RV_NUM_WALKS = 100
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
@@ -384,7 +384,7 @@ rule train_gnn_with_nodevec_unweighted_r2v_generate_embs:
         dim = 128
         walk_length = 5
 
-        d = pokec_data.SmallPokecDataFrame()
+        d = pokec_data.PokecDataFrame()
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
         sbm = triplet_dataset.SbmSamplerWrapper(adj_path=str(input.weighted_adj), group_membership=d.get_grouped_col(),
             window_length=1, padding_id=num_nodes, num_walks=params.RV_NUM_WALKS, num_edges=edge_index.shape[1], use_weights=False)
@@ -408,9 +408,9 @@ rule train_gnn_with_nodevec_unweighted_r2v_generate_embs:
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index, sampler=sbm.sample_neg_edges)
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=False, num_workers=params.NUM_WORKERS, pin_memory=True)
         if GNN_MODEL == 'gat':
-            m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=params.NODE_TO_VEC_DIM)
+            m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=X.shape[1])
         elif GNN_MODEL == 'gcn':
-            m = GCNLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=params.NODE_TO_VEC_DIM)
+            m = GCNLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=X.shape[1])
         else:
             raise ValueError("GNN_MODEL must be either gat or gcn")
 
@@ -440,7 +440,7 @@ rule train_gnn_with_nodevec_crosswalk_r2v:
         NODE_TO_VEC_DIM = 16,
         NODE_TO_VEC_EPOCHS = 5,
         NUM_WORKERS = 16,
-        SET_DEVICE = "cuda:1",
+        SET_DEVICE = "cuda:0",
         RV_NUM_WALKS = 100
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
@@ -459,7 +459,7 @@ rule train_gnn_with_nodevec_crosswalk_r2v:
         dim = 128
         walk_length = 5
 
-        d = pokec_data.SmallPokecDataFrame()
+        d = pokec_data.PokecDataFrame()
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
         sbm = triplet_dataset.SbmSamplerWrapper(adj_path=str(input.weighted_adj),group_membership=d.get_grouped_col(),
             window_length=1,padding_id=num_nodes,num_walks=params.RV_NUM_WALKS,num_edges=edge_index.shape[1])
@@ -489,9 +489,9 @@ rule train_gnn_with_nodevec_crosswalk_r2v:
 
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=True, num_workers=params.NUM_WORKERS, pin_memory=True)
         if GNN_MODEL == 'gat':
-            m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=params.NODE_TO_VEC_DIM )
+            m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=X.shape[1])
         elif GNN_MODEL == 'gcn':
-            m = GCNLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=params.NODE_TO_VEC_DIM )
+            m = GCNLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=X.shape[1])
         else:
             raise ValueError("GNN_MODEL must be either gat or gcn")
 
@@ -513,7 +513,7 @@ rule train_gnn_with_nodevec_crosswalk_r2v_generate_embs:
         NODE_TO_VEC_DIM = 16,
         NODE_TO_VEC_EPOCHS = 5,
         NUM_WORKERS = 16,
-        SET_DEVICE = "cuda:1",
+        SET_DEVICE = "cuda:0",
         RV_NUM_WALKS = 100
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
@@ -533,7 +533,7 @@ rule train_gnn_with_nodevec_crosswalk_r2v_generate_embs:
         num_walks = 10
         dim = 128
         walk_length = 5
-        d = pokec_data.SmallPokecDataFrame()
+        d = pokec_data.PokecDataFrame()
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
         sbm = triplet_dataset.SbmSamplerWrapper(adj_path=str(input.weighted_adj),group_membership=d.get_grouped_col(),
             window_length=1,padding_id=num_nodes,num_walks=params.RV_NUM_WALKS,num_edges=edge_index.shape[1])
@@ -559,9 +559,9 @@ rule train_gnn_with_nodevec_crosswalk_r2v_generate_embs:
 
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=False, num_workers=params.NUM_WORKERS, pin_memory=True)
         if GNN_MODEL == 'gat':
-            m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=params.NODE_TO_VEC_DIM)
+            m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=X.shape[1])
         elif GNN_MODEL == 'gcn':
-            m = GCNLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=params.NODE_TO_VEC_DIM)
+            m = GCNLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=X.shape[1])
         else:
             raise ValueError("GNN_MODEL must be either gat or gcn")
 
