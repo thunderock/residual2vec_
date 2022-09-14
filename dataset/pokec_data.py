@@ -101,7 +101,7 @@ class PokecDataFrame(object):
         dfe = dfe.drop_duplicates()
         dfe = dfe[dfe.source != dfe.target] - 1
         self.edge_index = torch.cat([torch.from_numpy(dfe[col].values.reshape(-1, 1).astype(np.int32)) for col in ["source", "target"]],
-                                    dim=1).T
+                                    dim=1).T.long()
         self.group_col = feature_cols.index(group_col)
 
     def get_grouped_col(self):
