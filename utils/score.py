@@ -113,7 +113,7 @@ def statistical_parity(edges, y, metric="std"):
     P = M / Mdenom
     # Calculate the statistical parity
 
-    probs = P[np.triu_indices(K)]
+    probs = np.array(P[np.triu_indices(K)]).reshape(-1)
     if metric == "std":
         parity = np.std(probs)
     elif metric == "gini":
