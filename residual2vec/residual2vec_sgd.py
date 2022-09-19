@@ -117,7 +117,7 @@ class residual2vec_sgd:
         self.sampler.fit(adjmat)
         return self
 
-    def transform(self, model, dataloader: torch.utils.data.DataLoader):
+    def transform(self, model, dataloader: torch.utils.data.DataLoader, epochs=1):
         """
         * model is the model to be used with the framework
         * x are the node features
@@ -133,18 +133,18 @@ class residual2vec_sgd:
 
         # Training
         optim = Adam(model.parameters(), lr=0.003)
-        # scaler = torch.cuda.amp.GradScaler()
-        pbar = tqdm(dataloader, miniters=100)
-        for iword, owords, nwords in pbar:
-            # optim.zero_grad()
-            for param in model.parameters():
-                param.grad = None
-            # with torch.cuda.amp.autocast():
-            loss = neg_sampling(iword, owords, nwords)
-            loss.backward()
-            # torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
-            optim.step()
-            pbar.set_postfix(loss=loss.item())
+        for epoch in range(epochs):
+            pbar = tqdm(dataloader, miniters=100)
+            for iword, owords, nwords in pbar:
+                # optim.zero_grad()
+                for param in model.parameters():
+                    param.grad = None
+                # with torch.cuda.amp.autocast():
+                loss = neg_sampling(iword, owords, nwords)
+                loss.backward()
+                # torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
+                optim.step()
+                pbar.set_postfix(epoch=epoch, loss=loss.item())
 
         self.in_vec = model.ivectors.weight.data.cpu().numpy()[:PADDING_IDX, :]
         self.out_vec = model.ovectors.weight.data.cpu().numpy()[:PADDING_IDX, :]

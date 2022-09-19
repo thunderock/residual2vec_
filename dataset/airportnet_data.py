@@ -14,7 +14,6 @@ from scipy.sparse.csgraph import connected_components
 import networkx as nx
 
 
-
 class AirportNetDataFrame(object):
 
     def __init__(self, group_col: str = 'region', root: str = '/tmp/'):
@@ -33,7 +32,7 @@ class AirportNetDataFrame(object):
         dfn["region"] = np.unique(dfn["region"].values, return_inverse=True)[1]
         dfe = dfe.astype({'source': 'int', 'target': 'int'})
         dfe = dfe.drop_duplicates()
-        dfe = dfe[dfe.source != dfe.target] - 1
+        dfe = dfe[dfe.source != dfe.target]
 
         # Create the membership variables
         self.X = torch.cat([torch.from_numpy(dfn[col].values.reshape(-1, 1)) for col in feature_cols], dim=1, )
