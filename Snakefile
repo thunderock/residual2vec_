@@ -281,6 +281,7 @@ rule generate_node_embeddings:
             print("using de biased walk")
         X = snakemake_utils.get_node2vec_trained_get_embs(
             file_path=input.node2vec_weights,
+            edge_index=edge_index,
             crosswalk=CROSSWALK,
             embedding_dim=params.NODE_TO_VEC_DIM,
             num_nodes=num_nodes,
