@@ -85,9 +85,8 @@ rule train_gnn:
                 adj_path=input.weighted_adj,
                 group_membership=d.get_grouped_col(),
                 window_length=1,
-                padding_idx=num_nodes,
+                padding_id=num_nodes,
                 num_walks=params.RV_NUM_WALKS,
-                num_nodes=edge_index.shape[1],
                 use_weights=CROSSWALK,
                 num_edges = edge_index.shape[1]
             )
@@ -201,11 +200,10 @@ rule train_node_2_vec:
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
         if R2V:
             sbm = triplet_dataset.SbmSamplerWrapper(
-                num_nodes=num_nodes,
                 adj_path=input.weighted_adj,
                 group_membership=d.get_grouped_col(),
                 window_length=1,
-                padding_idx=num_nodes,
+                padding_id=num_nodes,
                 num_walks=params.RV_NUM_WALKS,
                 use_weights=CROSSWALK,
                 num_edges=edge_index.shape[1]
@@ -272,9 +270,8 @@ rule generate_node_embeddings:
                 adj_path=input.weighted_adj,
                 group_membership=d.get_grouped_col(),
                 window_length=1,
-                padding_idx=num_nodes,
+                padding_id=num_nodes,
                 num_walks=params.RV_NUM_WALKS,
-                num_nodes=edge_index.shape[1],
                 use_weights=CROSSWALK,
                 num_edges = edge_index.shape[1]
             )
