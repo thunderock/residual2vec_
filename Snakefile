@@ -2,8 +2,8 @@ import os
 from os.path import join as j
 from utils.snakemake_utils import get_string_boolean, FileResources
 # os.environ["CUDA_VISIBLE_DEVICES"]=""
-config = {'gnn_model': 'gat', 'crosswalk': 'true',
-          'r2v': 'true', 'dataset': 'pokec', 'device': 'cuda:0'}
+# config = {'gnn_model': 'gat', 'crosswalk': 'true',
+#           'r2v': 'true', 'dataset': 'pokec', 'device': 'cuda:0'}
 
 
 # ENV = config.get('env', 'remote')
@@ -54,7 +54,7 @@ rule train_gnn:
     params:
         BATCH_SIZE = 256 * 3,
         NODE_TO_VEC_DIM= 16,
-        NUM_WORKERS = 16,
+        NUM_WORKERS = 20,
         SET_DEVICE = SET_DEVICE,
         RV_NUM_WALKS= 100
     run:
@@ -128,10 +128,11 @@ rule generate_crosswalk_weights:
     params:
         BATCH_SIZE=256 * 3,
         NODE_TO_VEC_DIM=16,
-        NUM_WORKERS=16,
+        NUM_WORKERS=20,
         SET_DEVICE=SET_DEVICE,
         RV_NUM_WALKS=100,
         NODE_TO_VEC_EPOCHS=5,
+    threads: 20
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
         import torch
@@ -180,7 +181,7 @@ rule train_node_2_vec:
     params:
         BATCH_SIZE = 256 * 3,
         NODE_TO_VEC_DIM= 16,
-        NUM_WORKERS = 16,
+        NUM_WORKERS = 20,
         SET_DEVICE = SET_DEVICE,
         RV_NUM_WALKS= 100,
         NODE_TO_VEC_EPOCHS= 5,
@@ -240,10 +241,11 @@ rule generate_node_embeddings:
     params:
         BATCH_SIZE = 256 * 3,
         NODE_TO_VEC_DIM= 16,
-        NUM_WORKERS = 16,
+        NUM_WORKERS = 20,
         SET_DEVICE = SET_DEVICE,
         RV_NUM_WALKS= 100,
         NODE_TO_VEC_EPOCHS= 5
+    threads: 20
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
         import torch
