@@ -95,6 +95,7 @@ rule train_gnn:
             print("using de biased walk")
         X = snakemake_utils.get_node2vec_trained_get_embs(
             file_path=input.node2vec_weights,
+            edge_index=edge_index,
             crosswalk=CROSSWALK,
             embedding_dim=params.NODE_TO_VEC_DIM,
             num_nodes=num_nodes,
@@ -120,7 +121,7 @@ rule train_gnn:
         else:
             raise ValueError("GNN_MODEL must be either gat or gcn")
 
-        model.transform(model=m, dataloader=dataloader)
+        model.transform(model=m, dataloader=dataloader, epochs=3)
         torch.save(m.state_dict(), output.model_weights)
 
 rule generate_crosswalk_weights:
