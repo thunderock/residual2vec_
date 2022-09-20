@@ -78,7 +78,7 @@ def _get_node2vec_model(crosswalk, embedding_dim, num_nodes,walk_length, context
     from models import weighted_node2vec
     from utils.config import DEVICE
     if crosswalk:
-        assert weighted_adj_path is not None and group_membership is not None
+        # assert weighted_adj_path is not None and group_membership is not None
         return weighted_node2vec.WeightedNode2Vec(
             num_nodes=num_nodes,
             group_membership=group_membership,
