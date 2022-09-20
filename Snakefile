@@ -88,7 +88,8 @@ rule train_gnn:
                 padding_idx=num_nodes,
                 num_walks=params.RV_NUM_WALKS,
                 num_nodes=edge_index.shape[1],
-                use_weights=CROSSWALK
+                use_weights=CROSSWALK,
+                num_edges = edge_index.shape[1]
             )
             edge_index = sbm.edge_index
             sampler = sbm.sample_neg_edges
@@ -154,18 +155,6 @@ rule generate_crosswalk_weights:
 
         d = snakemake_utils.get_dataset(DATASET)
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
-        if R2V:
-            sbm = triplet_dataset.SbmSamplerWrapper(
-                adj_path=output.weighted_adj,
-                group_membership=d.get_grouped_col(),
-                window_length=1,
-                padding_idx=num_nodes,
-                num_walks=params.RV_NUM_WALKS,
-                num_nodes=edge_index.shape[1],
-                use_weights=CROSSWALK
-            )
-            edge_index = sbm.edge_index
-            print("using de biased walk")
         X = snakemake_utils.store_crosswalk_weights(
             file_path=output.weighted_adj,
             crosswalk=CROSSWALK,
@@ -212,13 +201,14 @@ rule train_node_2_vec:
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
         if R2V:
             sbm = triplet_dataset.SbmSamplerWrapper(
+                num_nodes=num_nodes,
                 adj_path=input.weighted_adj,
                 group_membership=d.get_grouped_col(),
                 window_length=1,
                 padding_idx=num_nodes,
                 num_walks=params.RV_NUM_WALKS,
-                num_nodes=edge_index.shape[1],
-                use_weights=CROSSWALK
+                use_weights=CROSSWALK,
+                num_edges=edge_index.shape[1]
             )
             edge_index = sbm.edge_index
             print("using de biased walk")
@@ -285,7 +275,8 @@ rule generate_node_embeddings:
                 padding_idx=num_nodes,
                 num_walks=params.RV_NUM_WALKS,
                 num_nodes=edge_index.shape[1],
-                use_weights=CROSSWALK
+                use_weights=CROSSWALK,
+                num_edges = edge_index.shape[1]
             )
             edge_index = sbm.edge_index
             sampler = sbm.sample_neg_edges
