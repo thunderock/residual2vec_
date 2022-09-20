@@ -26,27 +26,27 @@ class FileResources(object):
     def node2vec_weights(self):
         if self.baseline:
             if self.crosswalk:
-                return str(j(self.root, "{}_crosswalk_{}_nodevec.h5".format(self.basename, self.model_name)))
+                return str(j(self.root, "{}_crosswalk_node2vec.h5".format(self.basename)))
             else:
-                return str(j(self.root, "{}_{}_node2vec.h5".format(self.basename, self.model_name)))
+                return str(j(self.root, "{}_node2vec.h5".format(self.basename)))
         else:
             if self.crosswalk:
-                return str(j(self.root, "{}_crosswalk_{}_r2v_node2vec.h5".format(self.basename, self.model_name)))
+                return str(j(self.root, "{}_crosswalk_r2v_node2vec.h5".format(self.basename)))
             else:
-                return str(j(self.root, "{}_{}_r2v_node2vec.h5".format(self.basename, self.model_name)))
+                return str(j(self.root, "{}_r2v_node2vec.h5".format(self.basename)))
 
     @property
     def model_weights(self):
         if self.baseline:
             if self.crosswalk:
-                return str(j(self.root, "{}_crosswalk_{}_nodevec.h5".format(self.basename, self.model_name)))
+                return str(j(self.root, "{}_crosswalk_{}.h5".format(self.basename, self.model_name)))
             else:
-                return str(j(self.root, "{}_{}_nodevec.h5".format(self.basename, self.model_name)))
+                return str(j(self.root, "{}_{}.h5".format(self.basename, self.model_name)))
         else:
             if self.crosswalk:
-                return str(j(self.root, "{}_crosswalk_{}_r2v_nodevec.h5".format(self.basename, self.model_name)))
+                return str(j(self.root, "{}_crosswalk_{}_r2v.h5".format(self.basename, self.model_name)))
             else:
-                return str(j(self.root, "{}_{}_r2v_nodevec.h5".format(self.basename, self.model_name)))
+                return str(j(self.root, "{}_{}_r2v.h5".format(self.basename, self.model_name)))
 
     @property
     def embs_file(self):
