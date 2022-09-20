@@ -34,13 +34,14 @@ assert SET_DEVICE in ('cuda:0', 'cpu', 'cuda:1',)
 
 # file resources
 file_resources = FileResources(root=DATA_ROOT, crosswalk=CROSSWALK, baseline=not R2V,
-                                model_name=GNN_MODEL)
+                                model_name=GNN_MODEL, basename=DATASET)
 print({
     'data_root': DATA_ROOT,
     'crosswalk': CROSSWALK,
     'baseline': not R2V,
     'model_name': GNN_MODEL,
-    'device': SET_DEVICE
+    'device': SET_DEVICE,
+    "dataset": DATASET
 })
 
 rule train_gnn:
@@ -120,7 +121,7 @@ rule train_gnn:
             raise ValueError("GNN_MODEL must be either gat or gcn")
 
         model.transform(model=m, dataloader=dataloader)
-        torch.save(m.state_dict(), str(output.model_weights))
+        torch.save(m.state_dict(), output.model_weights)
 
 rule generate_crosswalk_weights:
     output:
@@ -145,6 +146,12 @@ rule generate_crosswalk_weights:
 
         warnings.filterwarnings("ignore")
         gc.enable()
+
+        window_length = 5
+        num_walks = 10
+        dim = 128
+        walk_length = 5
+
         d = snakemake_utils.get_dataset(DATASET)
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
         if R2V:
@@ -321,4 +328,4 @@ rule generate_node_embeddings:
                 a, p, n = m.forward_i(a), m.forward_o(p), m.forward_o(n)
                 a, p, n = a.detach().cpu(), p.detach().cpu(), n.detach().cpu()
                 embs[idx * batch_size:(idx + 1) * batch_size, :] = torch.cat((a, p, n),dim=1)
-        np.save(str(output.embs_file),embs.numpy())
+        np.save(output.embs_file,embs.numpy())
