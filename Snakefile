@@ -126,7 +126,8 @@ rule train_gnn:
 
 rule generate_crosswalk_weights:
     output:
-        weighted_adj = file_resources.adj_path
+        weighted_adj = file_resources.adj_path,
+        test_weighted_adj = file_resources.test_adj_path
     params:
         BATCH_SIZE=256 * 3,
         NODE_TO_VEC_DIM=16,
@@ -142,6 +143,7 @@ rule generate_crosswalk_weights:
         import gc
         from utils.link_prediction import GCNLinkPrediction, GATLinkPrediction
         import residual2vec as rv
+        from utils.network_splitter import NetworkTrainTestSplitterWithMST
         import warnings
         from utils import snakemake_utils
 
@@ -155,12 +157,24 @@ rule generate_crosswalk_weights:
 
         d = snakemake_utils.get_dataset(DATASET)
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
+        n = NetworkTrainTestSplitterWithMST(num_nodes=num_nodes, edge_list=edge_index, fraction=.04)
+        n.train_test_split()
         X = snakemake_utils.store_crosswalk_weights(
             file_path=output.weighted_adj,
             crosswalk=CROSSWALK,
             embedding_dim=params.NODE_TO_VEC_DIM,
             num_nodes=num_nodes,
-            edge_index=edge_index,
+            edge_index=n.train_edges,
+            context_size=2,
+            walk_length=walk_length,
+            group_membership=d.get_grouped_col()
+        )
+        X = snakemake_utils.store_crosswalk_weights(
+            file_path=output.test_weighted_adj,
+            crosswalk=CROSSWALK,
+            embedding_dim=params.NODE_TO_VEC_DIM,
+            num_nodes=num_nodes,
+            edge_index=n.test_edges,
             context_size=2,
             walk_length=walk_length,
             group_membership=d.get_grouped_col()

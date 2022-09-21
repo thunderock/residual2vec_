@@ -23,6 +23,9 @@ class FileResources(object):
     def adj_path(self): return str(j(self.root, "{}_crosswalk_adj.npz".format(self.basename)))
 
     @property
+    def test_adj_path(self): return str(j(self.root, "{}_crosswalk_test_adj.npz".format(self.basename)))
+
+    @property
     def node2vec_weights(self):
         if self.baseline:
             if self.crosswalk:
