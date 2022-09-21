@@ -91,7 +91,8 @@ rule train_gnn:
                 num_edges = edge_index.shape[1]
             )
             edge_index = sbm.edge_index
-            sampler = sbm.sample_neg_edges
+            # dont use sbm negative sampler for training
+            # sampler = sbm.sample_neg_edges
             print("using de biased walk")
         X = snakemake_utils.get_node2vec_trained_get_embs(
             file_path=input.node2vec_weights,
@@ -245,7 +246,7 @@ rule generate_node_embeddings:
     input:
         node2vec_weights = file_resources.node2vec_weights,
         model_weights = file_resources.model_weights,
-        weighted_adj = file_resources.adj_path
+        weighted_adj = file_resources.test_adj_path # this is the test set, predict only on test set
     output:
         embs_file = file_resources.embs_file
     params:
@@ -280,19 +281,20 @@ rule generate_node_embeddings:
         d = snakemake_utils.get_dataset(DATASET)
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
         sampler = negative_sampling
-        if R2V:
-            sbm = triplet_dataset.SbmSamplerWrapper(
-                adj_path=input.weighted_adj,
-                group_membership=d.get_grouped_col(),
-                window_length=1,
-                padding_id=num_nodes,
-                num_walks=params.RV_NUM_WALKS,
-                use_weights=CROSSWALK,
-                num_edges = edge_index.shape[1]
-            )
-            edge_index = sbm.edge_index
-            sampler = sbm.sample_neg_edges
-            print("using de biased walk")
+        # dont use sbm node smapler for prediction
+        # if R2V:
+        #     sbm = triplet_dataset.SbmSamplerWrapper(
+        #         adj_path=input.weighted_adj,
+        #         group_membership=d.get_grouped_col(),
+        #         window_length=1,
+        #         padding_id=num_nodes,
+        #         num_walks=params.RV_NUM_WALKS,
+        #         use_weights=CROSSWALK,
+        #         num_edges = edge_index.shape[1]
+        #     )
+        #     edge_index = sbm.edge_index
+        #     sampler = sbm.sample_neg_edges
+        #     print("using de biased walk")
         X = snakemake_utils.get_node2vec_trained_get_embs(
             file_path=input.node2vec_weights,
             edge_index=edge_index,

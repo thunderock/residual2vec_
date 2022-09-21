@@ -54,19 +54,21 @@ class NetworkTrainTestSplitterWithMST(NetworkTrainTestSplitter):
         return from_scipy(MST).to("cpu").to_symmetric(), adj
 
     def train_test_split(self):
-        truncated_adj, adj = self.find_mst(self.original_edge_set)
+        mst_adj, adj = self.find_mst(self.original_edge_set)
         # very slow need to do this in torch
-        row, col, _ = truncated_adj.coo()
-        if len(row) < self.number_of_test_edges:
+        not_mst_adj = adj.to_scipy() - mst_adj.to_scipy()
+        not_mst_edge_index = self._get_edge_list(from_scipy(not_mst_adj))
+        mst_edge_list = self._get_edge_list(mst_adj)
+        print("MST edge list shape: ", mst_edge_list.shape)
+        print("Not MST edge list shape: ", not_mst_edge_index.shape)
+        if len(not_mst_edge_index[0]) < self.number_of_test_edges:
             raise Exception(
                 "Cannot remove edges by keeping the connectedness. Decrease the `fraction` parameter"
             )
 
         edge_ids = torch.from_numpy(np.random.choice(
-            len(row), self.number_of_test_edges, replace=False
+            len(not_mst_edge_index[0]), self.number_of_test_edges, replace=False
         ))
-        remaining_adj = adj.to_scipy() - truncated_adj.to_scipy()
-        self.test_edges = torch.stack([row[edge_ids], col[edge_ids]], dim=0)
-        row, col = row[~edge_ids], col[~edge_ids]
-        remaining_adj = remaining_adj + coo_matrix((np.ones(len(row)), (row, col)), shape=(self.num_nodes, self.num_nodes))
-        self.train_edges = self._get_edge_list(from_scipy(remaining_adj))
+        self.test_edges = not_mst_edge_index[:, edge_ids]
+
+        self.train_edges = torch.cat((not_mst_edge_index[:, ~edge_ids], mst_edge_list), dim=1)
