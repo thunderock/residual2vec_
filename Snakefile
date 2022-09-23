@@ -126,8 +126,15 @@ rule train_gnn:
 
 rule generate_crosswalk_weights:
     output:
-        weighted_adj = file_resources.adj_path,
-        test_weighted_adj = file_resources.test_adj_path
+        weighted_adj =  FileResources(root=DATA_ROOT, crosswalk=True, baseline=not R2V,
+                                model_name=GNN_MODEL, basename=DATASET).adj_path,
+        test_weighted_adj = FileResources(root=DATA_ROOT, crosswalk=True, baseline=not R2V,
+                                model_name=GNN_MODEL, basename=DATASET).test_adj_path,
+        unweighted_adj =  FileResources(root=DATA_ROOT,crosswalk=False,baseline=not R2V,
+        model_name=GNN_MODEL,basename=DATASET).adj_path,
+        test_unweighted_adj = FileResources(root=DATA_ROOT,crosswalk=False,baseline=not R2V,
+        model_name=GNN_MODEL,basename=DATASET).test_adj_path,
+
     params:
         BATCH_SIZE=256 * 3,
         NODE_TO_VEC_DIM=16,
@@ -150,14 +157,14 @@ rule generate_crosswalk_weights:
         num_walks = 10
         dim = 128
         walk_length = 5
-
+        # this is super hack here
         d = snakemake_utils.get_dataset(DATASET)
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
         n = NetworkTrainTestSplitterWithMST(num_nodes=num_nodes, edge_list=edge_index)
         n.train_test_split()
-        X = snakemake_utils.store_crosswalk_weights(
+        snakemake_utils.store_crosswalk_weights(
             file_path=output.weighted_adj,
-            crosswalk=CROSSWALK,
+            crosswalk=True,
             embedding_dim=params.NODE_TO_VEC_DIM,
             num_nodes=num_nodes,
             edge_index=n.train_edges,
@@ -165,9 +172,29 @@ rule generate_crosswalk_weights:
             walk_length=walk_length,
             group_membership=d.get_grouped_col()
         )
-        X = snakemake_utils.store_crosswalk_weights(
+        snakemake_utils.store_crosswalk_weights(
             file_path=output.test_weighted_adj,
-            crosswalk=CROSSWALK,
+            crosswalk=True,
+            embedding_dim=params.NODE_TO_VEC_DIM,
+            num_nodes=num_nodes,
+            edge_index=n.test_edges,
+            context_size=2,
+            walk_length=walk_length,
+            group_membership=d.get_grouped_col()
+        )
+        snakemake_utils.store_crosswalk_weights(
+            file_path=output.unweighted_adj,
+            crosswalk=False,
+            embedding_dim=params.NODE_TO_VEC_DIM,
+            num_nodes=num_nodes,
+            edge_index=n.train_edges,
+            context_size=2,
+            walk_length=walk_length,
+            group_membership=d.get_grouped_col()
+        )
+        snakemake_utils.store_crosswalk_weights(
+            file_path=output.test_unweighted_adj,
+            crosswalk=True,
             embedding_dim=params.NODE_TO_VEC_DIM,
             num_nodes=num_nodes,
             edge_index=n.test_edges,
