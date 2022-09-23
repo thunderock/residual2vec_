@@ -235,7 +235,7 @@ rule train_node_2_vec:
             embedding_dim=params.NODE_TO_VEC_DIM,
             num_nodes=num_nodes,
             context_size=2,
-            edge_index=edge_index,
+            edge_index=None,
             walk_length=walk_length,
             weighted_adj_path=input.weighted_adj if CROSSWALK else None,
             group_membership=d.get_grouped_col()
@@ -335,3 +335,4 @@ rule generate_node_embeddings:
                 a, p, n = a.detach().cpu(), p.detach().cpu(), n.detach().cpu()
                 embs[idx * batch_size:(idx + 1) * batch_size, :] = torch.cat((a, p, n),dim=1)
         np.save(output.embs_file,embs.numpy())
+

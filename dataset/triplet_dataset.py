@@ -157,7 +157,7 @@ class SbmSamplerWrapper(object):
         self.num_edges = num_edges
         centers, contexts, random_contexts = dataset.centers, dataset.contexts, dataset.random_contexts
         indices = np.random.choice(len(centers), num_edges, replace=False)
-        self.centers, contexts, self.random_contexts = centers[indices], contexts[indices], random_contexts[indices]
+        self.centers, contexts, random_contexts = centers[indices], contexts[indices], random_contexts[indices]
         # be careful, cant call this again, contexts lost
         self.edge_index = self._create_edge_index(self.centers, contexts)
 
@@ -165,7 +165,8 @@ class SbmSamplerWrapper(object):
     def _create_edge_index(self, source: np.ndarray, dist: np.ndarray):
         return torch.tensor([source, dist], dtype=torch.long)
 
-    def sample_neg_edges(self, edge_index, num_nodes, num_neg_samples, method,
-            force_undirected):
-        # none of these params used, only for compatibility
-        return self._create_edge_index(self.centers, self.random_contexts)
+    # def sample_neg_edges(self, edge_index, num_nodes, num_neg_samples, method,
+    #         force_undirected):
+    #     # none of these params used, only for compatibility
+    #     return self._create_edge_index(self.centers, self.random_contexts)
+

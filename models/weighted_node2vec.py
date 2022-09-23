@@ -13,20 +13,22 @@ random_walk = torch.ops.torch_cluster.random_walk
 
 
 class WeightedNode2Vec(Node2Vec):
-    def __init__(self, num_nodes, group_membership, edge_index, weighted_adj=None, **params):
+    def __init__(self, num_nodes, group_membership, edge_index=None, weighted_adj=None, **params):
         """
         :param weighted_adj: can be a weighted sparse matrix or its path
         """
+        if not isinstance(edge_index, torch.Tensor):
+            adj = sparse.load_npz(weighted_adj)
+            row, col = adj.nonzero()
+            edge_index = torch.cat((torch.from_numpy(row).unsqueeze(dim=0), torch.from_numpy(col).unsqueeze(dim=0))).long()
         Node2Vec.__init__(self, num_nodes=num_nodes, edge_index=edge_index, **params)
         if isinstance(group_membership, torch.Tensor):
             self.group_membership = group_membership.numpy()
 
         if weighted_adj:
-            if isinstance(weighted_adj, sparse.csr_matrix):
-                self.weighted_adj = weighted_adj
-            else:
-                self.weighted_adj = sparse.load_npz(weighted_adj)
 
+            self.weighted_adj = sparse.load_npz(weighted_adj)
+            adj = self.adj.to_symmetric()
         else:
             adj = self.adj.to_symmetric()
             row, col, _ = adj.coo()
@@ -37,6 +39,7 @@ class WeightedNode2Vec(Node2Vec):
             graph.set_weights(G, exp_=2., p_bndry=.7, l=2)
             # TODO (ashutiwa): cross walk doesn't produce symmetric matrix for undirected graph
             self.weighted_adj = graph.edge_weights_to_sparse(G, A)
+        self.adj = adj
         self.sampler = random_walk_sampler.RandomWalkSampler(adjmat=self.weighted_adj, walk_length=self.walk_length + 1, q=self.q, p=self.p)
         # self.edge_index = edge_index
 
@@ -98,3 +101,4 @@ class UnWeightedNode2Vec(Node2Vec):
         if save:
             torch.save(self.state_dict(), save)
         return self.embedding.weight.detach().cpu()
+
