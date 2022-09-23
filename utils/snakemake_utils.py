@@ -27,16 +27,10 @@ class FileResources(object):
 
     @property
     def node2vec_weights(self):
-        if self.baseline:
-            if self.crosswalk:
-                return str(j(self.root, "{}_crosswalk_node2vec.h5".format(self.basename)))
-            else:
-                return str(j(self.root, "{}_node2vec.h5".format(self.basename)))
+        if self.crosswalk:
+            return str(j(self.root, "{}_crosswalk_node2vec.h5".format(self.basename)))
         else:
-            if self.crosswalk:
-                return str(j(self.root, "{}_crosswalk_r2v_node2vec.h5".format(self.basename)))
-            else:
-                return str(j(self.root, "{}_r2v_node2vec.h5".format(self.basename)))
+            return str(j(self.root, "{}_node2vec.h5".format(self.basename)))
 
     @property
     def model_weights(self):

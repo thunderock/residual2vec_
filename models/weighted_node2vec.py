@@ -66,7 +66,7 @@ class WeightedNode2Vec(Node2Vec):
         # print(rw[0].shape, rw[1].shape, rowptr.shape, col.shape, batch.shape)
         # print(rw.shape)
         # -1 with 0
-        rw[rw == -1] = 0
+        # rw[rw == -1] = 0
         rw = torch.from_numpy(rw)
         walks = []
         num_walks_per_rw = 1 + self.walk_length + 1 - self.context_size
