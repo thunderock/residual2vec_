@@ -112,7 +112,6 @@ def train_node2vec_get_embs(file_path, batch_size, num_workers, epochs, **kwargs
 
 def store_crosswalk_weights(file_path, **kwargs):
     model = _get_node2vec_model(**kwargs)
-    assert isinstance(model, weighted_node2vec.WeightedNode2Vec)
     sparse.save_npz(file_path, model.weighted_adj)
 
 def get_num_nodes_from_adj(adj_path):
