@@ -1,5 +1,9 @@
 import os
 from os.path import join as j
+import torch
+from models import weighted_node2vec
+from utils.config import DEVICE
+from scipy import sparse
 
 def get_string_boolean(string):
     if string in ['True', 'true', 'TRUE', 'T', 't', '1']:
@@ -72,8 +76,6 @@ def get_dataset(name):
 
 def _get_node2vec_model(crosswalk, embedding_dim, num_nodes,walk_length, context_size,
                         edge_index, weighted_adj_path=None, group_membership=None):
-    from models import weighted_node2vec
-    from utils.config import DEVICE
     if crosswalk:
         # assert weighted_adj_path is not None and group_membership is not None
         return weighted_node2vec.WeightedNode2Vec(
@@ -96,24 +98,26 @@ def _get_node2vec_model(crosswalk, embedding_dim, num_nodes,walk_length, context
         ).to(DEVICE)
 
 def get_node2vec_trained_get_embs(file_path, **kwargs):
-    from utils.config import DEVICE
-    import torch
     model = _get_node2vec_model(**kwargs)
     model.load_state_dict(torch.load(file_path, map_location=DEVICE))
     return model.embedding.weight.detach().cpu()
 
 
 def train_node2vec_get_embs(file_path, batch_size, num_workers, epochs, **kwargs):
-    from utils.config import DEVICE
-    import torch
     model = _get_node2vec_model(**kwargs)
     loader = model.loader(batch_size=batch_size, shuffle=True, num_workers=num_workers)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
     return model.train_and_get_embs(loader, optimizer, epochs, file_path)
 
 def store_crosswalk_weights(file_path, **kwargs):
-    from scipy import sparse
-    from models import weighted_node2vec
     model = _get_node2vec_model(**kwargs)
     assert isinstance(model, weighted_node2vec.WeightedNode2Vec)
     sparse.save_npz(file_path, model.weighted_adj)
+
+def get_num_nodes_from_adj(adj_path):
+    return sparse.load_npz(adj_path).shape[0]
+
+def get_edge_index_from_sparse_path(weighted_adj):
+    adj = sparse.load_npz(weighted_adj)
+    row, col = adj.nonzero()
+    return torch.cat((torch.from_numpy(row).unsqueeze(dim=0), torch.from_numpy(col).unsqueeze(dim=0))).long()
