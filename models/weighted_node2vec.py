@@ -79,8 +79,14 @@ class WeightedNode2Vec(Node2Vec):
 
 
 class UnWeightedNode2Vec(Node2Vec):
-    def __init__(self, **params):
-        Node2Vec.__init__(self, **params)
+    def __init__(self, weighted_adj=None, edge_index=None, **params):
+        if not isinstance(edge_index, torch.Tensor):
+            adj = sparse.load_npz(weighted_adj)
+            row, col = adj.nonzero()
+            edge_index = torch.cat(
+                (torch.from_numpy(row).unsqueeze(dim=0), torch.from_numpy(col).unsqueeze(dim=0))).long()
+
+        Node2Vec.__init__(self, edge_index=edge_index, **params)
         self.adj = self.adj.to_symmetric()
 
     def train_and_get_embs(self, loader, optimizer, epochs=EPOCHS, save=None):

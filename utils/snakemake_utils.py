@@ -95,6 +95,7 @@ def _get_node2vec_model(crosswalk, embedding_dim, num_nodes,walk_length, context
             embedding_dim=embedding_dim,
             walk_length=walk_length,
             context_size=context_size,
+            weighted_adj=weighted_adj_path
         ).to(DEVICE)
 
 def get_node2vec_trained_get_embs(file_path, **kwargs):
