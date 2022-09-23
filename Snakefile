@@ -82,7 +82,7 @@ rule train_gnn:
         if R2V:
             sbm = triplet_dataset.SbmSamplerWrapper(
                 adj_path=input.weighted_adj,
-                group_membership=d.get_grouped_col(),
+                group_membership=labels,
                 window_length=1,
                 padding_id=num_nodes,
                 num_walks=params.RV_NUM_WALKS,
