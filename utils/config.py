@@ -36,7 +36,7 @@ GPU_ID = -1
 if CUDA:
     torch.cuda.manual_seed(RANDOM_SEED)
     DEVICE = os.environ.get("SET_GPU", "cuda:0")
-    GPU_ID = int(DEVICE.split(":")[1])
+    # GPU_ID = int(DEVICE.split(":")[1])
     print(f"Using GPU: {DEVICE}")
 LOGGER = logging.getLogger(__name__)
 LOGFORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
