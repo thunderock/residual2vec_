@@ -158,7 +158,7 @@ def _random_walk_weighted(indptr, indices, data, walk_length, p, q, padding_id, 
         ]
         for j in range(2, walk_length):
             neighbors = _neighbors(indptr, indices, walk[walk_id, j - 1])
-            neighbors = _neighbors(indptr, indices, t)
+            # neighbors = _neighbors(indptr, indices, t)
             if len(neighbors) == 0:
                 break
             neighbors_p = _neighbors(indptr, data, walk[walk_id, j - 1])
