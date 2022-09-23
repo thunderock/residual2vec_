@@ -51,11 +51,11 @@ rule train_gnn:
         weighted_adj=file_resources.adj_path
     output:
         model_weights = file_resources.model_weights
-    threads: 20
+    threads: 50
     params:
         BATCH_SIZE = 256 * 3,
         NODE_TO_VEC_DIM= 16,
-        NUM_WORKERS = 20,
+        NUM_WORKERS = 50,
         SET_DEVICE = SET_DEVICE,
         RV_NUM_WALKS= 100
     run:
@@ -135,7 +135,7 @@ rule generate_crosswalk_weights:
         SET_DEVICE=SET_DEVICE,
         RV_NUM_WALKS=100,
         NODE_TO_VEC_EPOCHS=5,
-    threads: 20
+    threads: 50
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
         import gc
@@ -183,11 +183,11 @@ rule train_node_2_vec:
         weighted_adj=file_resources.adj_path
     output:
         node2vec_weights = file_resources.node2vec_weights,
-    threads: 20
+    threads: 50
     params:
         BATCH_SIZE = 256 * 3,
         NODE_TO_VEC_DIM= 16,
-        NUM_WORKERS = 20,
+        NUM_WORKERS = 50,
         SET_DEVICE = SET_DEVICE,
         RV_NUM_WALKS= 100,
         NODE_TO_VEC_EPOCHS= 5,
@@ -246,11 +246,11 @@ rule generate_node_embeddings:
     params:
         BATCH_SIZE = 256 * 3,
         NODE_TO_VEC_DIM= 16,
-        NUM_WORKERS = 20,
+        NUM_WORKERS = 50,
         SET_DEVICE = SET_DEVICE,
         RV_NUM_WALKS= 100,
         NODE_TO_VEC_EPOCHS= 5
-    threads: 20
+    threads: 50
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
         import torch

@@ -24,11 +24,18 @@ class FileResources(object):
         self.model_name = model_name
 
     @property
-    def adj_path(self): return str(j(self.root, "{}_crosswalk_adj.npz".format(self.basename)))
+    def adj_path(self):
+        if self.crosswalk:
+            return str(j(self.root, f'{self.basename}_adj_crosswalk.npz'))
+        else:
+            return str(j(self.root, f'{self.basename}_adj.npz'))
 
     @property
-    def test_adj_path(self): return str(j(self.root, "{}_crosswalk_test_adj.npz".format(self.basename)))
-
+    def test_adj_path(self): 
+        if self.crosswalk:
+            return str(j(self.root, "{}_crosswalk_test_adj.npz".format(self.basename)))
+        else:
+            return str(j(self.root, "{}_test_adj.npz".format(self.basename)))
     @property
     def node2vec_weights(self):
         if self.crosswalk:

@@ -88,6 +88,7 @@ class UnWeightedNode2Vec(Node2Vec):
 
         Node2Vec.__init__(self, edge_index=edge_index, **params)
         self.adj = self.adj.to_symmetric()
+        self.weighted_adj = self.adj.to_scipy()
 
     def train_and_get_embs(self, loader, optimizer, epochs=EPOCHS, save=None):
         t = trange(epochs)
