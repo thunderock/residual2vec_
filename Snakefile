@@ -164,7 +164,7 @@ rule generate_crosswalk_weights:
         n.train_test_split()
         snakemake_utils.store_crosswalk_weights(
             file_path=output.weighted_adj,
-            crosswalk=True,
+            crosswalk=False,
             embedding_dim=params.NODE_TO_VEC_DIM,
             num_nodes=num_nodes,
             edge_index=n.train_edges,
@@ -174,7 +174,7 @@ rule generate_crosswalk_weights:
         )
         snakemake_utils.store_crosswalk_weights(
             file_path=output.test_weighted_adj,
-            crosswalk=True,
+            crosswalk=False,
             embedding_dim=params.NODE_TO_VEC_DIM,
             num_nodes=num_nodes,
             edge_index=n.test_edges,
@@ -335,7 +335,7 @@ rule generate_node_embeddings:
         ).fit()
         # X = torch.cat([X, d.X], dim=1)
         d = triplet_dataset.TripletGraphDataset(X=X,edge_index=edge_index)
-        dataloader = triplet_dataset.NeighborEdgeSampler(d,batch_size=model.batch_size,shuffle=True,num_workers=params.NUM_WORKERS,pin_memory=True)
+        dataloader = triplet_dataset.NeighborEdgeSampler(d,batch_size=model.batch_size,shuffle=False,num_workers=params.NUM_WORKERS,pin_memory=True)
         if GNN_MODEL == 'gat':
             m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=
             X.shape[1])

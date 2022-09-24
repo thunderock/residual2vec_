@@ -78,6 +78,15 @@ def get_dataset(name):
     elif name == 'small_pokec':
         from dataset.pokec_data import SmallPokecDataFrame
         dataset = SmallPokecDataFrame()
+    elif name == 'airport':
+        from dataset.airportnet_data import AirportNetDataFrame
+        dataset = AirportNetDataFrame()
+    elif name == 'polbook':
+        from dataset.polbook_data import PolBookDataFrame
+        dataset = PolBookDataFrame()
+    elif name == 'polblog':
+        from dataset.polblog_data import PolBlogDataFrame
+        dataset = PolBlogDataFrame()
     # add other datasets here
     return dataset
 
