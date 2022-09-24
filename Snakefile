@@ -164,7 +164,7 @@ rule generate_crosswalk_weights:
         n.train_test_split()
         snakemake_utils.store_crosswalk_weights(
             file_path=output.weighted_adj,
-            crosswalk=False,
+            crosswalk=True,
             embedding_dim=params.NODE_TO_VEC_DIM,
             num_nodes=num_nodes,
             edge_index=n.train_edges,
@@ -174,7 +174,7 @@ rule generate_crosswalk_weights:
         )
         snakemake_utils.store_crosswalk_weights(
             file_path=output.test_weighted_adj,
-            crosswalk=False,
+            crosswalk=True,
             embedding_dim=params.NODE_TO_VEC_DIM,
             num_nodes=num_nodes,
             edge_index=n.test_edges,
