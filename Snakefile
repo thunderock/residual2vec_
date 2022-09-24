@@ -22,7 +22,7 @@ R2V = get_string_boolean(R2V)
 SET_DEVICE = config.get('device', 'cuda:0')
 # DATA_ROOT = "/data/sg/ashutiwa/residual2vec_"
 # if ENV in ('local', 'carbonate'):
-DATA_ROOT = "data"
+DATA_ROOT = config.get("root", "data")
 
 
 # variables sanity check

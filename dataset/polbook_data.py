@@ -40,11 +40,11 @@ class PolBookDataFrame(object):
         dfn["political_leaning"] = np.unique(dfn["political_leaning"].values, return_inverse=True)[1]
         dfe = dfe.astype({'source': 'int', 'target': 'int'})
         dfe = dfe.drop_duplicates()
-        dfe = dfe[dfe.source != dfe.target] - 1
+        dfe = dfe[dfe.source != dfe.target]
 
         # Create the membership variables
         self.X = torch.cat([torch.from_numpy(dfn[col].values.reshape(-1, 1)) for col in feature_cols], dim=1, )
-        self.edge_index = torch.cat([torch.from_numpy(dfe[col].values.reshape(-1, 1).astype(np.int32)) for col in ["source", "target"]],dim=1).T
+        self.edge_index = torch.cat([torch.from_numpy(dfe[col].values.reshape(-1, 1).astype(np.int32)) for col in ["source", "target"]],dim=1).T.long()
         self.group_col = feature_cols.index(group_col)
 
     def get_grouped_col(self):
