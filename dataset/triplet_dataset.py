@@ -56,7 +56,6 @@ class TripletGraphDataset(Dataset):
         returns a, p, n tuple for this idx where a is the current node, p is the positive node and n is the randomly sampled negative node
         """
         # select a node with positive edge
-        intial_idx = idx
         p_node = self._select_random_neighbor(idx)
         n_node = self._select_random_neighbor(idx, neg=True)
 
@@ -65,13 +64,15 @@ class TripletGraphDataset(Dataset):
         else:
             a, p, n = None, None, None
             cnt = 0
-            while not (a and p and n):
+            while not (p and n):
+                # only reaches here in airport
                 cnt += 1
                 if cnt > 10:
-                    # only reaches here in polbook
-                    a = self._ret_features_for_node(intial_idx)
-                    p = self._ret_features_for_node(self.edge_index[0, torch.randint(self.edge_index.shape[0], (1,))].item())
-                    n = self._ret_features_for_node(self.neg_edge_index[0, torch.randint(self.neg_edge_index.shape[0], (1,))].item())
+                    # only reaches here in polbook, polblog
+                    if not p:
+                        p = self._ret_features_for_node(self.edge_index[0, torch.randint(self.edge_index.shape[0], (1,))].item())
+                    if not n:
+                        n = self._ret_features_for_node(self.neg_edge_index[0, torch.randint(self.neg_edge_index.shape[0], (1,))].item())
                     break
                 idx = torch.randint(self.edge_index.shape[0], (1,))
                 # print("randomly selected a_idx", idx)
