@@ -32,7 +32,7 @@ PREDICTION_THRESHOLD = .7
 NUM_NEIGHBORS = 10
 EMBEDDING_DIM = 128
 LR = .01
-GPU_ID = -1
+GPU_ID = 0
 if CUDA:
     torch.cuda.manual_seed(RANDOM_SEED)
     DEVICE = os.environ.get("SET_GPU", "cuda:0")

@@ -137,3 +137,10 @@ def get_edge_index_from_sparse_path(weighted_adj):
     adj = sparse.load_npz(weighted_adj)
     row, col = adj.nonzero()
     return torch.cat((torch.from_numpy(row).unsqueeze(dim=0), torch.from_numpy(col).unsqueeze(dim=0))).long()
+
+
+def return_new_graph(adj_matrix, n_neighbors, batch_size=2000):
+    from utils.graph_utils import get_edges_fastknn_faiss
+    edges = get_edges_fastknn_faiss(adj_matrix, n_neighbors, batch_size=batch_size)
+    # drop rows with target = -1
+    return edges.drop(edges[edges['target'] == -1].index)
