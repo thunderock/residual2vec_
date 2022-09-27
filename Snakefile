@@ -1,6 +1,7 @@
 import os
 from os.path import join as j
 from utils.snakemake_utils import get_string_boolean, FileResources
+import wandb
 # os.environ["CUDA_VISIBLE_DEVICES"]=""
 # config = {'gnn_model': 'gat', 'crosswalk': 'true',
 #           'r2v': 'true', 'dataset': 'pokec', 'device': 'cuda:0'}
@@ -23,7 +24,6 @@ SET_DEVICE = config.get('device', 'cuda:0')
 # DATA_ROOT = "/data/sg/ashutiwa/residual2vec_"
 # if ENV in ('local', 'carbonate'):
 DATA_ROOT = config.get("root", "data")
-
 
 # variables sanity check
 assert GNN_MODEL in ('gat', 'gcn')
@@ -113,6 +113,7 @@ rule train_gnn:
         ).fit()
         # X = torch.cat([X, d.X], dim=1)
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index)
+        wandb.init(project=DATASET,name="DATA_ROOT={}_MODEL={}_CROSSWALK={}_R2V={}".format(DATA_ROOT, GNN_MODEL, CROSSWALK, R2V))
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=True, num_workers=params.NUM_WORKERS, pin_memory=True)
         if GNN_MODEL == 'gat':
             m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=X.shape[1])
@@ -121,7 +122,7 @@ rule train_gnn:
         else:
             raise ValueError("GNN_MODEL must be either gat or gcn")
 
-        model.transform(model=m, dataloader=dataloader, epochs=3)
+        model.transform(model=m, dataloader=dataloader, epochs=100)
         torch.save(m.state_dict(), output.model_weights)
 
 rule generate_crosswalk_weights:
@@ -141,7 +142,7 @@ rule generate_crosswalk_weights:
         NUM_WORKERS=20,
         SET_DEVICE=SET_DEVICE,
         RV_NUM_WALKS=100,
-        NODE_TO_VEC_EPOCHS=5,
+        NODE_TO_VEC_EPOCHS=50
     threads: 20
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
@@ -217,7 +218,7 @@ rule train_node_2_vec:
         NUM_WORKERS = 20,
         SET_DEVICE = SET_DEVICE,
         RV_NUM_WALKS= 100,
-        NODE_TO_VEC_EPOCHS= 5,
+        NODE_TO_VEC_EPOCHS= 50,
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
         from dataset import triplet_dataset
@@ -276,7 +277,7 @@ rule generate_node_embeddings:
         NUM_WORKERS = 20,
         SET_DEVICE = SET_DEVICE,
         RV_NUM_WALKS= 100,
-        NODE_TO_VEC_EPOCHS= 5
+        NODE_TO_VEC_EPOCHS= 50
     threads: 20
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE

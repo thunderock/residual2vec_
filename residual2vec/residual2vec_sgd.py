@@ -60,7 +60,7 @@ from scipy import sparse
 from residual2vec import utils
 from residual2vec.random_walk_sampler import RandomWalkSampler
 from residual2vec.word2vec import NegativeSampling
-from torch_geometric.utils import negative_sampling
+import wandb
 from utils.config import *
 
 class residual2vec_sgd:
@@ -130,7 +130,6 @@ class residual2vec_sgd:
         # )
         neg_sampling = NegativeSampling(embedding=model)
         model.to(self.cuda)
-
         # Training
         optim = Adam(model.parameters(), lr=0.003)
         for epoch in range(epochs):
@@ -141,9 +140,12 @@ class residual2vec_sgd:
                     param.grad = None
                 # with torch.cuda.amp.autocast():
                 loss = neg_sampling(iword, owords, nwords)
+                if torch.isnan(loss) or torch.isinf(loss):
+                    break
                 loss.backward()
                 # torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
                 optim.step()
+                wandb.log({"epoch": epoch, "loss": loss.item()})
                 pbar.set_postfix(epoch=epoch, loss=loss.item())
 
         self.in_vec = model.ivectors.weight.data.cpu().numpy()[:PADDING_IDX, :]
