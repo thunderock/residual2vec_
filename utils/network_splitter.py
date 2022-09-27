@@ -48,7 +48,7 @@ class NetworkTrainTestSplitterWithMST(NetworkTrainTestSplitter):
     def find_mst(self, edge_list):
         row, col = edge_list
         adj = SparseTensor(row=row, col=col, sparse_sizes=(self.num_nodes, self.num_nodes)).to("cpu")
-        adj = adj.to_symmetric()
+        # adj = adj.to_symmetric()
         MST = csgraph.minimum_spanning_tree(adj.to_scipy())
         # why isn't mst symmetric
         return from_scipy(MST).to("cpu").to_symmetric(), adj

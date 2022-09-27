@@ -32,6 +32,7 @@ class AirportNetDataFrame(object):
         dfn["region"] = np.unique(dfn["region"].values, return_inverse=True)[1]
         dfe = dfe.astype({'source': 'int', 'target': 'int'})
         dfe = dfe.drop_duplicates()
+        dfe = pd.concat([dfe, dfe.rename(columns={'source': 'target', 'target': 'source'})]).drop_duplicates(keep='first')
         dfe = dfe[dfe.source != dfe.target]
 
         # Create the membership variables

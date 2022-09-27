@@ -101,6 +101,9 @@ class PokecDataFrame(object):
         self.X = torch.cat([torch.from_numpy(dfn[col].values.reshape(-1, 1)) for col in feature_cols], dim=1, )
         dfe = dfe.astype({'source': 'int', 'target': 'int'})
         dfe = dfe.drop_duplicates()
+        # removing bidirectional edges
+        dfe = pd.concat([dfe, dfe.rename(columns={'source': 'target', 'target': 'source'})]).drop_duplicates(keep='first')
+        # removing self loops
         dfe = dfe[dfe.source != dfe.target] - 1
         self.edge_index = torch.cat([torch.from_numpy(dfe[col].values.reshape(-1, 1).astype(np.int32)) for col in ["source", "target"]],
                                     dim=1).T.long()

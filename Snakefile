@@ -162,7 +162,9 @@ rule generate_crosswalk_weights:
         d = snakemake_utils.get_dataset(DATASET)
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
         n = NetworkTrainTestSplitterWithMST(num_nodes=num_nodes, edge_list=edge_index)
+        # nodes are not made symmetric here
         n.train_test_split()
+        # nodes are made symmetric here
         snakemake_utils.store_crosswalk_weights(
             file_path=output.weighted_adj,
             crosswalk=True,

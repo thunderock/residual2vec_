@@ -83,6 +83,9 @@ class TripletGraphDataset(Dataset):
             p = self._ret_features_for_node(self._select_random_neighbor(idx))
             # this can still result in failure but haven't seen it yet, this means that negative sampling couldn't generate a negative node for this source node
             n = self._ret_features_for_node(self._select_random_neighbor(idx, neg=True))
+            if not n:
+                # in cases where there is no negative "sampled" edge for this node, we randomly sample a negative node
+                n = self._ret_features_for_node(self.neg_edge_index[0, torch.randint(self.neg_edge_index.shape[0], (1,))].item())
         return torch.tensor([a, p, n])
 
 
@@ -182,4 +185,5 @@ class SbmSamplerWrapper(object):
     #         force_undirected):
     #     # none of these params used, only for compatibility
     #     return self._create_edge_index(self.centers, self.random_contexts)
+
 
