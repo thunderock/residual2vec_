@@ -268,7 +268,7 @@ rule generate_node_embeddings:
     input:
         node2vec_weights = file_resources.node2vec_weights,
         model_weights = file_resources.model_weights,
-        weighted_adj = file_resources.test_adj_path # this is the test set, predict only on test set
+        weighted_adj = file_resources.adj_path # this is the test set, predict only on test set
     output:
         embs_file = file_resources.embs_file
     params:
@@ -302,20 +302,7 @@ rule generate_node_embeddings:
         num_nodes = snakemake_utils.get_num_nodes_from_adj(input.weighted_adj)
 
         labels = snakemake_utils.get_dataset(DATASET).get_grouped_col()
-        # dont use sbm node smapler for prediction
-        # if R2V:
-        #     sbm = triplet_dataset.SbmSamplerWrapper(
-        #         adj_path=input.weighted_adj,
-        #         group_membership=d.get_grouped_col(),
-        #         window_length=1,
-        #         padding_id=num_nodes,
-        #         num_walks=params.RV_NUM_WALKS,
-        #         use_weights=CROSSWALK,
-        #         num_edges = edge_index.shape[1]
-        #     )
-        #     edge_index = sbm.edge_index
-        #     sampler = sbm.sample_neg_edges
-        #     print("using de biased walk")
+
         X = snakemake_utils.get_node2vec_trained_get_embs(
             file_path=input.node2vec_weights,
             edge_index=edge_index,
@@ -336,7 +323,7 @@ rule generate_node_embeddings:
         ).fit()
         # X = torch.cat([X, d.X], dim=1)
         d = triplet_dataset.TripletGraphDataset(X=X,edge_index=edge_index)
-        dataloader = triplet_dataset.NeighborEdgeSampler(d,batch_size=model.batch_size,shuffle=False,num_workers=params.NUM_WORKERS,pin_memory=True)
+        dataloader = triplet_dataset.NeighborEdgeSampler(d,batch_size=model.batch_size,shuffle=False,num_workers=params.NUM_WORKERS,pin_memory=True,transforming=True)
         if GNN_MODEL == 'gat':
             m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=
             X.shape[1])
@@ -346,14 +333,14 @@ rule generate_node_embeddings:
         else:
             raise ValueError("GNN_MODEL must be either gat or gcn")
         m = m.to(DEVICE)
-        embs = torch.zeros((num_nodes, 128 * 3))
+        embs = torch.zeros((num_nodes, 128))
         batch_size = model.batch_size
         m.eval()
         with torch.no_grad():
             for idx, batch in enumerate(tqdm(dataloader,desc="Generating node embeddings")):
                 a, p, n = batch
-                a, p, n = m.forward_i(a), m.forward_o(p), m.forward_o(n)
-                a, p, n = a.detach().cpu(), p.detach().cpu(), n.detach().cpu()
-                embs[idx * batch_size:(idx + 1) * batch_size, :] = torch.cat((a, p, n),dim=1)
+                a = m.forward_i(a)# , m.forward_o(p), m.forward_o(n)
+                a = a.detach().cpu()# , p.detach().cpu(), n.detach().cpu()
+                embs[idx * batch_size:(idx + 1) * batch_size, :] = a # torch.cat((a, p, n),dim=1)
         np.save(output.embs_file,embs.numpy())
 

@@ -64,25 +64,25 @@ class TripletGraphDataset(Dataset):
         else:
             a, p, n = None, None, None
             cnt = 0
-            while not (p and n):
-                # only reaches here in airport
-                cnt += 1
-                if cnt > 10:
-                    # only reaches here in polbook, polblog
-                    if not p:
-                        p = self._ret_features_for_node(self.edge_index[0, torch.randint(self.edge_index.shape[0], (1,))].item())
-                    if not n:
-                        n = self._ret_features_for_node(self.neg_edge_index[0, torch.randint(self.neg_edge_index.shape[0], (1,))].item())
-                    break
-                idx = torch.randint(self.edge_index.shape[0], (1,))
-                # print("randomly selected a_idx", idx)
-                # idx = 102
-                # select nodes randomly here
-                a = self._ret_features_for_node(self.edge_index[0, idx].item())
-                # p cannot be none now
-                p = self._ret_features_for_node(self._select_random_neighbor(idx))
-                # this can still result in failure but haven't seen it yet, this means that negative sampling couldn't generate a negative node for this source node
-                n = self._ret_features_for_node(self._select_random_neighbor(idx, neg=True))
+            # while not (p and n):
+            #     # only reaches here in airport
+            #     cnt += 1
+            #     if cnt > 10:
+            #         # only reaches here in polbook, polblog
+            #         if not p:
+            #             p = self._ret_features_for_node(self.edge_index[0, torch.randint(self.edge_index.shape[0], (1,))].item())
+            #         if not n:
+            #             n = self._ret_features_for_node(self.neg_edge_index[0, torch.randint(self.neg_edge_index.shape[0], (1,))].item())
+            #         break
+            idx = torch.randint(self.edge_index.shape[0], (1,))
+            # print("randomly selected a_idx", idx)
+            # idx = 102
+            # select nodes randomly here
+            a = self._ret_features_for_node(self.edge_index[0, idx].item())
+            # p cannot be none now
+            p = self._ret_features_for_node(self._select_random_neighbor(idx))
+            # this can still result in failure but haven't seen it yet, this means that negative sampling couldn't generate a negative node for this source node
+            n = self._ret_features_for_node(self._select_random_neighbor(idx, neg=True))
         return torch.tensor([a, p, n])
 
 
