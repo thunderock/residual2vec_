@@ -172,10 +172,10 @@ class SbmSamplerWrapper(object):
         dataset = TripletSimpleDataset(adjmat=adj, group_ids=group_membership, noise_sampler=sampler, **params, buffer_size=n_nodes, window_length=window_length)
         self.num_edges = num_edges
         centers, contexts, random_contexts = dataset.centers, dataset.contexts, dataset.random_contexts
-        indices = np.random.choice(len(centers), num_edges, replace=False)
-        self.centers, contexts, random_contexts = centers[indices], contexts[indices], random_contexts[indices]
+        # indices = np.random.choice(len(centers), num_edges, replace=False)
+        # self.centers, contexts, random_contexts = centers[indices], contexts[indices], random_contexts[indices]
         # be careful, cant call this again, contexts lost
-        self.edge_index = self._create_edge_index(self.centers, contexts)
+        self.edge_index = self._create_edge_index(centers, contexts)
 
 
     def _create_edge_index(self, source: np.ndarray, dist: np.ndarray):
