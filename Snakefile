@@ -130,6 +130,7 @@ rule train_gnn:
             raise ValueError("GNN_MODEL must be either gat or gcn")
 
         model.transform(model=m, dataloader=dataloader, epochs=residual2vec_training_epochs[DATASET])
+        wandb.finish()
         torch.save(m.state_dict(), output.model_weights)
 
 rule generate_crosswalk_weights:
@@ -149,7 +150,7 @@ rule generate_crosswalk_weights:
         NUM_WORKERS=20,
         SET_DEVICE=SET_DEVICE,
         RV_NUM_WALKS=100,
-        NODE_TO_VEC_EPOCHS=10
+        NODE_TO_VEC_EPOCHS=100
     threads: 20
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
@@ -228,7 +229,7 @@ rule train_node_2_vec:
         NUM_WORKERS = 20,
         SET_DEVICE = SET_DEVICE,
         RV_NUM_WALKS= 100,
-        NODE_TO_VEC_EPOCHS= 10,
+        NODE_TO_VEC_EPOCHS= 100
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
         from dataset import triplet_dataset
@@ -258,6 +259,7 @@ rule train_node_2_vec:
             )
             edge_index = sbm.edge_index
             print("using de biased walk")
+        wandb.init(project=DATASET,name="DATA_ROOT={}_NODE2VEC_CROSSWALK={}".format(DATA_ROOT,CROSSWALK))
         snakemake_utils.train_node2vec_get_embs(
             file_path=output.node2vec_weights,
             batch_size=params.BATCH_SIZE,
@@ -272,6 +274,7 @@ rule train_node_2_vec:
             weighted_adj_path=input.weighted_adj,
             group_membership=labels
         )
+        wandb.finish()
 
 
 rule generate_node_embeddings:
@@ -287,7 +290,7 @@ rule generate_node_embeddings:
         NUM_WORKERS = 20,
         SET_DEVICE = SET_DEVICE,
         RV_NUM_WALKS= 100,
-        NODE_TO_VEC_EPOCHS= 10
+        NODE_TO_VEC_EPOCHS= 100
     threads: 20
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE

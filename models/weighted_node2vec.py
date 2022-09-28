@@ -9,6 +9,7 @@ from torch_geometric.nn.models import Node2Vec
 from scipy import sparse
 from tqdm import tqdm, trange
 from residual2vec import random_walk_sampler
+import wandb
 random_walk = torch.ops.torch_cluster.random_walk
 
 
@@ -58,6 +59,7 @@ class WeightedNode2Vec(Node2Vec):
                 total_loss /= len(loader)
             t.set_description(f'Epoch {epoch + 1:03d}, Loss: {total_loss:.4f}')
             t.refresh()
+            wandb.log({"loss": total_loss, "epoch": epoch})
         if save:
             torch.save(self.state_dict(), save)
         return self.embedding.weight.detach().cpu()
@@ -105,6 +107,7 @@ class UnWeightedNode2Vec(Node2Vec):
                 total_loss /= len(loader)
             t.set_description(f'Epoch {epoch + 1:03d}, Loss: {total_loss:.4f}')
             t.refresh()
+            wandb.log({"loss": total_loss, "epoch": epoch})
         if save:
             torch.save(self.state_dict(), save)
         return self.embedding.weight.detach().cpu()
