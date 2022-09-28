@@ -134,7 +134,9 @@ class residual2vec_sgd:
         optim = Adam(model.parameters(), lr=0.003)
         min_val_loss = torch.tensor(np.inf)
         patience = 0
+
         for epoch in range(epochs):
+            break_loop = False
             pbar = tqdm(dataloader, miniters=100)
             for iword, owords, nwords in pbar:
                 # optim.zero_grad()
@@ -142,21 +144,22 @@ class residual2vec_sgd:
                     param.grad = None
                 # with torch.cuda.amp.autocast():
                 loss = neg_sampling(iword, owords, nwords)
-                if torch.isnan(loss) or torch.isinf(loss):
+                if torch.isnan(loss) or torch.isinf(loss) or patience > 10:
+                    break_loop = True
                     break
                 if loss < min_val_loss:
                     min_val_loss = loss
                     patience = 0
                 else:
                     patience += 1
-                if patience > 2:
-                    break
+
                 loss.backward()
                 # torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
                 optim.step()
                 wandb.log({"epoch": epoch, "loss": loss.item()})
                 pbar.set_postfix(epoch=epoch, loss=loss.item())
-
+            if break_loop:
+                break
         self.in_vec = model.ivectors.weight.data.cpu().numpy()[:PADDING_IDX, :]
         self.out_vec = model.ovectors.weight.data.cpu().numpy()[:PADDING_IDX, :]
         return self.in_vec
