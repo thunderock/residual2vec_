@@ -29,12 +29,10 @@ class TripletGraphDataset(Dataset):
         # assumes that all the nodes ids are present starting from 0 to the max number of nodes
         return self.n_nodes
 
-    def _get_node_edges_from_source(self, idx, edge_index=None, two_dim=False):
+    def _get_node_edges_from_source(self, idx, edge_index=None):
         edge_index = edge_index if edge_index is not None else self.edge_index
         mask = edge_index[0, :] == idx
         ret = edge_index[1, mask].squeeze()
-        if two_dim:
-            return torch.cat([torch.full_like(ret, idx).reshape(-1, 1), ret.reshape(-1, 1)], dim=1).T
         return ret
 
     def _ret_features_for_node(self, idx):
@@ -45,7 +43,9 @@ class TripletGraphDataset(Dataset):
     def _select_random_neighbor(self, source, neg=False):
         edge_index = self.neg_edge_index if neg else self.edge_index
         nodes = self._get_node_edges_from_source(source, edge_index)
-        if nodes.dim() == 0 or nodes.shape[0] == 0:
+        if nodes.dim() == 0:
+            nodes = nodes.unsqueeze(0)
+        if nodes.shape[0] == 0:
             # this should happen rarely, this means that the node has no edges
             # in that case we randomly sample a node with an edge
             return None
@@ -86,6 +86,10 @@ class TripletGraphDataset(Dataset):
             if not n:
                 # in cases where there is no negative "sampled" edge for this node, we randomly sample a negative node
                 n = self._ret_features_for_node(self.neg_edge_index[0, torch.randint(self.neg_edge_index.shape[0], (1,))].item())
+        # if not (a and p and n):
+        #     print("a, p, n", a, p, n)
+        #     mask = self.edge_index[0, :] == idx
+        #     print("edge_index", self._get_node_edges_from_source(idx).dim())
         return torch.tensor([a, p, n])
 
 
