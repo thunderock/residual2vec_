@@ -47,7 +47,7 @@ print({
 residual2vec_training_epochs = {
   'pokec': 4,
   'small_pokec': 10,
-  'airport': 200,
+  'airport': 100,
   'polblog': 200,
   'polbook': 200
 }
@@ -81,7 +81,7 @@ rule train_gnn:
         window_length = 5
         num_walks = 10
         dim = 128
-        walk_length = 5
+        walk_length = 80
         # get edge index from training set
         edge_index = snakemake_utils.get_edge_index_from_sparse_path(input.weighted_adj)
         num_nodes = snakemake_utils.get_num_nodes_from_adj(input.weighted_adj)
@@ -106,7 +106,7 @@ rule train_gnn:
             crosswalk=CROSSWALK,
             embedding_dim=params.NODE_TO_VEC_DIM,
             num_nodes=num_nodes,
-            context_size=2,
+            context_size=10,
             walk_length=walk_length,
             weighted_adj_path=input.weighted_adj,
             group_membership=labels
@@ -149,7 +149,7 @@ rule generate_crosswalk_weights:
         NUM_WORKERS=20,
         SET_DEVICE=SET_DEVICE,
         RV_NUM_WALKS=100,
-        NODE_TO_VEC_EPOCHS=50
+        NODE_TO_VEC_EPOCHS=10
     threads: 20
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
@@ -164,7 +164,7 @@ rule generate_crosswalk_weights:
         window_length = 5
         num_walks = 10
         dim = 128
-        walk_length = 5
+        walk_length = 80
         # this is super hack here
         d = snakemake_utils.get_dataset(DATASET)
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
@@ -178,27 +178,28 @@ rule generate_crosswalk_weights:
             embedding_dim=params.NODE_TO_VEC_DIM,
             num_nodes=num_nodes,
             edge_index=n.train_edges,
-            context_size=2,
+            context_size=10,
             walk_length=walk_length,
             group_membership=d.get_grouped_col()
         )
-        snakemake_utils.store_crosswalk_weights(
-            file_path=output.test_weighted_adj,
-            crosswalk=True,
-            embedding_dim=params.NODE_TO_VEC_DIM,
-            num_nodes=num_nodes,
-            edge_index=n.test_edges,
-            context_size=2,
-            walk_length=walk_length,
-            group_membership=d.get_grouped_col()
-        )
+        # dont need test crosswalk weights
+        # snakemake_utils.store_crosswalk_weights(
+        #     file_path=output.test_weighted_adj,
+        #     crosswalk=True,
+        #     embedding_dim=params.NODE_TO_VEC_DIM,
+        #     num_nodes=num_nodes,
+        #     edge_index=n.test_edges,
+        #     context_size=10,
+        #     walk_length=walk_length,
+        #     group_membership=d.get_grouped_col()
+        # )
         snakemake_utils.store_crosswalk_weights(
             file_path=output.unweighted_adj,
             crosswalk=False,
             embedding_dim=params.NODE_TO_VEC_DIM,
             num_nodes=num_nodes,
             edge_index=n.train_edges,
-            context_size=2,
+            context_size=10,
             walk_length=walk_length,
             group_membership=d.get_grouped_col()
         )
@@ -208,7 +209,7 @@ rule generate_crosswalk_weights:
             embedding_dim=params.NODE_TO_VEC_DIM,
             num_nodes=num_nodes,
             edge_index=n.test_edges,
-            context_size=2,
+            context_size=10,
             walk_length=walk_length,
             group_membership=d.get_grouped_col()
         )
@@ -227,7 +228,7 @@ rule train_node_2_vec:
         NUM_WORKERS = 20,
         SET_DEVICE = SET_DEVICE,
         RV_NUM_WALKS= 100,
-        NODE_TO_VEC_EPOCHS= 50,
+        NODE_TO_VEC_EPOCHS= 10,
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
         from dataset import triplet_dataset
@@ -239,7 +240,7 @@ rule train_node_2_vec:
         window_length = 5
         num_walks = 10
         dim = 128
-        walk_length = 5
+        walk_length = 80
 
         edge_index = snakemake_utils.get_edge_index_from_sparse_path(input.weighted_adj)
         num_nodes = snakemake_utils.get_num_nodes_from_adj(input.weighted_adj)
@@ -265,7 +266,7 @@ rule train_node_2_vec:
             crosswalk=CROSSWALK,
             embedding_dim=params.NODE_TO_VEC_DIM,
             num_nodes=num_nodes,
-            context_size=2,
+            context_size=10,
             edge_index=None,
             walk_length=walk_length,
             weighted_adj_path=input.weighted_adj,
@@ -286,7 +287,7 @@ rule generate_node_embeddings:
         NUM_WORKERS = 20,
         SET_DEVICE = SET_DEVICE,
         RV_NUM_WALKS= 100,
-        NODE_TO_VEC_EPOCHS= 50
+        NODE_TO_VEC_EPOCHS= 10
     threads: 20
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
@@ -306,7 +307,7 @@ rule generate_node_embeddings:
         window_length = 5
         num_walks = 10
         dim = 128
-        walk_length = 5
+        walk_length = 80
         edge_index = snakemake_utils.get_edge_index_from_sparse_path(input.weighted_adj)
         num_nodes = snakemake_utils.get_num_nodes_from_adj(input.weighted_adj)
 
@@ -318,7 +319,7 @@ rule generate_node_embeddings:
             crosswalk=CROSSWALK,
             embedding_dim=params.NODE_TO_VEC_DIM,
             num_nodes=num_nodes,
-            context_size=2,
+            context_size=10,
             walk_length=walk_length,
             weighted_adj_path=input.weighted_adj,
             group_membership=labels
