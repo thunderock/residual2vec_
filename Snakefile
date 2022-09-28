@@ -44,6 +44,13 @@ print({
     "dataset": DATASET
 })
 
+residual2vec_training_epochs = {
+  'pokec': 4,
+  'small_pokec': 10,
+  'airport': 200,
+  'polblog': 200,
+  'polbook': 200
+}
 rule train_gnn:
     # snakemake -R --until train_gnn_with_nodevec_unweighted_baseline  -call --config env=local model=gat
     input:
@@ -122,7 +129,7 @@ rule train_gnn:
         else:
             raise ValueError("GNN_MODEL must be either gat or gcn")
 
-        model.transform(model=m, dataloader=dataloader, epochs=100)
+        model.transform(model=m, dataloader=dataloader, epochs=residual2vec_training_epochs[DATASET])
         torch.save(m.state_dict(), output.model_weights)
 
 rule generate_crosswalk_weights:

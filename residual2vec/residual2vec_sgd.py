@@ -132,22 +132,27 @@ class residual2vec_sgd:
         model.to(self.cuda)
         # Training
         optim = Adam(model.parameters(), lr=0.003)
-        # patience = 0
 
+        # number of batches
+        n_batches = len(dataloader)
+        patience_threshold = int(n_batches * .5) # 50% of the dataset
+        print(f"Patience threshold: {patience_threshold}")
         for epoch in range(epochs):
             break_loop = False
+            patience = 0
             pbar = tqdm(dataloader, miniters=100)
             for iword, owords, nwords in pbar:
-                # optim.zero_grad()
+                optim.zero_grad()
                 for param in model.parameters():
                     param.grad = None
-                # with torch.cuda.amp.autocast():
                 loss = neg_sampling(iword, owords, nwords)
-                if torch.isnan(loss) or torch.isinf(loss) or loss.item() < 0:
-                    break_loop = True
-                    break
+                if not torch.is_nonzero(loss):
+                    patience += 1
+                    if patience > patience_threshold:
+                        break_loop = True
+                        print("Early stopping {}, patience: {}".format(epoch, patience))
+                        break
                 loss.backward()
-                # torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
                 optim.step()
                 wandb.log({"epoch": epoch, "loss": loss.item()})
                 pbar.set_postfix(epoch=epoch, loss=loss.item())
