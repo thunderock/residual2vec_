@@ -140,7 +140,7 @@ class residual2vec_sgd:
                     param.grad = None
                 # with torch.cuda.amp.autocast():
                 loss = neg_sampling(iword, owords, nwords)
-                if torch.isnan(loss) or torch.isinf(loss):
+                if torch.isnan(loss.item()) or torch.isinf(loss.item()):
                     break
                 loss.backward()
                 # torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
