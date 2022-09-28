@@ -132,8 +132,7 @@ class residual2vec_sgd:
         model.to(self.cuda)
         # Training
         optim = Adam(model.parameters(), lr=0.003)
-        min_val_loss = torch.tensor(np.inf)
-        patience = 0
+        # patience = 0
 
         for epoch in range(epochs):
             break_loop = False
@@ -144,15 +143,9 @@ class residual2vec_sgd:
                     param.grad = None
                 # with torch.cuda.amp.autocast():
                 loss = neg_sampling(iword, owords, nwords)
-                if torch.isnan(loss) or torch.isinf(loss):
+                if torch.isnan(loss) or torch.isinf(loss) or loss.item() < 0:
                     break_loop = True
                     break
-                if loss < min_val_loss:
-                    min_val_loss = loss
-                    patience = 0
-                else:
-                    patience += 1
-
                 loss.backward()
                 # torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
                 optim.step()
