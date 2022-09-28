@@ -136,8 +136,8 @@ rule generate_crosswalk_weights:
     output:
         weighted_adj =  FileResources(root=DATA_ROOT, crosswalk=True, baseline=not R2V,
                                 model_name=GNN_MODEL, basename=DATASET).adj_path,
-        test_weighted_adj = FileResources(root=DATA_ROOT, crosswalk=True, baseline=not R2V,
-                                model_name=GNN_MODEL, basename=DATASET).test_adj_path,
+        # test_weighted_adj = FileResources(root=DATA_ROOT, crosswalk=True, baseline=not R2V,
+        #                         model_name=GNN_MODEL, basename=DATASET).test_adj_path,
         unweighted_adj =  FileResources(root=DATA_ROOT,crosswalk=False,baseline=not R2V,
         model_name=GNN_MODEL,basename=DATASET).adj_path,
         test_unweighted_adj = FileResources(root=DATA_ROOT,crosswalk=False,baseline=not R2V,
