@@ -135,12 +135,13 @@ class residual2vec_sgd:
 
         # number of batches
         n_batches = len(dataloader)
-        patience_threshold = int(n_batches * .5) # 50% of the dataset
+        patience_threshold = int(n_batches * .5) # 50% of the batches
         print(f"Patience threshold: {patience_threshold}")
         for epoch in range(epochs):
             break_loop = False
             patience = 0
             pbar = tqdm(dataloader, miniters=100)
+            batch_num = 0
             for iword, owords, nwords in pbar:
                 optim.zero_grad()
                 for param in model.parameters():
@@ -154,8 +155,9 @@ class residual2vec_sgd:
                         break
                 loss.backward()
                 optim.step()
-                wandb.log({"epoch": epoch, "loss": loss.item()})
+                wandb.log({"epoch": epoch, "loss": loss.item(), "batch_num": batch_num})
                 pbar.set_postfix(epoch=epoch, loss=loss.item())
+                batch_num += 1
             if break_loop:
                 break
         self.in_vec = model.ivectors.weight.data.cpu().numpy()[:PADDING_IDX, :]
