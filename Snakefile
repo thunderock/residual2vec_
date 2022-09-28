@@ -51,6 +51,14 @@ residual2vec_training_epochs = {
   'polblog': 200,
   'polbook': 200
 }
+
+node2vec_training_epochs = {
+  'pokec': 10,
+  'small_pokec': 10,
+  'airport': 100,
+  'polblog': 200,
+  'polbook': 200
+}
 rule train_gnn:
     # snakemake -R --until train_gnn_with_nodevec_unweighted_baseline  -call --config env=local model=gat
     input:
@@ -150,7 +158,7 @@ rule generate_crosswalk_weights:
         NUM_WORKERS=20,
         SET_DEVICE=SET_DEVICE,
         RV_NUM_WALKS=100,
-        NODE_TO_VEC_EPOCHS=100
+        NODE_TO_VEC_EPOCHS=node2vec_training_epochs[DATASET]
     threads: 20
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
@@ -229,7 +237,7 @@ rule train_node_2_vec:
         NUM_WORKERS = 20,
         SET_DEVICE = SET_DEVICE,
         RV_NUM_WALKS= 100,
-        NODE_TO_VEC_EPOCHS= 100
+        NODE_TO_VEC_EPOCHS= node2vec_training_epochs[DATASET]
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
         from dataset import triplet_dataset
@@ -290,7 +298,7 @@ rule generate_node_embeddings:
         NUM_WORKERS = 20,
         SET_DEVICE = SET_DEVICE,
         RV_NUM_WALKS= 100,
-        NODE_TO_VEC_EPOCHS= 100
+        NODE_TO_VEC_EPOCHS= node2vec_training_epochs[DATASET]
     threads: 20
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
