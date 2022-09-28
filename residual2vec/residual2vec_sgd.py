@@ -144,7 +144,7 @@ class residual2vec_sgd:
                     param.grad = None
                 # with torch.cuda.amp.autocast():
                 loss = neg_sampling(iword, owords, nwords)
-                if torch.isnan(loss) or torch.isinf(loss) or patience > 10:
+                if torch.isnan(loss) or torch.isinf(loss) or patience > (self.n_nodes // self.batch_size):
                     break_loop = True
                     break
                 if loss < min_val_loss:
