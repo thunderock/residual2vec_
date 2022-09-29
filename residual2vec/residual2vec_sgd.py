@@ -60,7 +60,7 @@ from scipy import sparse
 from residual2vec import utils
 from residual2vec.random_walk_sampler import RandomWalkSampler
 from residual2vec.word2vec import NegativeSampling
-from torch_geometric.utils import negative_sampling
+import wandb
 from utils.config import *
 
 class residual2vec_sgd:
@@ -117,7 +117,7 @@ class residual2vec_sgd:
         self.sampler.fit(adjmat)
         return self
 
-    def transform(self, model, dataloader: torch.utils.data.DataLoader):
+    def transform(self, model, dataloader: torch.utils.data.DataLoader, epochs=1):
         """
         * model is the model to be used with the framework
         * x are the node features
@@ -130,22 +130,36 @@ class residual2vec_sgd:
         # )
         neg_sampling = NegativeSampling(embedding=model)
         model.to(self.cuda)
-
         # Training
         optim = Adam(model.parameters(), lr=0.003)
-        # scaler = torch.cuda.amp.GradScaler()
-        pbar = tqdm(dataloader, miniters=100)
-        for iword, owords, nwords in pbar:
-            # optim.zero_grad()
-            for param in model.parameters():
-                param.grad = None
-            # with torch.cuda.amp.autocast():
-            loss = neg_sampling(iword, owords, nwords)
-            loss.backward()
-            # torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
-            optim.step()
-            pbar.set_postfix(loss=loss.item())
 
+        # number of batches
+        n_batches = len(dataloader)
+        patience_threshold = int(n_batches * .5) # 50% of the batches
+        print(f"Patience threshold: {patience_threshold}")
+        for epoch in range(epochs):
+            break_loop = False
+            patience = 0
+            pbar = tqdm(dataloader, miniters=100)
+            batch_num = 0
+            for iword, owords, nwords in pbar:
+                optim.zero_grad()
+                for param in model.parameters():
+                    param.grad = None
+                loss = neg_sampling(iword, owords, nwords)
+                if not torch.is_nonzero(loss):
+                    patience += 1
+                    if patience > patience_threshold:
+                        break_loop = True
+                        print("Early stopping {}, patience: {}".format(epoch, patience))
+                        break
+                loss.backward()
+                optim.step()
+                wandb.log({"epoch": epoch, "loss": loss.item(), "batch_num": batch_num})
+                pbar.set_postfix(epoch=epoch, loss=loss.item())
+                batch_num += 1
+            if break_loop:
+                break
         self.in_vec = model.ivectors.weight.data.cpu().numpy()[:PADDING_IDX, :]
         self.out_vec = model.ovectors.weight.data.cpu().numpy()[:PADDING_IDX, :]
         return self.in_vec
@@ -170,13 +184,13 @@ class TripletSimpleDataset(Dataset):
     ):
 
         self.adjmat = adjmat
-        self.num_features = 1
-        self.X = torch.from_numpy(group_ids).unsqueeze(-1).to(torch.float32)
+        # self.num_features = 1
+        # self.X = torch.from_numpy(group_ids).unsqueeze(-1).to(torch.float32)
         self.num_walks = num_walks
-        rows, cols = self.adjmat.nonzero()
-        self.edge_index = torch.from_numpy(np.stack([rows, cols], axis=0)).to(torch.int64)
-        self.neg_edge_index = negative_sampling(edge_index=self.edge_index, num_nodes=self.X.shape[0],
-                                                num_neg_samples=None, method='sparse', force_undirected=True)
+        # rows, cols = self.adjmat.nonzero()
+        # self.edge_index = torch.from_numpy(np.stack([rows, cols], axis=0)).to(torch.int64)
+        # self.neg_edge_index = negative_sampling(edge_index=self.edge_index, num_nodes=self.X.shape[0],
+        #                                         num_neg_samples=None, method='sparse', force_undirected=True)
         self.window_length = window_length
         self.noise_sampler = noise_sampler
         self.walk_length = walk_length
@@ -202,7 +216,7 @@ class TripletSimpleDataset(Dataset):
         self.contexts = None
         self.centers = None
         self.random_contexts = None
-        self.num_embeddings = len(np.unique(group_ids)) + 1
+        # self.num_embeddings = len(np.unique(group_ids)) + 1
 
         # Initialize
         self._generate_samples()

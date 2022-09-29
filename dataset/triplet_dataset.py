@@ -2,6 +2,7 @@
 # @Author:      Ashutosh Tiwari
 # @Email:       checkashu@gmail.com
 # @Time:        8/13/22 11:16 AM
+import numpy as np
 import pandas as pd
 from utils.config import *
 from torch.utils.data import Dataset
@@ -15,16 +16,7 @@ from torch_sparse import SparseTensor
 
 class TripletGraphDataset(Dataset):
     def __init__(self, X: torch.Tensor, edge_index: torch.Tensor):
-        # if node2vec:
-        #     # train node2vec here
-        #     loader = node2vec.loader(batch_size=BATCH_SIZE, shuffle=True, num_workers=NUM_WORKERS)
-        #     optimizer = torch.optim.Adam(list(node2vec.parameters()), lr=0.01)
-        #     self.X = self._train_node2vec(node2vec, loader, optimizer)
-        #     self.edge_index = node2vec.edge_index
-        # else:
-        #     pokec = pokec_data.PokecDataFrame(root=root)
-        #     self.X = pokec.X
-        #     self.edge_index = pokec.edge_index
+        super().__init__()
         self.X = X
         self.edge_index = edge_index
         self.num_features = self.X.shape[1]
@@ -37,16 +29,11 @@ class TripletGraphDataset(Dataset):
         # assumes that all the nodes ids are present starting from 0 to the max number of nodes
         return self.n_nodes
 
-    def _get_node_edges_from_source(self, idx, edge_index=None, two_dim=False):
+    def _get_node_edges_from_source(self, idx, edge_index=None):
         edge_index = edge_index if edge_index is not None else self.edge_index
         mask = edge_index[0, :] == idx
         ret = edge_index[1, mask].squeeze()
-        if two_dim:
-            return torch.cat([torch.full_like(ret, idx).reshape(-1, 1), ret.reshape(-1, 1)], dim=1).T
         return ret
-
-    def get_adjacency_mt(self):
-        pass
 
     def _ret_features_for_node(self, idx):
         # index = self.idx_mapping[idx]self.features
@@ -56,7 +43,9 @@ class TripletGraphDataset(Dataset):
     def _select_random_neighbor(self, source, neg=False):
         edge_index = self.neg_edge_index if neg else self.edge_index
         nodes = self._get_node_edges_from_source(source, edge_index)
-        if nodes.dim() == 0 or nodes.shape[0] == 0:
+        if nodes.dim() == 0:
+            nodes = nodes.unsqueeze(0)
+        if nodes.shape[0] == 0:
             # this should happen rarely, this means that the node has no edges
             # in that case we randomly sample a node with an edge
             return None
@@ -69,9 +58,22 @@ class TripletGraphDataset(Dataset):
         # select a node with positive edge
         p_node = self._select_random_neighbor(idx)
         n_node = self._select_random_neighbor(idx, neg=True)
+
         if p_node and n_node:
             a, p, n = self._ret_features_for_node(idx), self._ret_features_for_node(p_node), self._ret_features_for_node(n_node)
         else:
+            a, p, n = None, None, None
+            cnt = 0
+            # while not (p and n):
+            #     # only reaches here in airport
+            #     cnt += 1
+            #     if cnt > 10:
+            #         # only reaches here in polbook, polblog
+            #         if not p:
+            #             p = self._ret_features_for_node(self.edge_index[0, torch.randint(self.edge_index.shape[0], (1,))].item())
+            #         if not n:
+            #             n = self._ret_features_for_node(self.neg_edge_index[0, torch.randint(self.neg_edge_index.shape[0], (1,))].item())
+            #         break
             idx = torch.randint(self.edge_index.shape[0], (1,))
             # print("randomly selected a_idx", idx)
             # idx = 102
@@ -81,6 +83,13 @@ class TripletGraphDataset(Dataset):
             p = self._ret_features_for_node(self._select_random_neighbor(idx))
             # this can still result in failure but haven't seen it yet, this means that negative sampling couldn't generate a negative node for this source node
             n = self._ret_features_for_node(self._select_random_neighbor(idx, neg=True))
+            if not n:
+                # in cases where there is no negative "sampled" edge for this node, we randomly sample a negative node
+                n = self._ret_features_for_node(self.neg_edge_index[0, torch.randint(self.neg_edge_index.shape[0], (1,))].item())
+        # if not (a and p and n):
+        #     print("a, p, n", a, p, n)
+        #     mask = self.edge_index[0, :] == idx
+        #     print("edge_index", self._get_node_edges_from_source(idx).dim())
         return torch.tensor([a, p, n])
 
 
@@ -148,3 +157,37 @@ class NeighborEdgeSampler(torch.utils.data.DataLoader):
 
     def __repr__(self) -> str:
         return '{}({}, batch_size={})'.format(self.__class__.__name__, len(self.dataset), self.batch_size)
+
+
+
+class SbmSamplerWrapper(object):
+    def __init__(self, adj_path, group_membership, window_length, num_edges, use_weights=True, **params):
+        from residual2vec.node_samplers import SBMNodeSampler
+        from residual2vec.residual2vec_sgd import TripletSimpleDataset
+        from scipy import sparse
+        from residual2vec import utils
+        sampler = SBMNodeSampler(window_length=window_length, group_membership=group_membership, dcsbm=True)
+        adj = sparse.load_npz(adj_path)
+        if not use_weights:
+            adj.data = np.ones_like(adj.data)
+        n_nodes = adj.shape[0]
+        adj = utils.to_adjacency_matrix(adj)
+        sampler.fit(adj)
+        dataset = TripletSimpleDataset(adjmat=adj, group_ids=group_membership, noise_sampler=sampler, **params, buffer_size=n_nodes, window_length=window_length)
+        self.num_edges = num_edges
+        centers, contexts, random_contexts = dataset.centers, dataset.contexts, dataset.random_contexts
+        # indices = np.random.choice(len(centers), num_edges, replace=False)
+        # self.centers, contexts, random_contexts = centers[indices], contexts[indices], random_contexts[indices]
+        # be careful, cant call this again, contexts lost
+        self.edge_index = self._create_edge_index(centers, contexts)
+
+
+    def _create_edge_index(self, source: np.ndarray, dist: np.ndarray):
+        return torch.tensor([source, dist], dtype=torch.long)
+
+    # def sample_neg_edges(self, edge_index, num_nodes, num_neg_samples, method,
+    #         force_undirected):
+    #     # none of these params used, only for compatibility
+    #     return self._create_edge_index(self.centers, self.random_contexts)
+
+

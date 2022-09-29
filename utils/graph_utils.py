@@ -5,7 +5,7 @@
 import numpy as np
 import pandas as pd
 from scipy import sparse
-from utils.config import GPU_ID
+from utils.config import GPU_ID, DISABLE_TQDM
 import networkx as nx
 from tqdm import tqdm
 
@@ -55,7 +55,7 @@ def get_edges_fastknn_faiss(emb, k=10, batch_size=2000):
     n_nodes, embedding_size = emb.shape
     knn = FastkNN(k=k, metric='cosine', exact=False, gpu_id=GPU_ID).fit(emb)
 
-    targets = np.concatenate([knn.predict(i).flatten() for i in tqdm(np.array_split(emb, n_nodes // batch_size))])
+    targets = np.concatenate([knn.predict(i).flatten() for i in tqdm(np.array_split(emb, n_nodes // batch_size), disable=DISABLE_TQDM)])
     return pd.DataFrame({
         "source": np.repeat(np.arange(n_nodes), k),
         "target": targets,

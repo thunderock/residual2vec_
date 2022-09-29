@@ -32,11 +32,12 @@ PREDICTION_THRESHOLD = .7
 NUM_NEIGHBORS = 10
 EMBEDDING_DIM = 128
 LR = .01
-GPU_ID = -1
+GPU_ID = 0
+DISABLE_TQDM = False
 if CUDA:
     torch.cuda.manual_seed(RANDOM_SEED)
     DEVICE = os.environ.get("SET_GPU", "cuda:0")
-    GPU_ID = int(DEVICE.split(":")[1])
+    # GPU_ID = int(DEVICE.split(":")[1])
     print(f"Using GPU: {DEVICE}")
 LOGGER = logging.getLogger(__name__)
 LOGFORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
