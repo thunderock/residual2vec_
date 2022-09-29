@@ -45,8 +45,8 @@ print({
 })
 
 residual2vec_training_epochs = {
-  'pokec': 4,
-  'small_pokec': 10,
+  'pokec': 2,
+  'small_pokec': 4,
   'airport': 100,
   'polblog': 200,
   'polbook': 200
