@@ -53,7 +53,7 @@ residual2vec_training_epochs = {
 }
 
 node2vec_training_epochs = {
-  'pokec': 10,
+  'pokec': 30,
   'small_pokec': 10,
   'airport': 100,
   'polblog': 200,
