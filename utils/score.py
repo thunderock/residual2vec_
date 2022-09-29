@@ -6,6 +6,7 @@ import numpy as np
 from scipy import sparse
 
 
+
 def gini(array, eps = 1e-32):
     """Calculate the Gini coefficient of a numpy array."""
     # based on bottom eq:
@@ -28,7 +29,9 @@ def gini(array, eps = 1e-32):
     # Gini coefficient:
     return ((np.sum((2 * index - n  - 1) * array)) / (n * np.sum(array)))
 
+
 def statistical_parity(edges, y, metric="std"):
+
     # taken from https://github.com/thunderock/residual2vec_/pull/4
     """
     edges: edge df with source and target column
