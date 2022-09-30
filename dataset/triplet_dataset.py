@@ -15,13 +15,13 @@ from torch_sparse import SparseTensor
 
 
 class TripletGraphDataset(Dataset):
-    def __init__(self, X: torch.Tensor, edge_index: torch.Tensor):
+    def __init__(self, X: torch.Tensor, edge_index: torch.Tensor, sampler):
         super().__init__()
         self.X = X
         self.edge_index = edge_index
         self.num_features = self.X.shape[1]
 
-        self.neg_edge_index = negative_sampling(edge_index=self.edge_index, num_nodes=self.X.shape[0], num_neg_samples=None, method='sparse', force_undirected=True)
+        self.neg_edge_index = sampler(edge_index=self.edge_index, num_nodes=self.X.shape[0], num_neg_samples=None, method='sparse', force_undirected=True)
         self.num_embeddings = int(torch.max(self.X).item()) + 1
         self.n_nodes = self.X.shape[0]
 
@@ -173,21 +173,21 @@ class SbmSamplerWrapper(object):
         n_nodes = adj.shape[0]
         adj = utils.to_adjacency_matrix(adj)
         sampler.fit(adj)
-        dataset = TripletSimpleDataset(adjmat=adj, group_ids=group_membership, noise_sampler=sampler, **params, buffer_size=n_nodes, window_length=window_length)
+        dataset = TripletSimpleDataset(adjmat=adj, noise_sampler=sampler, **params, buffer_size=n_nodes, window_length=window_length)
         self.num_edges = num_edges
         centers, contexts, random_contexts = dataset.centers, dataset.contexts, dataset.random_contexts
         # indices = np.random.choice(len(centers), num_edges, replace=False)
         # self.centers, contexts, random_contexts = centers[indices], contexts[indices], random_contexts[indices]
         # be careful, cant call this again, contexts lost
-        self.edge_index = self._create_edge_index(centers, contexts)
+        self.neg_edge_index = self._create_edge_index(centers, random_contexts)
 
 
     def _create_edge_index(self, source: np.ndarray, dist: np.ndarray):
         return torch.tensor([source, dist], dtype=torch.long)
 
-    # def sample_neg_edges(self, edge_index, num_nodes, num_neg_samples, method,
-    #         force_undirected):
-    #     # none of these params used, only for compatibility
-    #     return self._create_edge_index(self.centers, self.random_contexts)
+    def sample_neg_edges(self, edge_index, num_nodes, num_neg_samples, method,
+            force_undirected):
+        # none of these params used, only for compatibility
+        return self.neg_edge_index
 
 

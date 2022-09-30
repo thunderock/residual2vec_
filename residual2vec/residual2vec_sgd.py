@@ -171,7 +171,6 @@ class TripletSimpleDataset(Dataset):
     def __init__(
         self,
         adjmat,
-        group_ids,
         num_walks,
         window_length,
         noise_sampler,

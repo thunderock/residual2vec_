@@ -44,7 +44,7 @@ class WeightedNode2Vec(Node2Vec):
         self.sampler = random_walk_sampler.RandomWalkSampler(adjmat=self.weighted_adj, walk_length=self.walk_length + 1, q=self.q, p=self.p)
         # self.edge_index = edge_index
 
-    def train_and_get_embs(self, loader, optimizer, epochs=EPOCHS, save=None):
+    def train_and_get_embs(self, loader, optimizer, epochs, save=None):
         t = trange(epochs)
         print("training node2vec")
         for epoch in t:
@@ -92,7 +92,7 @@ class UnWeightedNode2Vec(Node2Vec):
         self.adj = self.adj.to_symmetric()
         self.weighted_adj = self.adj.to_scipy()
 
-    def train_and_get_embs(self, loader, optimizer, epochs=EPOCHS, save=None):
+    def train_and_get_embs(self, loader, optimizer, epochs, save=None):
         t = trange(epochs)
         print("training node2vec")
         for epoch in t:

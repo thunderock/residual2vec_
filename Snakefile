@@ -59,6 +59,14 @@ node2vec_training_epochs = {
   'polblog': 200,
   'polbook': 200
 }
+
+num_gnn_layers = {
+    'pokec': 5,
+    'small_pokec': 5,
+    'airport': 3,
+    'polblog': 3,
+    'polbook': 3
+}
 rule train_gnn:
     # snakemake -R --until train_gnn_with_nodevec_unweighted_baseline  -call --config env=local model=gat
     input:
@@ -79,6 +87,7 @@ rule train_gnn:
         from models.weighted_node2vec import UnWeightedNode2Vec
         from dataset import triplet_dataset, pokec_data
         from utils.config import DEVICE
+        from torch_geometric.utils import negative_sampling
         import gc
         from utils.link_prediction import GCNLinkPrediction, GATLinkPrediction
         import residual2vec as rv
@@ -94,6 +103,7 @@ rule train_gnn:
         edge_index = snakemake_utils.get_edge_index_from_sparse_path(input.weighted_adj)
         num_nodes = snakemake_utils.get_num_nodes_from_adj(input.weighted_adj)
         labels = snakemake_utils.get_dataset(DATASET).get_grouped_col()
+        sampler = negative_sampling
         if R2V:
             sbm = triplet_dataset.SbmSamplerWrapper(
                 adj_path=input.weighted_adj,
@@ -104,9 +114,9 @@ rule train_gnn:
                 use_weights=CROSSWALK,
                 num_edges = edge_index.shape[1]
             )
-            edge_index = sbm.edge_index
+
             # dont use sbm negative sampler for training
-            # sampler = sbm.sample_neg_edges
+            sampler = sbm.sample_neg_edges
             print("using de biased walk")
         X = snakemake_utils.get_node2vec_trained_get_embs(
             file_path=input.node2vec_weights,
@@ -127,13 +137,13 @@ rule train_gnn:
             batch_size=params.BATCH_SIZE,
         ).fit()
         # X = torch.cat([X, d.X], dim=1)
-        d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index)
+        d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index, sampler=sampler)
         wandb.init(project=DATASET,name="DATA_ROOT={}_MODEL={}_CROSSWALK={}_R2V={}".format(DATA_ROOT, GNN_MODEL, CROSSWALK, R2V))
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=True, num_workers=params.NUM_WORKERS, pin_memory=True)
         if GNN_MODEL == 'gat':
-            m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=X.shape[1])
+            m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=num_gnn_layers[DATASET],num_embeddings=X.shape[1])
         elif GNN_MODEL == 'gcn':
-            m = GCNLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=X.shape[1])
+            m = GCNLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=num_gnn_layers[DATASET],num_embeddings=X.shape[1])
         else:
             raise ValueError("GNN_MODEL must be either gat or gcn")
 
@@ -308,6 +318,7 @@ rule generate_node_embeddings:
         from utils.config import DEVICE
         import gc
         from utils.link_prediction import GCNLinkPrediction, GATLinkPrediction
+        from torch_geometric.utils import negative_sampling
         import residual2vec as rv
         import warnings
         from utils import snakemake_utils
@@ -321,7 +332,7 @@ rule generate_node_embeddings:
         walk_length = 80
         edge_index = snakemake_utils.get_edge_index_from_sparse_path(input.weighted_adj)
         num_nodes = snakemake_utils.get_num_nodes_from_adj(input.weighted_adj)
-
+        sampler = negative_sampling
         labels = snakemake_utils.get_dataset(DATASET).get_grouped_col()
 
         X = snakemake_utils.get_node2vec_trained_get_embs(
@@ -343,13 +354,13 @@ rule generate_node_embeddings:
             batch_size=params.BATCH_SIZE,
         ).fit()
         # X = torch.cat([X, d.X], dim=1)
-        d = triplet_dataset.TripletGraphDataset(X=X,edge_index=edge_index)
+        d = triplet_dataset.TripletGraphDataset(X=X,edge_index=edge_index, sampler=sampler)
         dataloader = triplet_dataset.NeighborEdgeSampler(d,batch_size=model.batch_size,shuffle=False,num_workers=params.NUM_WORKERS,pin_memory=True,transforming=True)
         if GNN_MODEL == 'gat':
-            m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=
+            m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=num_gnn_layers[DATASET],num_embeddings=
             X.shape[1])
         elif GNN_MODEL == 'gcn':
-            m = GCNLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=5,num_embeddings=
+            m = GCNLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=num_gnn_layers[DATASET],num_embeddings=
             X.shape[1])
         else:
             raise ValueError("GNN_MODEL must be either gat or gcn")
