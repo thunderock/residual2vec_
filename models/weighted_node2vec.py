@@ -7,37 +7,33 @@ import numpy as np
 from utils.config import *
 from utils import graph
 import torch
+from torch_geometric.nn.models import Node2Vec
 from scipy import sparse
-from node2vec.node2vecs import GensimNode2Vec
-from torch_sparse import SparseTensor
-from torch_sparse.tensor import from_scipy
-
-class Node2Vec(object):
-    def __init__(self, embedding_dim):
-        self.node2vec = GensimNode2Vec(vector_size=embedding_dim)
-
-    def train_and_get_embs(self, save=None):
-        self.node2vec.fit(self.adj)
-        embs = self.node2vec.transform()
-        if save is not None:
-            np.save(save, embs)
-        return embs
+from tqdm import tqdm, trange
+from residual2vec import random_walk_sampler
+import wandb
+random_walk = torch.ops.torch_cluster.random_walk
 
 
 class WeightedNode2Vec(Node2Vec):
-    def __init__(self, num_nodes, group_membership, embedding_dim, edge_index=None, weighted_adj=None):
+    def __init__(self, num_nodes, group_membership, edge_index=None, weighted_adj=None, **params):
         """
         :param weighted_adj: can be a weighted sparse matrix or its path
         """
-
-        Node2Vec.__init__(self, embedding_dim=embedding_dim)
+        if not isinstance(edge_index, torch.Tensor):
+            adj = sparse.load_npz(weighted_adj)
+            row, col = adj.nonzero()
+            edge_index = torch.cat((torch.from_numpy(row).unsqueeze(dim=0), torch.from_numpy(col).unsqueeze(dim=0))).long()
+        Node2Vec.__init__(self, num_nodes=num_nodes, num_negative_samples=10, edge_index=edge_index, **params)
         if isinstance(group_membership, torch.Tensor):
             self.group_membership = group_membership.numpy()
 
-        if not weighted_adj:
-            assert edge_index is not None
-            row, col = edge_index
-            adj = SparseTensor(row=row, col=col, sparse_sizes=(num_nodes, num_nodes)).to_symmetric()
+        if weighted_adj:
+
+            self.weighted_adj = sparse.load_npz(weighted_adj)
+            adj = self.adj.to_symmetric()
+        else:
+            adj = self.adj.to_symmetric()
             row, col, _ = adj.coo()
             ones = np.ones(row.shape[0], dtype=np.int32)
             A = sparse.csr_matrix((ones, (row.numpy(), col.numpy())), shape=(num_nodes, num_nodes))
@@ -45,23 +41,76 @@ class WeightedNode2Vec(Node2Vec):
             G.attr = group_membership
             graph.set_weights(G, exp_=2., p_bndry=.7, l=2)
             # TODO (ashutiwa): cross walk doesn't produce symmetric matrix for undirected graph
-            adj = graph.edge_weights_to_sparse(G, A)
-            adj = from_scipy(adj)
-        else:
-            adj = from_scipy(sparse.load_npz(weighted_adj)).to_symmetric()
-        self.adj = adj.to_symmetric().to_scipy()
+            self.weighted_adj = graph.edge_weights_to_sparse(G, A)
+        self.adj = adj
+        self.sampler = random_walk_sampler.RandomWalkSampler(adjmat=self.weighted_adj, walk_length=self.walk_length + 1, q=self.q, p=self.p)
+        # self.edge_index = edge_index
+
+    def train_and_get_embs(self, loader, optimizer, epochs, save=None):
+        t = trange(epochs)
+        print("training node2vec")
+        for epoch in t:
+            self.train()
+            total_loss = 0
+            for pos_rw, neg_rw in loader:
+                optimizer.zero_grad()
+                loss = self.loss(pos_rw.to(DEVICE), neg_rw.to(DEVICE))
+                loss.backward()
+                optimizer.step()
+                total_loss += loss.item()
+                total_loss /= len(loader)
+            t.set_description(f'Epoch {epoch + 1:03d}, Loss: {total_loss:.4f}')
+            t.refresh()
+            wandb.log({"loss": total_loss, "epoch": epoch})
+        if save:
+            torch.save(self.embedding.weight.detach().cpu(), save)
+        return self.embedding.weight.detach().cpu()
+
+    def pos_sample(self, batch):
+        batch = batch.repeat(self.walks_per_node)
+        rowptr, col, _ = self.adj.csr()
+        rw = self.sampler.sampling(start=batch.numpy())
+        # print(rw[0].shape, rw[1].shape, rowptr.shape, col.shape, batch.shape)
+        # print(rw.shape)
+        # -1 with 0
+        # rw[rw == -1] = 0
+        rw = torch.from_numpy(rw)
+        walks = []
+        num_walks_per_rw = 1 + self.walk_length + 1 - self.context_size
+        for j in range(num_walks_per_rw):
+            walks.append(rw[:, j:j + self.context_size])
+        return torch.cat(walks, dim=0)
 
 
 class UnWeightedNode2Vec(Node2Vec):
-    def __init__(self, num_nodes, embedding_dim, weighted_adj, edge_index):
-        if not weighted_adj:
-            assert edge_index is not None
-            row, col = edge_index
-            adj = SparseTensor(row=row, col=col, sparse_sizes=(num_nodes, num_nodes))
-        else:
-            adj = from_scipy(sparse.load_npz(weighted_adj))
-        Node2Vec.__init__(self, embedding_dim=embedding_dim)
-        self.adj = adj.to_symmetric().to_scipy()
+    def __init__(self, weighted_adj=None, edge_index=None, **params):
+        if not isinstance(edge_index, torch.Tensor):
+            adj = sparse.load_npz(weighted_adj)
+            row, col = adj.nonzero()
+            edge_index = torch.cat(
+                (torch.from_numpy(row).unsqueeze(dim=0), torch.from_numpy(col).unsqueeze(dim=0))).long()
 
+        Node2Vec.__init__(self, edge_index=edge_index, num_negative_samples=10, **params)
+        self.adj = self.adj.to_symmetric()
+        self.weighted_adj = self.adj.to_scipy()
 
+    def train_and_get_embs(self, loader, optimizer, epochs, save=None):
+        t = trange(epochs)
+        print("training node2vec")
+        for epoch in t:
+            self.train()
+            total_loss = 0
+            for pos_rw, neg_rw in loader:
+                optimizer.zero_grad()
+                loss = self.loss(pos_rw.to(DEVICE), neg_rw.to(DEVICE))
+                loss.backward()
+                optimizer.step()
+                total_loss += loss.item()
+                total_loss /= len(loader)
+            t.set_description(f'Epoch {epoch + 1:03d}, Loss: {total_loss:.4f}')
+            t.refresh()
+            wandb.log({"loss": total_loss, "epoch": epoch})
+        if save:
+            torch.save(self.embedding.weight.detach().cpu(), save)
+        return self.embedding.weight.detach().cpu()
 

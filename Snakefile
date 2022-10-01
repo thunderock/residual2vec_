@@ -52,6 +52,14 @@ residual2vec_training_epochs = {
   'polbook': 200
 }
 
+node2vec_training_epochs = {
+  'pokec': 30,
+  'small_pokec': 10,
+  'airport': 100,
+  'polblog': 200,
+  'polbook': 200
+}
+
 num_gnn_layers = {
     'pokec': 5,
     'small_pokec': 5,
@@ -75,7 +83,9 @@ rule train_gnn:
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
         import torch
-        from dataset import triplet_dataset
+        from models.weighted_node2vec import UnWeightedNode2Vec
+        from dataset import triplet_dataset, pokec_data
+        from utils.config import DEVICE
         from torch_geometric.utils import negative_sampling
         import gc
         from utils.link_prediction import GCNLinkPrediction, GATLinkPrediction
@@ -108,7 +118,7 @@ rule train_gnn:
             sampler = sbm.sample_neg_edges
             print("using de biased walk")
         X = snakemake_utils.get_node2vec_trained_get_embs(
-            file_path=input.node2vec_weights
+            file_path=input.node2vec_weights,
         )
         model = rv.residual2vec_sgd(
             noise_sampler=False,
@@ -119,7 +129,7 @@ rule train_gnn:
         ).fit()
         # X = torch.cat([X, d.X], dim=1)
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index, sampler=sampler)
-        wandb.init(project=DATASET,name="DATA_ROOT={}_MODEL={}_CROSSWALK={}_R2V={}".format(DATA_ROOT, GNN_MODEL, CROSSWALK, R2V))
+        wandb.init(project=DATASET + '_temp',name="DATA_ROOT={}_MODEL={}_CROSSWALK={}_R2V={}".format(DATA_ROOT, GNN_MODEL, CROSSWALK, R2V))
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=True, num_workers=params.NUM_WORKERS, pin_memory=True)
         if GNN_MODEL == 'gat':
             m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=num_gnn_layers[DATASET],num_embeddings=X.shape[1])
@@ -148,7 +158,8 @@ rule generate_crosswalk_weights:
         NODE_TO_VEC_DIM=16,
         NUM_WORKERS=20,
         SET_DEVICE=SET_DEVICE,
-        RV_NUM_WALKS=100
+        RV_NUM_WALKS=100,
+        NODE_TO_VEC_EPOCHS=node2vec_training_epochs[DATASET]
     threads: 20
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
@@ -178,6 +189,8 @@ rule generate_crosswalk_weights:
             embedding_dim=params.NODE_TO_VEC_DIM,
             num_nodes=num_nodes,
             edge_index=n.train_edges,
+            context_size=10,
+            walk_length=walk_length,
             group_membership=d.get_grouped_col()
         )
         snakemake_utils.store_crosswalk_weights(
@@ -186,6 +199,8 @@ rule generate_crosswalk_weights:
             embedding_dim=params.NODE_TO_VEC_DIM,
             num_nodes=num_nodes,
             edge_index=n.train_edges,
+            context_size=10,
+            walk_length=walk_length,
             group_membership=d.get_grouped_col()
         )
         snakemake_utils.store_crosswalk_weights(
@@ -194,6 +209,8 @@ rule generate_crosswalk_weights:
             embedding_dim=params.NODE_TO_VEC_DIM,
             num_nodes=num_nodes,
             edge_index=n.test_edges,
+            context_size=10,
+            walk_length=walk_length,
             group_membership=d.get_grouped_col()
         )
 
@@ -210,7 +227,8 @@ rule train_node_2_vec:
         NODE_TO_VEC_DIM= 16,
         NUM_WORKERS = 20,
         SET_DEVICE = SET_DEVICE,
-        RV_NUM_WALKS= 100
+        RV_NUM_WALKS= 100,
+        NODE_TO_VEC_EPOCHS= node2vec_training_epochs[DATASET]
     run:
         os.environ["SET_GPU"] = params.SET_DEVICE
         from dataset import triplet_dataset
@@ -219,20 +237,31 @@ rule train_node_2_vec:
         from utils import snakemake_utils
         warnings.filterwarnings("ignore")
         gc.enable()
+        window_length = 5
+        num_walks = 10
+        dim = 128
+        walk_length = 80
 
         edge_index = snakemake_utils.get_edge_index_from_sparse_path(input.weighted_adj)
         num_nodes = snakemake_utils.get_num_nodes_from_adj(input.weighted_adj)
 
         labels = snakemake_utils.get_dataset(DATASET).get_grouped_col()
+        wandb.init(project=DATASET + '_temp',name="DATA_ROOT={}_NODE2VEC_CROSSWALK={}".format(DATA_ROOT,CROSSWALK))
         snakemake_utils.train_node2vec_get_embs(
-            edge_index=edge_index,
             file_path=output.node2vec_weights,
+            batch_size=params.BATCH_SIZE,
+            num_workers=params.NUM_WORKERS,
+            epochs=params.NODE_TO_VEC_EPOCHS,
             crosswalk=CROSSWALK,
             embedding_dim=params.NODE_TO_VEC_DIM,
             num_nodes=num_nodes,
+            context_size=10,
+            edge_index=None,
+            walk_length=walk_length,
             weighted_adj_path=input.weighted_adj,
             group_membership=labels
         )
+        wandb.finish(exit_code=0)
 
 
 rule generate_node_embeddings:

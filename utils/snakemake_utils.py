@@ -92,7 +92,8 @@ def get_dataset(name):
     # add other datasets here
     return dataset
 
-def _get_node2vec_model(crosswalk, embedding_dim, num_nodes, edge_index, weighted_adj_path=None, group_membership=None):
+def _get_node2vec_model(crosswalk, embedding_dim, num_nodes,walk_length, context_size,
+                        edge_index, weighted_adj_path=None, group_membership=None):
     if crosswalk:
         # assert weighted_adj_path is not None and group_membership is not None
         return weighted_node2vec.WeightedNode2Vec(
@@ -101,28 +102,34 @@ def _get_node2vec_model(crosswalk, embedding_dim, num_nodes, edge_index, weighte
             weighted_adj=weighted_adj_path,
             edge_index=edge_index,
             embedding_dim=embedding_dim,
-        )
+            walk_length=walk_length,
+            context_size=context_size,
+
+        ).to(DEVICE)
+
     return weighted_node2vec.UnWeightedNode2Vec(
             num_nodes=num_nodes,
+            edge_index=edge_index,
             embedding_dim=embedding_dim,
-            weighted_adj=weighted_adj_path,
-            edge_index=edge_index
-        )
-
+            walk_length=walk_length,
+            context_size=context_size,
+            weighted_adj=weighted_adj_path
+        ).to(DEVICE)
 
 def get_node2vec_trained_get_embs(file_path):
-    return torch.from_numpy(np.load(file_path).astype(np.float32))
+    return torch.load(file_path)
 
-
-def train_node2vec_get_embs(file_path, **kwargs):
+def train_node2vec_get_embs(file_path, batch_size, num_workers, epochs, **kwargs):
     model = _get_node2vec_model(**kwargs)
-    return model.train_and_get_embs(file_path)
+    loader = model.loader(batch_size=batch_size, shuffle=True, num_workers=num_workers)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+    return model.train_and_get_embs(loader, optimizer, epochs, file_path)
 
 def store_crosswalk_weights(file_path, edge_index, **kwargs):
     # make this edge index symmetric
     edge_index = torch.cat([edge_index, edge_index.flip(0)], dim=1)
     model = _get_node2vec_model(edge_index=edge_index, **kwargs)
-    sparse.save_npz(file_path, model.adj)
+    sparse.save_npz(file_path, model.weighted_adj)
 
 def get_num_nodes_from_adj(adj_path):
     return sparse.load_npz(adj_path).shape[0]
