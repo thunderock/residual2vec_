@@ -8,6 +8,23 @@ from scipy import sparse
 from utils.config import GPU_ID, DISABLE_TQDM
 import networkx as nx
 from tqdm import tqdm
+import torch
+from tqdm import trange
+
+def negative_sampling(edge_index, n_nodes, n_neg_samples):
+    negative_edges = torch.randint(0, n_nodes, (n_neg_samples, 2))
+    nodes = edge_index.flatten()
+    nodes_shape = nodes.shape[0]
+    for i in trange(n_neg_samples, desc="creating negative edges"):
+        sample_one = nodes[torch.randint(nodes_shape, (1,))]
+        sample_two = nodes[torch.randint(nodes_shape, (1,))]
+        mask = edge_index[0] == sample_one
+        while not (any(mask) and any(edge_index[1, mask] == sample_two)):
+            sample_one = nodes[torch.randint(nodes_shape, (1,))]
+            sample_two = nodes[torch.randint(nodes_shape, (1,))]
+            mask = edge_index[0] == sample_one
+        negative_edges[i] = torch.tensor([sample_one, sample_two])
+    return negative_edges
 
 
 def get_edge_df(G: nx.Graph):
