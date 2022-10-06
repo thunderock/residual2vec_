@@ -5,26 +5,56 @@
 import numpy as np
 import pandas as pd
 from scipy import sparse
+from utils.snakemake_utils import get_torch_sparse_from_edge_index
 from utils.config import GPU_ID, DISABLE_TQDM
 import networkx as nx
 from tqdm import tqdm
 import torch
 from tqdm import trange
 
+def _pair(s, t):
+    k = s + t
+    return (k * (k + 1) * .5 + torch.minimum(s, t)).long()
+
+def _depair(k):
+    w = torch.floor(torch.sqrt(2 * k))
+    t = (w ** 2 + w) / 2
+    y = k - t
+    x = w - y
+    return torch.vstack((x.long(), y.long()))
+
 def negative_sampling(edge_index, n_nodes, n_neg_samples):
-    negative_edges = torch.randint(0, n_nodes, (n_neg_samples, 2))
-    nodes = edge_index.flatten()
-    nodes_shape = nodes.shape[0]
-    for i in trange(n_neg_samples, desc="creating negative edges"):
-        sample_one = nodes[torch.randint(nodes_shape, (1,))]
-        sample_two = nodes[torch.randint(nodes_shape, (1,))]
-        mask = edge_index[0] == sample_one
-        while not (any(mask) and any(edge_index[1, mask] == sample_two)):
-            sample_one = nodes[torch.randint(nodes_shape, (1,))]
-            sample_two = nodes[torch.randint(nodes_shape, (1,))]
-            mask = edge_index[0] == sample_one
-        negative_edges[i] = torch.tensor([sample_one, sample_two])
-    return negative_edges
+    """
+    This edge index leads to a symmetric matrix for sure
+    """
+    # comment this before merging in master
+    # assert get_torch_sparse_from_edge_index(edge_index, n_nodes).is_symmetric()
+    neg_edges = torch.tensor([], dtype=torch.long)
+    # not flattening the edge_index because source and targets are already same
+    anonymized_edges = torch.unique(_pair(edge_index[0], edge_index[1]))
+    nodes = edge_index[0]
+    while neg_edges.size(0) < n_neg_samples:
+        remaining = n_neg_samples - neg_edges.size(0)
+        # choosing start nodes with replacement
+        start_nodes = nodes[torch.randint(0, n_nodes, (remaining,))]
+        # choosing end nodes with replacement
+        end_nodes = nodes[torch.randint(0, n_nodes, (remaining,))]
+        # removing self loops
+        mask = start_nodes != end_nodes
+        start_nodes = start_nodes[mask]
+        end_nodes = end_nodes[mask]
+        # concatenating start and end nodes
+        paired = _pair(start_nodes, end_nodes)
+        # removing edges that are already present in the graph
+        paired = paired[~torch.isin(paired, anonymized_edges)]
+
+        # removing edges not in negative_edges, sizes do not match here
+        paired = paired[~torch.isin(paired, neg_edges)]
+
+        # adding these to negative edges
+        neg_edges = torch.cat((neg_edges, paired))
+
+    return _depair(neg_edges)
 
 
 def get_edge_df(G: nx.Graph):

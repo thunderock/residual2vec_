@@ -139,3 +139,9 @@ def return_new_graph(node_embeddings, n_neighbors, batch_size=2000):
     # drop rows with target = -1
     return edges.drop(edges[edges['target'] == -1].index)
 
+def get_torch_sparse_from_edge_index(edge_index, num_nodes):
+    row, col = edge_index
+    from torch_sparse import SparseTensor
+    return SparseTensor(row=row, col=col, sparse_sizes=(num_nodes, num_nodes)).to('cpu')
+
+
