@@ -17,13 +17,13 @@ def _pair(s, t):
     return (k * (k + 1) * .5 + torch.minimum(s, t)).long()
 
 def _depair(k):
-    w = torch.floor(torch.sqrt(2 * k))
+    w = torch.floor((torch.sqrt(8 * k + 1) - 1) / 2)
     t = (w ** 2 + w) / 2
     y = k - t
     x = w - y
     return torch.vstack((x.long(), y.long()))
 
-def negative_sampling(edge_index, n_nodes, n_neg_samples):
+def negative_sampling(edge_index, n_nodes, n_neg_samples=None, iter_limit=1000, return_pos_samples=False):
     """
     This edge index leads to a symmetric matrix for sure
     """
@@ -33,7 +33,10 @@ def negative_sampling(edge_index, n_nodes, n_neg_samples):
     # not flattening the edge_index because source and targets are already same
     anonymized_edges = torch.unique(_pair(edge_index[0], edge_index[1]))
     nodes = edge_index[0]
-    while neg_edges.size(0) < n_neg_samples:
+    iterations = 0
+    n_neg_samples = anonymized_edges.size(0) if n_neg_samples is None else n_neg_samples
+
+    while neg_edges.size(0) < n_neg_samples and iterations < iter_limit:
         remaining = n_neg_samples - neg_edges.size(0)
         # choosing start nodes with replacement
         start_nodes = nodes[torch.randint(0, n_nodes, (remaining,))]
@@ -53,7 +56,10 @@ def negative_sampling(edge_index, n_nodes, n_neg_samples):
 
         # adding these to negative edges
         neg_edges = torch.cat((neg_edges, paired))
+        iterations += 1
 
+    if return_pos_samples:
+        return _depair(neg_edges), _depair(anonymized_edges[:neg_edges.size(0)])
     return _depair(neg_edges)
 
 
