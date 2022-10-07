@@ -23,12 +23,15 @@ def _depair(k):
     x = w - y
     return torch.vstack((x.long(), y.long()))
 
-def negative_sampling(edge_index, n_nodes, n_neg_samples=None, iter_limit=1000, return_pos_samples=False):
+
+def negative_sampling(edge_index, n_nodes, n_neg_samples=None, iter_limit=1000, return_pos_samples=False, use_adj=False):
     """
     This edge index leads to a symmetric matrix for sure
     """
     # comment this before merging in master
     # assert get_torch_sparse_from_edge_index(edge_index, n_nodes).is_symmetric()
+    if use_adj:
+        return _negative_sampling(edge_index, n_nodes, n_neg_samples, iter_limit, return_pos_samples)
     neg_edges = torch.tensor([], dtype=torch.long)
     # not flattening the edge_index because source and targets are already same
     anonymized_edges = torch.unique(_pair(edge_index[0], edge_index[1]))
@@ -51,7 +54,7 @@ def negative_sampling(edge_index, n_nodes, n_neg_samples=None, iter_limit=1000, 
         # removing edges that are already present in the graph
         paired = paired[~torch.isin(paired, anonymized_edges)]
 
-        # removing edges not in negative_edges, sizes do not match here
+        # removing edges in negative_edges
         paired = paired[~torch.isin(paired, neg_edges)]
 
         # adding these to negative edges
@@ -61,6 +64,45 @@ def negative_sampling(edge_index, n_nodes, n_neg_samples=None, iter_limit=1000, 
     if return_pos_samples:
         return _depair(neg_edges), _depair(anonymized_edges[:neg_edges.size(0)])
     return _depair(neg_edges)
+
+def _negative_sampling(edge_index, n_nodes, n_neg_samples=None, iter_limit=1000, return_pos_samples=False):
+    # removing duplicated edges (because of symmetry
+    edge_index = torch.unique(torch.sort(edge_index, dim=0).values, dim=1)
+    adj = get_torch_sparse_from_edge_index(edge_index, n_nodes).to_dense().bool()
+    neg_edges = torch.zeros_like(adj)
+    nodes = torch.concat((edge_index[0], edge_index[1]))
+    iterations = 0
+    n_neg_samples = edge_index.size(1) if n_neg_samples is None else n_neg_samples
+    sampled = 0
+    while sampled < n_neg_samples and iterations < iter_limit:
+        # choosing start nodes with replacement
+        start_nodes = nodes[torch.randint(0, n_nodes, (n_neg_samples,))]
+        # choosing end nodes with replacement
+        end_nodes = nodes[torch.randint(0, n_nodes, (n_neg_samples,))]
+        # removing self loops and start less than end
+        mask = (start_nodes != end_nodes) & (start_nodes < end_nodes)
+        start_nodes = start_nodes[mask]
+        end_nodes = end_nodes[mask]
+
+        # removing edges that are already present in the graph
+        mask = adj[start_nodes, end_nodes] == 0
+        start_nodes = start_nodes[mask]
+        end_nodes = end_nodes[mask]
+
+        # removing edges in negative_edges
+        mask = neg_edges[start_nodes, end_nodes] == 0
+        start_nodes = start_nodes[mask]
+        end_nodes = end_nodes[mask]
+
+        # adding these to negative edges
+        neg_edges[start_nodes, end_nodes] = 1
+        sampled += start_nodes.size(0)
+        iterations += 1
+
+    neg_edges = neg_edges.nonzero(as_tuple=True)
+    if return_pos_samples:
+        return torch.stack(neg_edges), edge_index[:, :neg_edges[0].size(0)]
+    return torch.stack(neg_edges)
 
 
 def get_edge_df(G: nx.Graph):
