@@ -69,7 +69,7 @@ def _negative_sampling(edge_index, n_nodes, n_neg_samples=None, iter_limit=1000,
     # removing duplicated edges (because of symmetry
     edge_index = torch.unique(torch.sort(edge_index, dim=0).values, dim=1)
     adj = get_torch_sparse_from_edge_index(edge_index, n_nodes).to_dense().bool()
-    neg_edges = torch.zeros_like(adj)
+    neg_adj = torch.zeros_like(adj)
     nodes = torch.concat((edge_index[0], edge_index[1]))
     iterations = 0
     n_neg_samples = edge_index.size(1) if n_neg_samples is None else n_neg_samples
@@ -90,19 +90,23 @@ def _negative_sampling(edge_index, n_nodes, n_neg_samples=None, iter_limit=1000,
         end_nodes = end_nodes[mask]
 
         # removing edges in negative_edges
-        mask = neg_edges[start_nodes, end_nodes] == 0
+        mask = neg_adj[start_nodes, end_nodes] == 0
         start_nodes = start_nodes[mask]
         end_nodes = end_nodes[mask]
 
         # adding these to negative edges
-        neg_edges[start_nodes, end_nodes] = 1
+        neg_adj[start_nodes, end_nodes] = 1
+        # should be symmetric
+        neg_adj[end_nodes, start_nodes] = 1
         sampled += start_nodes.size(0)
         iterations += 1
 
-    neg_edges = neg_edges.nonzero(as_tuple=True)
+    neg_edge_index = torch.stack(neg_adj.nonzero(as_tuple=True))
+    # this will contain duplicates because of symmetry
+    neg_edge_index = torch.unique(torch.sort(neg_edge_index, dim=0).values, dim=1)
     if return_pos_samples:
-        return torch.stack(neg_edges), edge_index[:, :neg_edges[0].size(0)]
-    return torch.stack(neg_edges)
+        return neg_edge_index, edge_index[:, :neg_edge_index.size(1)]
+    return neg_edge_index
 
 
 def get_edge_df(G: nx.Graph):
