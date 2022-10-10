@@ -5,10 +5,59 @@
 import numpy as np
 import pandas as pd
 from scipy import sparse
+from utils.snakemake_utils import get_torch_sparse_from_edge_index
 from utils.config import GPU_ID, DISABLE_TQDM
 import networkx as nx
 from tqdm import tqdm
+import torch
+from tqdm import trange
 
+def _negative_sampling_sparse(edge_index, n_nodes, n_neg_samples=None, iter_limit=1000, return_pos_samples=False):
+    # removing duplicated edges (because of symmetry
+    edge_index = torch.unique(torch.sort(edge_index, dim=0).values, dim=1)
+    n_neg_samples = edge_index.size(1) if n_neg_samples is None else n_neg_samples
+    adj = get_torch_sparse_from_edge_index(edge_index, n_nodes).to_scipy(layout='csr')
+    neg_adj = get_torch_sparse_from_edge_index(torch.empty((2, 0), dtype=torch.long), n_nodes).to_scipy(layout='csr')
+    nodes = torch.concat((edge_index[0], edge_index[1])).numpy()
+    iterations, sampled = 0, 0
+    while sampled < n_neg_samples and iterations < iter_limit:
+        remaining = n_neg_samples - sampled
+        # choosing start nodes with replacement
+        start_nodes = nodes[np.random.randint(0, n_nodes, (remaining,))]
+        # choosing end nodes with replacement
+        end_nodes = nodes[np.random.randint(0, n_nodes, (remaining,))]
+        # removing self loops and start less than end
+        mask = (start_nodes != end_nodes) & (start_nodes < end_nodes)
+        start_nodes = start_nodes[mask]
+        end_nodes = end_nodes[mask]
+
+        # removing edges that are already present in the graph
+        mask = (adj[start_nodes, end_nodes] == 0)
+        if mask.size:
+            mask = np.array(mask.flat)
+            start_nodes = start_nodes[mask]
+            end_nodes = end_nodes[mask]
+
+        # removing edges in negative_edges
+        mask = (neg_adj[start_nodes, end_nodes] == 0)
+        if mask.size:
+            mask = np.array(mask.flat)
+            start_nodes = start_nodes[mask]
+            end_nodes = end_nodes[mask]
+
+        # adding these to negative edges
+        neg_adj[start_nodes, end_nodes] = 1
+        # should be symmetric
+        neg_adj[end_nodes, start_nodes] = 1
+        sampled = neg_adj.nnz // 2
+        iterations += 1
+
+    neg_edge_index = torch.from_numpy(np.vstack(neg_adj.nonzero())).long()
+    # this will contain duplicates because of symmetry
+    neg_edge_index = torch.unique(torch.sort(neg_edge_index, dim=0).values, dim=1)
+    if return_pos_samples:
+        return neg_edge_index, edge_index[:, :neg_edge_index.size(1)]
+    return neg_edge_index
 
 def get_edge_df(G: nx.Graph):
     """
@@ -60,3 +109,4 @@ def get_edges_fastknn_faiss(emb, k=10, batch_size=2000):
         "source": np.repeat(np.arange(n_nodes), k),
         "target": targets,
     })
+

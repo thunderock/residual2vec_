@@ -21,21 +21,21 @@ CUDA = torch.cuda.is_available()
 TRAIN_TEST_SPLIT = .2
 RANDOM_SEED = 2022
 DROPOUT = .2
-torch.manual_seed(RANDOM_SEED)
-np.random.seed(RANDOM_SEED)
+# torch.manual_seed(RANDOM_SEED)
+# np.random.seed(RANDOM_SEED)
 DEVICE = torch.device("cpu")
-ALPHA = .2
-BATCH_SIZE = 128
-NUM_WORKERS = 4
-EPOCHS = 5
+# ALPHA = .2
+# BATCH_SIZE = 128
+# NUM_WORKERS = 4
+# EPOCHS = 5
 PREDICTION_THRESHOLD = .7
-NUM_NEIGHBORS = 10
+# NUM_NEIGHBORS = 10
 EMBEDDING_DIM = 128
-LR = .01
+# LR = .01
 GPU_ID = 0
 DISABLE_TQDM = False
 if CUDA:
-    torch.cuda.manual_seed(RANDOM_SEED)
+    # torch.cuda.manual_seed(RANDOM_SEED)
     DEVICE = os.environ.get("SET_GPU", "cuda:0")
     # GPU_ID = int(DEVICE.split(":")[1])
     print(f"Using GPU: {DEVICE}")
