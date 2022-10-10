@@ -32,14 +32,18 @@ def _negative_sampling_sparse(edge_index, n_nodes, n_neg_samples=None, iter_limi
         end_nodes = end_nodes[mask]
 
         # removing edges that are already present in the graph
-        mask = np.array((adj[start_nodes, end_nodes] == 0).flat)
-        start_nodes = start_nodes[mask]
-        end_nodes = end_nodes[mask]
+        mask = (adj[start_nodes, end_nodes] == 0)
+        if mask.size:
+            mask = np.array(mask.flat)
+            start_nodes = start_nodes[mask]
+            end_nodes = end_nodes[mask]
 
         # removing edges in negative_edges
-        mask = np.array((neg_adj[start_nodes, end_nodes] == 0).flat)
-        start_nodes = start_nodes[mask]
-        end_nodes = end_nodes[mask]
+        mask = (neg_adj[start_nodes, end_nodes] == 0)
+        if mask.size:
+            mask = np.array(mask.flat)
+            start_nodes = start_nodes[mask]
+            end_nodes = end_nodes[mask]
 
         # adding these to negative edges
         neg_adj[start_nodes, end_nodes] = 1
