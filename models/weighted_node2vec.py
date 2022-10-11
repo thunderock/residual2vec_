@@ -28,6 +28,7 @@ class WeightedNode2Vec(Node2Vec):
     def __init__(self, num_nodes, group_membership, embedding_dim, edge_index=None, weighted_adj=None):
         """
         :param weighted_adj: can be a weighted sparse matrix or its path
+        : Only call this when you have a weighted_adj, i.e. crosswalk
         """
 
         Node2Vec.__init__(self, embedding_dim=embedding_dim)
@@ -48,8 +49,8 @@ class WeightedNode2Vec(Node2Vec):
             adj = graph.edge_weights_to_sparse(G, A)
             adj = from_scipy(adj)
         else:
-            adj = from_scipy(sparse.load_npz(weighted_adj)).to_symmetric()
-        self.adj = adj.to_symmetric().to_scipy()
+            adj = from_scipy(sparse.load_npz(weighted_adj))
+        self.adj = adj.to_scipy()
 
 
 class UnWeightedNode2Vec(Node2Vec):

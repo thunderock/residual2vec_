@@ -31,7 +31,7 @@ class NetworkTrainTestSplitter(object):
 
 
 class NetworkTrainTestSplitterWithMST(NetworkTrainTestSplitter):
-    def __init__(self, num_nodes: int, edge_list: torch.Tensor, fraction=0.5):
+    def __init__(self, num_nodes: int, edge_list: torch.Tensor, fraction=0.4):
         """Only support undirected Network.
         :param G: Networkx graph object. Origin Graph
         :param fraction: Fraction of edges that will be removed (test_edge).

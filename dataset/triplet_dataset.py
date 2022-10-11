@@ -2,15 +2,9 @@
 # @Author:      Ashutosh Tiwari
 # @Email:       checkashu@gmail.com
 # @Time:        8/13/22 11:16 AM
-import numpy as np
-import pandas as pd
 from utils.config import *
 from torch.utils.data import Dataset
-from torch_geometric.data import download_url
 import torch
-from sklearn.preprocessing import LabelEncoder
-from torch_geometric.utils import negative_sampling
-from torch_geometric.loader.neighbor_sampler import EdgeIndex
 from torch_sparse import SparseTensor
 
 
@@ -36,9 +30,7 @@ class TripletGraphDataset(Dataset):
         return ret
 
     def _ret_features_for_node(self, idx):
-        # index = self.idx_mapping[idx]self.features
         return idx
-        return self.X[idx]
 
     def _select_random_neighbor(self, source, neg=False):
         edge_index = self.neg_edge_index if neg else self.edge_index
@@ -59,37 +51,7 @@ class TripletGraphDataset(Dataset):
         p_node = self._select_random_neighbor(idx)
         n_node = self._select_random_neighbor(idx, neg=True)
 
-        if p_node and n_node:
-            a, p, n = self._ret_features_for_node(idx), self._ret_features_for_node(p_node), self._ret_features_for_node(n_node)
-        else:
-            a, p, n = None, None, None
-            cnt = 0
-            # while not (p and n):
-            #     # only reaches here in airport
-            #     cnt += 1
-            #     if cnt > 10:
-            #         # only reaches here in polbook, polblog
-            #         if not p:
-            #             p = self._ret_features_for_node(self.edge_index[0, torch.randint(self.edge_index.shape[0], (1,))].item())
-            #         if not n:
-            #             n = self._ret_features_for_node(self.neg_edge_index[0, torch.randint(self.neg_edge_index.shape[0], (1,))].item())
-            #         break
-            idx = torch.randint(self.edge_index.shape[0], (1,))
-            # print("randomly selected a_idx", idx)
-            # idx = 102
-            # select nodes randomly here
-            a = self._ret_features_for_node(self.edge_index[0, idx].item())
-            # p cannot be none now
-            p = self._ret_features_for_node(self._select_random_neighbor(idx))
-            # this can still result in failure but haven't seen it yet, this means that negative sampling couldn't generate a negative node for this source node
-            n = self._ret_features_for_node(self._select_random_neighbor(idx, neg=True))
-            if not n:
-                # in cases where there is no negative "sampled" edge for this node, we randomly sample a negative node
-                n = self._ret_features_for_node(self.neg_edge_index[0, torch.randint(self.neg_edge_index.shape[0], (1,))].item())
-        # if not (a and p and n):
-        #     print("a, p, n", a, p, n)
-        #     mask = self.edge_index[0, :] == idx
-        #     print("edge_index", self._get_node_edges_from_source(idx).dim())
+        a, p, n = self._ret_features_for_node(idx), self._ret_features_for_node(p_node), self._ret_features_for_node(n_node)
         return torch.tensor([a, p, n])
 
 
@@ -109,12 +71,12 @@ class NeighborEdgeSampler(torch.utils.data.DataLoader):
         self.neg_adj_t.storage.rowptr()
         self.adj_t.storage.rowptr()
         if not edge_sample_size:
-            edge_sample_size = num_nodes // 2
+            edge_sample_size = num_nodes
         self.edge_sample_size = torch.tensor(edge_sample_size)
         self.transforming = transforming
 
     def _get_adj_t(self, edge_index, num_nodes):
-        return SparseTensor(row=edge_index[0], col=edge_index[1], value=torch.arange(edge_index.size(1)), sparse_sizes=(num_nodes, num_nodes)).t()
+        return SparseTensor(row=edge_index[0], col=edge_index[1], value=torch.ones(edge_index.size(1)), sparse_sizes=(num_nodes, num_nodes)).t()
 
     def sample(self, batch):
         # make sure this is a list of tensors
@@ -124,16 +86,9 @@ class NeighborEdgeSampler(torch.utils.data.DataLoader):
         a, p, n = batch[:, 0], batch[:, 1], batch[:, 2]
         adjs, nids = [], []
         if self.transforming:
-            # idx = 0
-            # n_id = a
             adj_t, node_ids = self.adj_t.sample_adj(a, self.edge_sample_size, replace=False)
-            # e_id = adj_t.storage.value()
-            # size = adj_t.sparse_sizes()[::-1]
             row, col, _ = adj_t.coo()
             edge_index = torch.stack([row, col], dim=0)
-            # adjs.append(EdgeIndex(edge_index, e_id, size))
-            # adjs = [edge_index] * 3
-            # nids = [n_id] * 3
             x = (self.dataset.X[a], self.dataset.X[node_ids], edge_index)
             return x, x, x
         else:
@@ -143,11 +98,8 @@ class NeighborEdgeSampler(torch.utils.data.DataLoader):
                     adj_t, node_ids = self.neg_adj_t.sample_adj(n_id, self.edge_sample_size, replace=False)
                 else:
                     adj_t, node_ids = self.adj_t.sample_adj(n_id, self.edge_sample_size, replace=False)
-                # e_id = adj_t.storage.value()
-                # size = adj_t.sparse_sizes()[::-1]
                 row, col, _ = adj_t.coo()
                 edge_index = torch.stack([row, col], dim=0)
-                # adjs.append(EdgeIndex(edge_index, e_id, size))
                 adjs.append(edge_index)
                 nids.append(node_ids)
         # get this features from dataset itself in future

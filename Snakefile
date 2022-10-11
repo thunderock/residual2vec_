@@ -272,6 +272,20 @@ rule generate_node_embeddings:
         edge_index = snakemake_utils.get_edge_index_from_sparse_path(input.weighted_adj)
         num_nodes = snakemake_utils.get_num_nodes_from_adj(input.weighted_adj)
         sampler = negative_sampling
+        if R2V:
+            sbm = triplet_dataset.SbmSamplerWrapper(
+                adj_path=input.weighted_adj,
+                group_membership=labels,
+                window_length=1,
+                padding_id=num_nodes,
+                num_walks=params.RV_NUM_WALKS,
+                use_weights=CROSSWALK,
+                num_edges = edge_index.shape[1]
+            )
+
+            # dont use sbm negative sampler for training
+            sampler = sbm.sample_neg_edges
+            print("using de biased walk")
         labels = snakemake_utils.get_dataset(DATASET).get_grouped_col()
 
         X = snakemake_utils.get_node2vec_trained_get_embs(
