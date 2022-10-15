@@ -22,7 +22,7 @@ class FileResources(object):
         self.crosswalk = crosswalk
         self.baseline = baseline
         self.basename = basename
-        assert model_name in ['gat', 'gcn']
+        assert model_name in ['gat', 'gcn', 'word2vec']
         self.model_name = model_name
 
     @property
@@ -126,6 +126,9 @@ def store_crosswalk_weights(file_path, edge_index, **kwargs):
 
 def get_num_nodes_from_adj(adj_path):
     return sparse.load_npz(adj_path).shape[0]
+
+def get_adj_mat_from_path(adj_path):
+    return sparse.load_npz(adj_path)
 
 def get_edge_index_from_sparse_path(weighted_adj):
     adj = sparse.load_npz(weighted_adj)
