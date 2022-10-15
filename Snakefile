@@ -136,8 +136,8 @@ rule generate_crosswalk_weights:
     output:
         weighted_adj =  FileResources(root=DATA_ROOT, crosswalk=True, baseline=not R2V,
                                 model_name=GNN_MODEL, basename=DATASET).adj_path,
-        # test_weighted_adj = FileResources(root=DATA_ROOT, crosswalk=True, baseline=not R2V,
-        #                         model_name=GNN_MODEL, basename=DATASET).test_adj_path,
+        test_weighted_adj = FileResources(root=DATA_ROOT, crosswalk=True, baseline=not R2V,
+                                model_name=GNN_MODEL, basename=DATASET).test_adj_path,
         unweighted_adj =  FileResources(root=DATA_ROOT,crosswalk=False,baseline=not R2V,
         model_name=GNN_MODEL,basename=DATASET).adj_path,
         test_unweighted_adj = FileResources(root=DATA_ROOT,crosswalk=False,baseline=not R2V,
@@ -174,6 +174,14 @@ rule generate_crosswalk_weights:
 
         snakemake_utils.store_crosswalk_weights(
             file_path=output.weighted_adj,
+            crosswalk=True,
+            embedding_dim=params.NODE_TO_VEC_DIM,
+            num_nodes=num_nodes,
+            edge_index=n.train_edges,
+            group_membership=d.get_grouped_col()
+        )
+        snakemake_utils.store_crosswalk_weights(
+            file_path=output.test_weighted_adj,
             crosswalk=True,
             embedding_dim=params.NODE_TO_VEC_DIM,
             num_nodes=num_nodes,
@@ -239,7 +247,7 @@ rule generate_node_embeddings:
     input:
         node2vec_weights = file_resources.node2vec_embs,
         model_weights = file_resources.model_weights,
-        weighted_adj = file_resources.adj_path # this is the test set, predict only on test set
+        weighted_adj = file_resources.test_adj_path
     output:
         embs_file = file_resources.embs_file
     params:
@@ -272,6 +280,7 @@ rule generate_node_embeddings:
         edge_index = snakemake_utils.get_edge_index_from_sparse_path(input.weighted_adj)
         num_nodes = snakemake_utils.get_num_nodes_from_adj(input.weighted_adj)
         sampler = negative_sampling
+        labels = snakemake_utils.get_dataset(DATASET).get_grouped_col()
         if R2V:
             sbm = triplet_dataset.SbmSamplerWrapper(
                 adj_path=input.weighted_adj,
@@ -286,7 +295,6 @@ rule generate_node_embeddings:
             # dont use sbm negative sampler for training
             sampler = sbm.sample_neg_edges
             print("using de biased walk")
-        labels = snakemake_utils.get_dataset(DATASET).get_grouped_col()
 
         X = snakemake_utils.get_node2vec_trained_get_embs(
             file_path=input.node2vec_weights,

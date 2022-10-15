@@ -17,7 +17,12 @@ class TripletGraphDataset(Dataset):
 
         self.neg_edge_index = sampler(edge_index=self.edge_index, num_nodes=self.X.shape[0], num_neg_samples=None, method='sparse', force_undirected=True)
         self.num_embeddings = int(torch.max(self.X).item()) + 1
+        print("size of edge_index", self.edge_index.shape, " and size of neg_edge_index", self.neg_edge_index.shape)
         self.n_nodes = self.X.shape[0]
+        # sources which are common in both positive and negative edge index
+        edge_idx_sources, neg_edge_idx_sources = self.edge_index[0, :], self.neg_edge_index[0, :]
+        self.common_sources = torch.unique(edge_idx_sources[torch.isin(edge_idx_sources, neg_edge_idx_sources)])
+        print("number of common sources", self.common_sources.shape[0])
 
     def __len__(self):
         # assumes that all the nodes ids are present starting from 0 to the max number of nodes
@@ -29,8 +34,8 @@ class TripletGraphDataset(Dataset):
         ret = edge_index[1, mask].squeeze()
         return ret
 
-    def _ret_features_for_node(self, idx):
-        return idx
+    # def _ret_features_for_node(self, idx):
+    #     return idx
 
     def _select_random_neighbor(self, source, neg=False):
         edge_index = self.neg_edge_index if neg else self.edge_index
@@ -43,15 +48,20 @@ class TripletGraphDataset(Dataset):
             return None
         return nodes[torch.randint(nodes.shape[0], (1,))].squeeze()
 
-    def __getitem__(self, idx):
+    def __getitem__(self, a):
         """
         returns a, p, n tuple for this idx where a is the current node, p is the positive node and n is the randomly sampled negative node
         """
         # select a node with positive edge
-        p_node = self._select_random_neighbor(idx)
-        n_node = self._select_random_neighbor(idx, neg=True)
+        p = self._select_random_neighbor(a)
+        n = self._select_random_neighbor(a, neg=True)
 
-        a, p, n = self._ret_features_for_node(idx), self._ret_features_for_node(p_node), self._ret_features_for_node(n_node)
+        if not (p and n):
+            # select a random node which is present in both positive and negative edge index
+            a = self.common_sources[torch.randint(self.common_sources.shape[0], (1,))]
+            p = self._select_random_neighbor(a)
+            n = self._select_random_neighbor(a, neg=True)
+        # assert all([a, p, n]), "a: {}, p: {}, n: {} should not be None".format(a, p, n)
         return torch.tensor([a, p, n])
 
 
