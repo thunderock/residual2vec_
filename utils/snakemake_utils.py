@@ -127,6 +127,9 @@ def store_crosswalk_weights(file_path, edge_index, **kwargs):
 def get_num_nodes_from_adj(adj_path):
     return sparse.load_npz(adj_path).shape[0]
 
+def get_adj_mat_from_path(adj_path):
+    return sparse.load_npz(adj_path)
+
 def get_edge_index_from_sparse_path(weighted_adj):
     adj = sparse.load_npz(weighted_adj)
     row, col = adj.nonzero()

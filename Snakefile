@@ -26,7 +26,7 @@ SET_DEVICE = config.get('device', 'cuda:0')
 DATA_ROOT = config.get("root", "data")
 
 # variables sanity check
-assert GNN_MODEL in ('gat', 'gcn')
+assert GNN_MODEL in ('gat', 'gcn', 'word2vec')
 assert DATASET in ('pokec', 'small_pokec', 'airport', 'polblog', 'polbook')
 assert CROSSWALK in (True, False)
 assert R2V in (True, False)
@@ -80,6 +80,7 @@ rule train_gnn:
         import gc
         from utils.link_prediction import GCNLinkPrediction, GATLinkPrediction
         import residual2vec as rv
+        import numpy as np
         import warnings
         from utils import snakemake_utils
         warnings.filterwarnings("ignore")
@@ -125,6 +126,65 @@ rule train_gnn:
             m = GATLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=num_gnn_layers[DATASET],num_embeddings=X.shape[1])
         elif GNN_MODEL == 'gcn':
             m = GCNLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=num_gnn_layers[DATASET],num_embeddings=X.shape[1])
+        elif GNN_MODEL == 'word2vec':
+            # create adj matrix
+            adj_mat = snakemake_utils.get_adj_mat_from_path(input.weighted_adj)
+            # first create noise sampler
+            from residual2vec.node_samplers import SBMNodeSampler
+            from torch.utils.data import DataLoader
+            from residual2vec.word2vec import Word2Vec
+            if R2V:
+                # pick sbm node sampler
+                noise_sampler = SBMNodeSampler(
+                    window_length=1,
+                    group_membership=labels,
+                    dcsbm=True
+                )
+            else:
+                noise_sampler = SBMNodeSampler(
+                    window_length=1,
+                    dcsbm=True
+                )
+            model = rv.residual2vec_sgd(
+                noise_sampler=noise_sampler,
+                window_length=1,
+                num_walks=num_walks,
+                walk_length=walk_length,
+                batch_size=params.BATCH_SIZE,
+            ).fit(adjmat=adj_mat)
+            adjusted_num_walks = np.ceil(
+                num_walks
+                * np.maximum(
+                    1,
+                    model.batch_size
+                    * model.miniters
+                    / (model.n_nodes * num_walks * walk_length),
+                )
+            ).astype(int)
+            d = rv.TripletSimpleDataset(
+                adjmat=model.adjmat,
+                num_walks=adjusted_num_walks,
+                window_length=model.window_length,
+                noise_sampler=model.sampler,
+                padding_id=model.n_nodes,
+                walk_length=model.walk_length,
+                p=model.p,
+                q=model.q,
+                buffer_size=model.buffer_size,
+                context_window_type=model.context_window_type,
+            )
+            dataloader = DataLoader(
+                d,
+                batch_size=model.batch_size,
+                shuffle=True,
+                num_workers=params.NUM_WORKERS,
+                pin_memory=True,
+            )
+            m = Word2Vec(
+                vocab_size=num_nodes + 1,
+                embedding_size=128,
+                padding_idx=num_nodes,
+            )
         else:
             raise ValueError("GNN_MODEL must be either gat or gcn")
 
@@ -315,9 +375,69 @@ rule generate_node_embeddings:
         elif GNN_MODEL == 'gcn':
             m = GCNLinkPrediction(in_channels=d.num_features,embedding_size=128,hidden_channels=64,num_layers=num_gnn_layers[DATASET],num_embeddings=
             X.shape[1])
+        elif GNN_MODEL == 'word2vec':
+            # create adj matrix
+            adj_mat = snakemake_utils.get_adj_mat_from_path(input.weighted_adj)
+            # first create noise sampler
+            from residual2vec.node_samplers import SBMNodeSampler
+            from torch.utils.data import DataLoader
+            from residual2vec.word2vec import Word2Vec
+            if R2V:
+                # pick sbm node sampler
+                noise_sampler = SBMNodeSampler(
+                    window_length=1,
+                    group_membership=labels,
+                    dcsbm=True
+                )
+            else:
+                noise_sampler = SBMNodeSampler(
+                    window_length=1,
+                    dcsbm=True
+                )
+            model = rv.residual2vec_sgd(
+                noise_sampler=noise_sampler,
+                window_length=1,
+                num_walks=num_walks,
+                walk_length=walk_length,
+                batch_size=params.BATCH_SIZE,
+            ).fit(adjmat=adj_mat)
+            adjusted_num_walks = np.ceil(
+                num_walks
+                * np.maximum(
+                    1,
+                    model.batch_size
+                    * model.miniters
+                    / (model.n_nodes * num_walks * walk_length),
+                )
+            ).astype(int)
+            d = rv.TripletSimpleDataset(
+                adjmat=model.adjmat,
+                num_walks=adjusted_num_walks,
+                window_length=model.window_length,
+                noise_sampler=model.sampler,
+                padding_id=model.n_nodes,
+                walk_length=model.walk_length,
+                p=model.p,
+                q=model.q,
+                buffer_size=model.buffer_size,
+                context_window_type=model.context_window_type,
+            )
+            dataloader = DataLoader(
+                d,
+                batch_size=model.batch_size,
+                shuffle=False,
+                num_workers=params.NUM_WORKERS,
+                pin_memory=True,
+            )
+            m = Word2Vec(
+                vocab_size=num_nodes + 1,
+                embedding_size=128,
+                padding_idx=num_nodes,
+            )
         else:
             raise ValueError("GNN_MODEL must be either gat or gcn")
         m = m.to(DEVICE)
+        m.load_state_dict(torch.load(input.model_weights))
         embs = torch.zeros((num_nodes, 128))
         batch_size = model.batch_size
         m.eval()
