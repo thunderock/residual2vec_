@@ -296,6 +296,7 @@ rule generate_node_embeddings:
         else:
             raise ValueError("GNN_MODEL must be either gat or gcn")
         m = m.to(DEVICE)
+        m.load_state_dict(torch.load(input.model_weights))
         embs = torch.zeros((num_nodes, 128))
         batch_size = model.batch_size
         m.eval()
