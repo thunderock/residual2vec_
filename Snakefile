@@ -428,13 +428,18 @@ rule generate_node_embeddings:
             raise ValueError("GNN_MODEL must be either gat or gcn")
         m = m.to(DEVICE)
         m.load_state_dict(torch.load(input.model_weights))
+        # needs to be tensor type
         embs = torch.zeros((num_nodes, 128))
+        if GNN_MODEL == 'word2vec':
+            embs = torch.from_numpy(m.ivectors.weight.data.cpu().numpy()[:num_nodes, :])
         batch_size = model.batch_size
         m.eval()
+
         with torch.no_grad():
             for idx, batch in enumerate(tqdm(dataloader,desc="Generating node embeddings")):
+                if GNN_MODEL == 'word2vec': break
                 a, _, _ = batch
-                a = m.forward_i(a).cpu()
+                a = m.forward_i(a).detach().cpu()
                 nodes_remaining = num_nodes - (idx * batch_size)
                 if nodes_remaining < batch_size:
                     embs[idx * batch_size:, :] = a[-nodes_remaining:, :]
