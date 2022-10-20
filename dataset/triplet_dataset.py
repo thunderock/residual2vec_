@@ -7,15 +7,20 @@ from torch.utils.data import Dataset
 import torch
 from torch_sparse import SparseTensor
 
+# TODO (ashutosh):
+# 1. Call negative sampling a couple of times and then keep concatenating the negative neighbors
+# 2. design a way to store positive and negative neighbors in an efficient way
 
 class TripletGraphDataset(Dataset):
-    def __init__(self, X: torch.Tensor, edge_index: torch.Tensor, sampler):
+    def __init__(self, X: torch.Tensor, edge_index: torch.Tensor, sampler, num_neg_sampling=3,):
         super().__init__()
         self.X = X
         self.edge_index = edge_index
         self.num_features = self.X.shape[1]
 
-        self.neg_edge_index = sampler(edge_index=self.edge_index, num_nodes=self.X.shape[0], num_neg_samples=None, method='sparse', force_undirected=True)
+        self.neg_edge_index = torch.unique(torch.cat([sampler(edge_index=self.edge_index, num_nodes=self.X.shape[0], num_neg_samples=None, method='sparse', force_undirected=True) for _ in range(num_neg_sampling)], dim=1), dim=1)
+        self.pos_edge_index = edge_index
+        self.num_neg_samples = num_neg_sampling
         self.num_embeddings = int(torch.max(self.X).item()) + 1
         print("size of edge_index", self.edge_index.shape, " and size of neg_edge_index", self.neg_edge_index.shape)
         self.n_nodes = self.X.shape[0]
@@ -23,6 +28,10 @@ class TripletGraphDataset(Dataset):
         edge_idx_sources, neg_edge_idx_sources = self.edge_index[0, :], self.neg_edge_index[0, :]
         self.common_sources = torch.unique(edge_idx_sources[torch.isin(edge_idx_sources, neg_edge_idx_sources)])
         print("number of common sources", self.common_sources.shape[0])
+
+    def get_neigbbor_nodes(self, idx, edge_index, final_size):
+
+        neighbors = torch.full((final_size,), fill_value=-1, dtype=torch.long)
 
     def __len__(self):
         # assumes that all the nodes ids are present starting from 0 to the max number of nodes
@@ -123,25 +132,23 @@ class NeighborEdgeSampler(torch.utils.data.DataLoader):
 
 
 class SbmSamplerWrapper(object):
-    def __init__(self, adj_path, group_membership, window_length, num_edges, use_weights=True, **params):
+    def __init__(self, adj_path, group_membership, window_length, num_edges, padding_id, num_walks, use_weights=True, ):
         from residual2vec.node_samplers import SBMNodeSampler
-        from residual2vec.residual2vec_sgd import TripletSimpleDataset
         from scipy import sparse
         from residual2vec import utils
-        sampler = SBMNodeSampler(window_length=window_length, group_membership=group_membership, dcsbm=True)
+        self.sampler = SBMNodeSampler(window_length=window_length, group_membership=group_membership, dcsbm=True)
         adj = sparse.load_npz(adj_path)
         if not use_weights:
             adj.data = np.ones_like(adj.data)
-        n_nodes = adj.shape[0]
-        adj = utils.to_adjacency_matrix(adj)
-        sampler.fit(adj)
-        dataset = TripletSimpleDataset(adjmat=adj, noise_sampler=sampler, **params, buffer_size=n_nodes, window_length=window_length)
+        self.adj = utils.to_adjacency_matrix(adj)
+        self.sampler.fit(adj)
+        self.window_length = window_length
         self.num_edges = num_edges
-        centers, contexts, random_contexts = dataset.centers, dataset.contexts, dataset.random_contexts
+        self.padding_id= padding_id
+        self.num_walks = num_walks
         # indices = np.random.choice(len(centers), num_edges, replace=False)
         # self.centers, contexts, random_contexts = centers[indices], contexts[indices], random_contexts[indices]
         # be careful, cant call this again, contexts lost
-        self.neg_edge_index = self._create_edge_index(centers, random_contexts)
 
 
     def _create_edge_index(self, source: np.ndarray, dist: np.ndarray):
@@ -150,6 +157,12 @@ class SbmSamplerWrapper(object):
     def sample_neg_edges(self, edge_index, num_nodes, num_neg_samples, method,
             force_undirected):
         # none of these params used, only for compatibility
-        return self.neg_edge_index
+
+        from residual2vec.residual2vec_sgd import TripletSimpleDataset
+
+        dataset = TripletSimpleDataset(adjmat=self.adj, noise_sampler=self.sampler, buffer_size=num_nodes, window_length=self.window_length, padding_id=self.padding_id, num_walks=self.num_walks)
+        centers, contexts, random_contexts = dataset.centers, dataset.contexts, dataset.random_contexts
+        self._create_edge_index(centers, random_contexts)
+
 
 

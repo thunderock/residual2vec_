@@ -65,7 +65,7 @@ def _negative_sampling_sparse(edge_index, n_nodes, n_neg_samples=None, iter_limi
 
     neg_edge_index = torch.from_numpy(np.vstack(neg_adj.nonzero())).long()
     # this will contain duplicates because of symmetry
-    neg_edge_index = torch.unique(torch.sort(neg_edge_index, dim=0).values, dim=1)
+    neg_edge_index = torch.unique(torch.sort(neg_edge_index, dim=0), dim=1)
     if return_pos_samples:
         return neg_edge_index, edge_index[:, :neg_edge_index.size(1)]
     return neg_edge_index
