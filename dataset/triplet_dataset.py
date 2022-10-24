@@ -34,9 +34,6 @@ class TripletGraphDataset(Dataset):
         ret = edge_index[1, mask].squeeze()
         return ret
 
-    # def _ret_features_for_node(self, idx):
-    #     return idx
-
     def _select_random_neighbor(self, source, neg=False):
         edge_index = self.neg_edge_index if neg else self.edge_index
         nodes = self._get_node_edges_from_source(source, edge_index)
@@ -55,7 +52,6 @@ class TripletGraphDataset(Dataset):
         # select a node with positive edge
         p = self._select_random_neighbor(a)
         n = self._select_random_neighbor(a, neg=True)
-
         if not (p and n):
             # select a random node which is present in both positive and negative edge index
             a = self.common_sources[torch.randint(self.common_sources.shape[0], (1,))]

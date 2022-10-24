@@ -8,3 +8,11 @@ Potential Problems I can think of:
 6. Visualize crosswalk weights once.
 7. test set too big, tune the size of test set. May be it is changing the cluster structure of the graph. And then when we use crosswalk to assign the weights to edges, it is not able to capture the cluster structure of the graph. So, we are not able to predict the test set well.
 8. May be node2vec random walks not working for weighted adjacency matrix.
+
+* to be done
+
+* create baseline with crosswalk, fairwalk paired with deepwalk
+crosswalk = true => crosswalk
+crosswalk = false => fairwalk
+
+node2vec replaced with deepwalk

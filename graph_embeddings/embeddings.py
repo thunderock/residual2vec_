@@ -236,9 +236,8 @@ class Fairwalk(Node2Vec):
             "workers": 4,
         }
 
-    def fit(self, net):
+    def _get_adj_matrix(self, net):
         A = utils.to_adjacency_matrix(net)
-
         if self.group_membership is None:  # default is degree
             self.group_membership = np.unique(
                 np.array(A.sum(axis=1)).reshape(-1), return_inverse=True
@@ -256,6 +255,11 @@ class Fairwalk(Node2Vec):
             w = 1 / freq[gids]
 
             Ahat.data[A.indptr[i] : A.indptr[i + 1]] = w
+        return Ahat.copy()
+
+    def fit(self, net):
+
+        Ahat = self._get_adj_matrix(net)
         self.sampler.sampling(Ahat)
         return self
 

@@ -4,7 +4,6 @@ from os.path import join as j
 import numpy as np
 import torch
 from models import weighted_node2vec
-from utils.config import DEVICE
 from scipy import sparse
 
 def get_string_boolean(string):
@@ -41,9 +40,9 @@ class FileResources(object):
     @property
     def node2vec_embs(self):
         if self.crosswalk:
-            return str(j(self.root, "{}_crosswalk_node2vec.npy".format(self.basename)))
+            return str(j(self.root, "{}_crosswalk_deepwalk.npy".format(self.basename)))
         else:
-            return str(j(self.root, "{}_node2vec.npy".format(self.basename)))
+            return str(j(self.root, "{}_fairwalk_deepwalk.npy".format(self.basename)))
 
     @property
     def model_weights(self):
@@ -51,7 +50,7 @@ class FileResources(object):
             if self.crosswalk:
                 return str(j(self.root, "{}_crosswalk_{}.h5".format(self.basename, self.model_name)))
             else:
-                return str(j(self.root, "{}_{}.h5".format(self.basename, self.model_name)))
+                return str(j(self.root, "{}_fairwalk_{}.h5".format(self.basename, self.model_name)))
         else:
             if self.crosswalk:
                 return str(j(self.root, "{}_crosswalk_{}_r2v.h5".format(self.basename, self.model_name)))
@@ -62,14 +61,14 @@ class FileResources(object):
     def embs_file(self):
         if self.baseline:
             if self.crosswalk:
-                return str(j(self.root, "{}_crosswalk_{}_node2vec_embs.npy".format(self.basename, self.model_name)))
+                return str(j(self.root, "{}_crosswalk_{}_deepwalk_embs.npy".format(self.basename, self.model_name)))
             else:
-                return str(j(self.root, "{}_{}_node2vec_embs.npy".format(self.basename, self.model_name)))
+                return str(j(self.root, "{}_fairwalk_{}_deepwalk_embs.npy".format(self.basename, self.model_name)))
         else:
             if self.crosswalk:
-                return str(j(self.root, "{}_crosswalk_{}_r2v_node2vec_embs.npy".format(self.basename, self.model_name)))
+                return str(j(self.root, "{}_crosswalk_{}_r2v_deepwalk_embs.npy".format(self.basename, self.model_name)))
             else:
-                return str(j(self.root, "{}_{}_r2v_node2vec_embs.npy".format(self.basename, self.model_name)))
+                return str(j(self.root, "{}_fairwalk_{}_r2v_deepwalk_embs.npy".format(self.basename, self.model_name)))
 
 
 def get_dataset(name):
