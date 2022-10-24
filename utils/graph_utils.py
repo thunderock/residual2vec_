@@ -52,7 +52,7 @@ def _negative_sampling_sparse(edge_index, n_nodes, n_neg_samples=None, iter_limi
         # removing edges in negative_edges, taking != 0 because it is faster than == 0
         mask = (neg_adj[start_nodes, end_nodes] != 0)
         if mask.size:
-            mask = np.array(mask.flat)
+            mask = mask.nonzero()[1]
             start_nodes = start_nodes[~mask]
             end_nodes = end_nodes[~mask]
         # adding these to negative edges
