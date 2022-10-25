@@ -29,14 +29,15 @@ class FileResources(object):
         if self.crosswalk:
             return str(j(self.root, f'{self.basename}_adj_crosswalk.npz'))
         else:
-            return str(j(self.root, f'{self.basename}_fairwalk_adj.npz'))
+            return str(j(self.root, f'{self.basename}_adj_fairwalk.npz'))
 
     @property
     def test_adj_path(self): 
-        if self.crosswalk:
-            return str(j(self.root, "{}_crosswalk_test_adj.npz".format(self.basename)))
-        else:
-            return str(j(self.root, "{}_test_adj.npz".format(self.basename)))
+        # if self.crosswalk:
+        #     return str(j(self.root, "{}_crosswalk_test_adj.npz".format(self.basename)))
+        # else:
+        return str(j(self.root, "{}_test_adj.npz".format(self.basename)))
+    
     @property
     def node2vec_embs(self):
         if self.crosswalk:
@@ -55,7 +56,7 @@ class FileResources(object):
             if self.crosswalk:
                 return str(j(self.root, "{}_crosswalk_{}_r2v.h5".format(self.basename, self.model_name)))
             else:
-                return str(j(self.root, "{}_{}_r2v.h5".format(self.basename, self.model_name)))
+                return str(j(self.root, "{}_fairwalk_{}_r2v.h5".format(self.basename, self.model_name)))
 
     @property
     def embs_file(self):
