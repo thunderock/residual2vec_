@@ -37,7 +37,7 @@ class FileResources(object):
         #     return str(j(self.root, "{}_crosswalk_test_adj.npz".format(self.basename)))
         # else:
         return str(j(self.root, "{}_test_adj.npz".format(self.basename)))
-    
+
     @property
     def node2vec_embs(self):
         if self.crosswalk:
@@ -49,10 +49,11 @@ class FileResources(object):
     def model_weights(self):
         if self.baseline:
             if self.crosswalk:
-                return str(j(self.root, "{}_crosswalk_{}.h5".format(self.basename, self.model_name)))
+                return str(j(self.root, "{}_crosswalk_{}_deepwalk.h5".format(self.basename, self.model_name)))
             else:
-                return str(j(self.root, "{}_fairwalk_{}.h5".format(self.basename, self.model_name)))
+                return str(j(self.root, "{}_fairwalk_{}_deepwalk.h5".format(self.basename, self.model_name)))
         else:
+            assert False
             if self.crosswalk:
                 return str(j(self.root, "{}_crosswalk_{}_r2v.h5".format(self.basename, self.model_name)))
             else:
@@ -66,6 +67,7 @@ class FileResources(object):
             else:
                 return str(j(self.root, "{}_fairwalk_{}_deepwalk_embs.npy".format(self.basename, self.model_name)))
         else:
+            assert False
             if self.crosswalk:
                 return str(j(self.root, "{}_crosswalk_{}_r2v_deepwalk_embs.npy".format(self.basename, self.model_name)))
             else:
