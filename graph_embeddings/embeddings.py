@@ -8,26 +8,26 @@ import numpy as np
 import pandas as pd
 
 # For GCN
-import stellargraph as sg
-import tensorflow as tf
+# import stellargraph as sg
+# import tensorflow as tf
 from graph_embeddings import samplers, utils
 from scipy import sparse
 from sklearn import model_selection
-from stellargraph.data import UnsupervisedSampler
-from stellargraph.layer import GraphSAGE, link_classification
-from stellargraph.mapper import GraphSAGELinkGenerator, GraphSAGENodeGenerator
-from tensorflow import keras
-from tensorflow.keras import Model
-from tensorflow.keras.callbacks import EarlyStopping
+# from stellargraph.data import UnsupervisedSampler
+# from stellargraph.layer import GraphSAGE, link_classification
+# from stellargraph.mapper import GraphSAGELinkGenerator, GraphSAGENodeGenerator
+# from tensorflow import keras
+# from tensorflow.keras import Model
+# from tensorflow.keras.callbacks import EarlyStopping
 
 logger = logging.getLogger(__name__)
 
-try:
-    import glove
-except ImportError:
-    print(
-        "Ignore this message if you do not use Glove. Otherwise, install glove python package by 'pip install glove_python_binary' "
-    )
+# try:
+#     import glove
+# except ImportError:
+#     print(
+#         "Ignore this message if you do not use Glove. Otherwise, install glove python package by 'pip install glove_python_binary' "
+#     )
 
 
 #
@@ -118,7 +118,7 @@ class Node2Vec(NodeEmbeddings):
 
         Parameters
         ---------
-        net : nx.Graph object
+        A : nx.Graph object
             Network to be embedded. The graph type can be anything if
             the graph type is supported for the node samplers.
 

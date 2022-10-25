@@ -3,7 +3,7 @@ from os.path import join as j
 
 import numpy as np
 import torch
-from models import weighted_node2vec
+from models import weighted_deepwalk
 from scipy import sparse
 
 def get_string_boolean(string):
@@ -29,7 +29,7 @@ class FileResources(object):
         if self.crosswalk:
             return str(j(self.root, f'{self.basename}_adj_crosswalk.npz'))
         else:
-            return str(j(self.root, f'{self.basename}_adj.npz'))
+            return str(j(self.root, f'{self.basename}_fairwalk_adj.npz'))
 
     @property
     def test_adj_path(self): 
@@ -94,18 +94,19 @@ def get_dataset(name):
 def _get_node2vec_model(crosswalk, embedding_dim, num_nodes, edge_index, weighted_adj_path=None, group_membership=None):
     if crosswalk:
         # assert weighted_adj_path is not None and group_membership is not None
-        return weighted_node2vec.WeightedNode2Vec(
+        return weighted_deepwalk.CrossWalkDeepWalk(
             num_nodes=num_nodes,
             group_membership=group_membership,
             weighted_adj=weighted_adj_path,
             edge_index=edge_index,
             embedding_dim=embedding_dim,
         )
-    return weighted_node2vec.UnWeightedNode2Vec(
-            num_nodes=num_nodes,
-            embedding_dim=embedding_dim,
-            weighted_adj=weighted_adj_path,
-            edge_index=edge_index
+    return weighted_deepwalk.FairWalkDeepWalk(
+        num_nodes=num_nodes,
+        group_membership=group_membership,
+        weighted_adj=weighted_adj_path,
+        edge_index=edge_index,
+        embedding_dim=embedding_dim,
         )
 
 

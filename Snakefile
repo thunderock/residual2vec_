@@ -29,7 +29,7 @@ DATA_ROOT = config.get("root", "data")
 assert GNN_MODEL in ('gat', 'gcn', 'word2vec')
 assert DATASET in ('pokec', 'small_pokec', 'airport', 'polblog', 'polbook')
 assert CROSSWALK in (True, False)
-assert R2V in (False)
+assert R2V == False
 assert SET_DEVICE in ('cuda:0', 'cpu', 'cuda:1',)
 
 # file resources
