@@ -8,6 +8,7 @@ import psutil
 from multiprocessing import cpu_count
 import numpy as np
 import torch
+from utils.snakemake_utils import get_string_boolean
 
 P = psutil.Process(os.getpid())
 try:
@@ -33,7 +34,8 @@ PREDICTION_THRESHOLD = .7
 EMBEDDING_DIM = 128
 # LR = .01
 GPU_ID = 0
-DISABLE_TQDM = False
+DISABLE_TQDM = os.environ.get("DISABLE_TQDM", 'False')
+DISABLE_TQDM = get_string_boolean(DISABLE_TQDM)
 if CUDA:
     # torch.cuda.manual_seed(RANDOM_SEED)
     DEVICE = os.environ.get("SET_GPU", "cuda:0")

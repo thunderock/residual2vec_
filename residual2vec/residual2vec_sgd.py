@@ -140,7 +140,7 @@ class residual2vec_sgd:
         for epoch in range(epochs):
             break_loop = False
             patience = 0
-            pbar = tqdm(dataloader, miniters=100)
+            pbar = tqdm(dataloader, miniters=100, disable=DISABLE_TQDM)
             batch_num = 0
             for iword, owords, nwords in pbar:
                 optim.zero_grad()
