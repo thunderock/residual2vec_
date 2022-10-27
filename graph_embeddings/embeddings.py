@@ -8,26 +8,26 @@ import numpy as np
 import pandas as pd
 
 # For GCN
-import stellargraph as sg
-import tensorflow as tf
+# import stellargraph as sg
+# import tensorflow as tf
 from graph_embeddings import samplers, utils
 from scipy import sparse
 from sklearn import model_selection
-from stellargraph.data import UnsupervisedSampler
-from stellargraph.layer import GraphSAGE, link_classification
-from stellargraph.mapper import GraphSAGELinkGenerator, GraphSAGENodeGenerator
-from tensorflow import keras
-from tensorflow.keras import Model
-from tensorflow.keras.callbacks import EarlyStopping
+# from stellargraph.data import UnsupervisedSampler
+# from stellargraph.layer import GraphSAGE, link_classification
+# from stellargraph.mapper import GraphSAGELinkGenerator, GraphSAGENodeGenerator
+# from tensorflow import keras
+# from tensorflow.keras import Model
+# from tensorflow.keras.callbacks import EarlyStopping
 
 logger = logging.getLogger(__name__)
 
-try:
-    import glove
-except ImportError:
-    print(
-        "Ignore this message if you do not use Glove. Otherwise, install glove python package by 'pip install glove_python_binary' "
-    )
+# try:
+#     import glove
+# except ImportError:
+#     print(
+#         "Ignore this message if you do not use Glove. Otherwise, install glove python package by 'pip install glove_python_binary' "
+#     )
 
 
 #
@@ -63,7 +63,6 @@ class NodeEmbeddings:
 
 class Node2Vec(NodeEmbeddings):
     """A python class for the node2vec.
-
     Parameters
     ----------
     num_walks : int (optional, default 5)
@@ -115,13 +114,11 @@ class Node2Vec(NodeEmbeddings):
 
     def fit(self, net):
         """Estimating the parameters for embedding.
-
         Parameters
         ---------
-        net : nx.Graph object
+        A : nx.Graph object
             Network to be embedded. The graph type can be anything if
             the graph type is supported for the node samplers.
-
         Return
         ------
         self : Node2Vec
@@ -236,9 +233,8 @@ class Fairwalk(Node2Vec):
             "workers": 4,
         }
 
-    def fit(self, net):
+    def _get_adj_matrix(self, net):
         A = utils.to_adjacency_matrix(net)
-
         if self.group_membership is None:  # default is degree
             self.group_membership = np.unique(
                 np.array(A.sum(axis=1)).reshape(-1), return_inverse=True
@@ -256,6 +252,11 @@ class Fairwalk(Node2Vec):
             w = 1 / freq[gids]
 
             Ahat.data[A.indptr[i] : A.indptr[i + 1]] = w
+        return Ahat.copy()
+
+    def fit(self, net):
+
+        Ahat = self._get_adj_matrix(net)
         self.sampler.sampling(Ahat)
         return self
 
@@ -297,7 +298,6 @@ class LaplacianEigenMap(NodeEmbeddings):
 
 class NetMF(NodeEmbeddings):
     """NetMF.
-
     Alias of LevyWord2Vec
     """
 
@@ -310,13 +310,11 @@ class NetMF(NodeEmbeddings):
 
     def fit(self, net):
         """Estimating the parameters for embedding.
-
         Parameters
         ---------
         net : nx.Graph object
             Network to be embedded. The graph type can be anything if
             the graph type is supported for the node samplers.
-
         Return
         ------
         self : Node2Vec
@@ -394,13 +392,11 @@ class GAT(NodeEmbeddings):
 
     def fit(self, net, node_features=None):
         """Estimating the parameters for embedding.
-
         Parameters
         ---------
         net : nx.Graph object
             Network to be embedded. The graph type can be anything if
             the graph type is supported for the node samplers.
-
         Return
         ------
         self : Node2Vec
@@ -408,7 +404,6 @@ class GAT(NodeEmbeddings):
 
         def find_blocks_by_sbm(A, K, directed=False):
             """Jiashun Jin. Fast community detection by SCORE.
-
             :param A: scipy sparse matrix
             :type A: sparse.csr_matrix
             :param K: number of communities
@@ -574,13 +569,11 @@ class GCN(NodeEmbeddings):
 
     def fit(self, net, node_features=None):
         """Estimating the parameters for embedding.
-
         Parameters
         ---------
         net : nx.Graph object
             Network to be embedded. The graph type can be anything if
             the graph type is supported for the node samplers.
-
         Return
         ------
         self : Node2Vec
@@ -588,7 +581,6 @@ class GCN(NodeEmbeddings):
 
         def find_blocks_by_sbm(A, K, directed=False):
             """Jiashun Jin. Fast community detection by SCORE.
-
             :param A: scipy sparse matrix
             :type A: sparse.csr_matrix
             :param K: number of communities
@@ -734,13 +726,11 @@ class GraphSage(GCN):
 
     def fit(self, net, node_features=None):
         """Estimating the parameters for embedding.
-
         Parameters
         ---------
         net : nx.Graph object
             Network to be embedded. The graph type can be anything if
             the graph type is supported for the node samplers.
-
         Return
         ------
         self : Node2Vec
@@ -748,7 +738,6 @@ class GraphSage(GCN):
 
         def find_blocks_by_sbm(A, K, directed=False):
             """Jiashun Jin. Fast community detection by SCORE.
-
             :param A: scipy sparse matrix
             :type A: sparse.csr_matrix
             :param K: number of communities

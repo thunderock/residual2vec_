@@ -129,7 +129,7 @@ class SbmSamplerWrapper(object):
         from scipy import sparse
         from residual2vec import utils
         sampler = SBMNodeSampler(window_length=window_length, group_membership=group_membership, dcsbm=True)
-        adj = sparse.load_npz(adj_path)
+        adj = adj_path if sparse.issparse(adj_path) else sparse.load_npz(adj_path)
         if not use_weights:
             adj.data = np.ones_like(adj.data)
         n_nodes = adj.shape[0]

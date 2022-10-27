@@ -8,7 +8,14 @@ import psutil
 from multiprocessing import cpu_count
 import numpy as np
 import torch
-from utils.snakemake_utils import get_string_boolean
+
+def get_string_boolean(string):
+    if string in ['True', 'true', 'TRUE', 'T', 't', '1']:
+        return True
+    elif string in ['False', 'false', 'FALSE', 'F', 'f', '0']:
+        return False
+    else:
+        raise ValueError('String must be either True or False')
 
 P = psutil.Process(os.getpid())
 try:
@@ -36,10 +43,27 @@ EMBEDDING_DIM = 128
 GPU_ID = 0
 DISABLE_TQDM = os.environ.get("DISABLE_TQDM", 'False')
 DISABLE_TQDM = get_string_boolean(DISABLE_TQDM)
+DISABLE_WANDB = os.environ.get("DISABLE_WANDB", 'False')
+DISABLE_WANDB = get_string_boolean(DISABLE_WANDB)
 if CUDA:
     # torch.cuda.manual_seed(RANDOM_SEED)
     DEVICE = os.environ.get("SET_GPU", "cuda:0")
     # GPU_ID = int(DEVICE.split(":")[1])
     print(f"Using GPU: {DEVICE}")
+R2V_TRAINING_EPOCHS = {
+    'pokec': 2,
+    'small_pokec': 4,
+    'airport': 100,
+    'polbook': 200,
+    'polblog': 200
+}
+NUM_GNN_LAYERS = {
+    'pokec': 5,
+    'small_pokec': 5,
+    'airport': 3,
+    'polbook': 3,
+    'polblog': 3
+}
+
 LOGGER = logging.getLogger(__name__)
 LOGFORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'

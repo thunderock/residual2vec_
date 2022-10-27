@@ -55,7 +55,7 @@ import numpy as np
 from numba import njit
 from torch.optim import Adam
 from torch.utils.data import DataLoader, Dataset
-from tqdm import tqdm
+from tqdm import tqdm, trange
 from scipy import sparse
 from residual2vec import utils
 from residual2vec.random_walk_sampler import RandomWalkSampler
@@ -137,7 +137,11 @@ class residual2vec_sgd:
         n_batches = len(dataloader)
         patience_threshold = int(n_batches * .5) # 50% of the batches
         print(f"Patience threshold: {patience_threshold}")
-        for epoch in range(epochs):
+        if DISABLE_TQDM:
+            epoch_range = trange(epochs, desc="training FINAL MODEL")
+        else:
+            epoch_range = range(epochs)
+        for epoch in epoch_range:
             break_loop = False
             patience = 0
             pbar = tqdm(dataloader, miniters=100, disable=DISABLE_TQDM)
@@ -155,7 +159,8 @@ class residual2vec_sgd:
                         break
                 loss.backward()
                 optim.step()
-                wandb.log({"epoch": epoch, "loss": loss.item(), "batch_num": batch_num})
+                if not DISABLE_WANDB:
+                    wandb.log({"epoch": epoch, "loss": loss.item(), "batch_num": batch_num})
                 pbar.set_postfix(epoch=epoch, loss=loss.item())
                 batch_num += 1
             if break_loop:
