@@ -195,9 +195,9 @@ def get_gnn_model(model_name, num_features, emb_dim, dataset=None, num_layers=No
         num_layers = NUM_GNN_LAYERS[dataset]
     from utils.link_prediction import GATLinkPrediction, GCNLinkPrediction
     if model_name == 'gcn':
-        model = GCNLinkPrediction(in_channels=num_features, embedding_size=emb_dim, hidden_channels=64, num_layers=num_layers, num_embeddings=num_features)
+        model = GCNLinkPrediction(in_channels=num_features, embedding_size=emb_dim, hidden_channels=64, num_layers=num_layers, num_embeddings=num_features, learn_outvec=learn_outvec)
     elif model_name == 'gat':
-        model = GATLinkPrediction(in_channels=num_features, embedding_size=emb_dim, hidden_channels=64, num_layers=num_layers, num_embeddings=num_features)
+        model = GATLinkPrediction(in_channels=num_features, embedding_size=emb_dim, hidden_channels=64, num_layers=num_layers, num_embeddings=num_features, learn_outvec=learn_outvec)
     else:
         raise NotImplementedError
     return model
