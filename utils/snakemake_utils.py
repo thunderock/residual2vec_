@@ -111,7 +111,7 @@ def _get_deepwalk_model(embedding_dim, num_nodes, edge_index, weighted_adj_path=
             num_nodes=num_nodes,
             group_membership=group_membership,
             embedding_dim=embedding_dim,
-            edge_index=embedding_dim,
+            edge_index=edge_index,
             weighted_adj=weighted_adj_path
         )
 
