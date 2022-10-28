@@ -12,7 +12,7 @@ import torch.nn.functional as F
 
 class LinkPrediction(nn.Module):
 
-    def __init__(self, num_embeddings, classification=False, embedding_size=EMBEDDING_DIM, dropout=DROPOUT):
+    def __init__(self, num_embeddings, classification=False, embedding_size=EMBEDDING_DIM, dropout=DROPOUT, learn_outvec=True):
         super(LinkPrediction, self).__init__()
         self.dropout = dropout
         self.classification = classification
@@ -20,6 +20,7 @@ class LinkPrediction(nn.Module):
         self.num_embeddings = num_embeddings
         self.ivectors = nn.Linear(self.num_embeddings, self.embedding_size)
         self.ovectors = nn.Linear(self.num_embeddings, self.embedding_size)
+        self.learn_outvec = learn_outvec
 
     @property
     def params(self): return sum([np.prod(p.size()) for p in filter(lambda p: p.requires_grad, self.parameters())])
@@ -40,6 +41,8 @@ class LinkPrediction(nn.Module):
         return F.relu(self.out_layer(X, edge_index))
 
     def forward_o(self, X):
+        if not self.learn_outvec:
+            return self.forward_i(X)
         node, X, edge_index = X[0].to(DEVICE), X[1].to(DEVICE), X[2].to(DEVICE)
         x = self.ovectors(node)
         batch_size = x.size(0)

@@ -189,7 +189,7 @@ def get_torch_sparse_from_edge_index(edge_index, num_nodes):
     from torch_sparse import SparseTensor
     return SparseTensor(row=row, col=col, sparse_sizes=(num_nodes, num_nodes)).to('cpu')
 
-def get_gnn_model(model_name, num_features, emb_dim, dataset=None, num_layers=None):
+def get_gnn_model(model_name, num_features, emb_dim, dataset=None, num_layers=None, learn_outvec=True):
     if num_layers is None:
         assert dataset is not None, "If num_layers is not provided, dataset must be provided"
         num_layers = NUM_GNN_LAYERS[dataset]
@@ -203,7 +203,7 @@ def get_gnn_model(model_name, num_features, emb_dim, dataset=None, num_layers=No
     return model
 
 
-def train_model_and_get_embs(adj, model_name, X, sampler, gnn_layers, epochs):
+def train_model_and_get_embs(adj, model_name, X, sampler, gnn_layers, epochs, learn_outvec):
     num_nodes = adj.shape[0]
     edge_index = get_edge_index_from_sparse_path(adj)
     from dataset.triplet_dataset import TripletGraphDataset, NeighborEdgeSampler
@@ -213,7 +213,7 @@ def train_model_and_get_embs(adj, model_name, X, sampler, gnn_layers, epochs):
         sampler=sampler
     )
     dataloader = NeighborEdgeSampler(dataset, batch_size=256 * 3, shuffle=True, num_workers=4, pin_memory=True)
-    model = get_gnn_model(model_name=model_name, emb_dim=128, num_layers=gnn_layers, num_features=X.shape[1])
+    model = get_gnn_model(model_name=model_name, emb_dim=128, num_layers=gnn_layers, num_features=X.shape[1], learn_outvec=learn_outvec)
     from residual2vec.residual2vec_sgd import residual2vec_sgd as rv
     frame = rv(noise_sampler=False, window_length=5, num_walks=10, walk_length=80, batch_size=256 * 3).fit()
     frame.transform(model=model, dataloader=dataloader, epochs=epochs)
@@ -235,7 +235,7 @@ def train_model_and_get_embs(adj, model_name, X, sampler, gnn_layers, epochs):
     return embs
 
 
-def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2vec: bool, fairwalk: bool, model_name: str):
+def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2vec: bool, fairwalk: bool, model_name: str, learn_outvec:bool=True):
     """
     returns embs given dataset name
     dataset: name of dataset
@@ -275,5 +275,5 @@ def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2ve
     else:
         from torch_geometric.utils import negative_sampling
         sampler = negative_sampling
-    return train_model_and_get_embs(adj=adj, model_name=model_name, X=X, sampler=sampler, gnn_layers=NUM_GNN_LAYERS[dataset_name], epochs=R2V_TRAINING_EPOCHS[dataset_name])
+    return train_model_and_get_embs(adj=adj, model_name=model_name, X=X, sampler=sampler, gnn_layers=NUM_GNN_LAYERS[dataset_name], epochs=R2V_TRAINING_EPOCHS[dataset_name], learn_outvec=learn_outvec)
 
