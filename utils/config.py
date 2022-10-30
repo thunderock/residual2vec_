@@ -6,7 +6,6 @@ import os
 import logging
 import psutil
 from multiprocessing import cpu_count
-import numpy as np
 import torch
 
 def get_string_boolean(string):
@@ -65,5 +64,14 @@ NUM_GNN_LAYERS = {
     'polblog': 3
 }
 
+NUM_NEGATIVE_SAMPLING = {
+    'pokec': 1,
+    'small_pokec': 1,
+    'airport': 4,
+    'polbook': 10,
+    'polblog': 10
+}
+
+NUM_WORKERS = 20
 LOGGER = logging.getLogger(__name__)
 LOGFORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'

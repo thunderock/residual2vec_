@@ -4,7 +4,6 @@
 # @Time:        8/31/22 10:29 AM
 import numpy as np
 
-from utils.config import *
 from utils import graph
 import torch
 from scipy import sparse

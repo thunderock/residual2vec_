@@ -1,10 +1,9 @@
-import os
 from os.path import join as j
 
 import numpy as np
 import torch
 from models import weighted_node2vec
-from utils.config import R2V_TRAINING_EPOCHS, NUM_GNN_LAYERS
+from utils.config import R2V_TRAINING_EPOCHS, NUM_GNN_LAYERS, NUM_WORKERS
 from scipy import sparse
 
 def get_string_boolean(string):
@@ -17,60 +16,61 @@ def get_string_boolean(string):
 
 
 class FileResources(object):
-    def __init__(self, root: str, crosswalk: bool, baseline: bool, model_name:str, basename: str='pokec'):
+    def __init__(self, root: str, fairwalk:bool, crosswalk: bool, r2v: bool, model_name:str, node2vec:bool, dataset:str):
         self.root = root
         self.crosswalk = crosswalk
-        self.baseline = baseline
-        self.basename = basename
-        assert model_name in ['gat', 'gcn', 'word2vec']
+        self.r2v = r2v
+        self.fairwalk = fairwalk
         self.model_name = model_name
+        self.node2vec = node2vec
+        self.dataset = dataset
 
     @property
     def adj_path(self):
         if self.crosswalk:
-            return str(j(self.root, f'{self.basename}_adj_crosswalk.npz'))
+            return str(j(self.root, f'{self.dataset}_adj_crosswalk.npz'))
+        elif self.fairwalk:
+            return str(j(self.root, f'{self.dataset}_adj_fairwalk.npz'))
         else:
-            return str(j(self.root, f'{self.basename}_adj.npz'))
+            return str(j(self.root, f'{self.dataset}_adj.npz'))
 
     @property
     def test_adj_path(self): 
-        if self.crosswalk:
-            return str(j(self.root, "{}_crosswalk_test_adj.npz".format(self.basename)))
-        else:
-            return str(j(self.root, "{}_test_adj.npz".format(self.basename)))
+        return str(j(self.root, "{}_test_adj.npz".format(self.dataset)))
+
     @property
-    def node2vec_embs(self):
+    def feature_embs(self):
         if self.crosswalk:
-            return str(j(self.root, "{}_crosswalk_node2vec.npy".format(self.basename)))
+            if self.node2vec:
+                return str(j(self.root, "{}_crosswalk_node2vec.npy".format(self.dataset)))
+            else:
+                return str(j(self.root, "{}_crosswalk_deepwalk.npy".format(self.dataset)))
         else:
-            return str(j(self.root, "{}_node2vec.npy".format(self.basename)))
+            # faiwalk
+            if self.node2vec:
+                return str(j(self.root, "{}_fairwalk_node2vec.npy".format(self.dataset)))
+            else:
+                return str(j(self.root, "{}_fairwalk_deepwalk.npy".format(self.dataset)))
 
     @property
     def model_weights(self):
-        if self.baseline:
-            if self.crosswalk:
-                return str(j(self.root, "{}_crosswalk_{}.h5".format(self.basename, self.model_name)))
-            else:
-                return str(j(self.root, "{}_{}.h5".format(self.basename, self.model_name)))
-        else:
-            if self.crosswalk:
-                return str(j(self.root, "{}_crosswalk_{}_r2v.h5".format(self.basename, self.model_name)))
-            else:
-                return str(j(self.root, "{}_{}_r2v.h5".format(self.basename, self.model_name)))
+        feature_method = "node2vec" if self.node2vec else "deepwalk"
+        weight_generation = None
+        if self.crosswalk: weight_generation = "crosswalk"
+        if self.fairwalk: weight_generation = "fairwalk"
+        negative_sampling = "deepwalk"
+        if self.r2v: negative_sampling = "r2v"
+        return str(j(self.root, f"{self.dataset}_{self.model_name}_{weight_generation}_{feature_method}_{negative_sampling}.h5"))
 
     @property
     def embs_file(self):
-        if self.baseline:
-            if self.crosswalk:
-                return str(j(self.root, "{}_crosswalk_{}_node2vec_embs.npy".format(self.basename, self.model_name)))
-            else:
-                return str(j(self.root, "{}_{}_node2vec_embs.npy".format(self.basename, self.model_name)))
-        else:
-            if self.crosswalk:
-                return str(j(self.root, "{}_crosswalk_{}_r2v_node2vec_embs.npy".format(self.basename, self.model_name)))
-            else:
-                return str(j(self.root, "{}_{}_r2v_node2vec_embs.npy".format(self.basename, self.model_name)))
-
+        feature_method = "node2vec" if self.node2vec else "deepwalk"
+        weight_generation = None
+        if self.crosswalk: weight_generation = "crosswalk"
+        if self.fairwalk: weight_generation = "fairwalk"
+        negative_sampling = "deepwalk"
+        if self.r2v: negative_sampling = "r2v"
+        return str(j(self.root, f"{self.dataset}_{self.model_name}_{weight_generation}_{feature_method}_{negative_sampling}_embs.npy"))
 
 def get_dataset(name):
     dataset = None
@@ -106,7 +106,6 @@ def _get_deepwalk_model(embedding_dim, num_nodes, edge_index, weighted_adj_path=
             embedding_dim=embedding_dim,
         )
     elif fairwalk:
-
         return weighted_deepwalk.FairWalkDeepWalk(
             num_nodes=num_nodes,
             group_membership=group_membership,
@@ -114,13 +113,13 @@ def _get_deepwalk_model(embedding_dim, num_nodes, edge_index, weighted_adj_path=
             edge_index=edge_index,
             weighted_adj=weighted_adj_path
         )
-
     return weighted_deepwalk.UnWeightedDeepWalk(
             num_nodes=num_nodes,
             embedding_dim=embedding_dim,
             weighted_adj=weighted_adj_path,
             edge_index=edge_index
         )
+
 
 def _get_node2vec_model(embedding_dim, num_nodes, edge_index, weighted_adj_path=None, group_membership=None, crosswalk=True, fairwalk=False):
     assert not (crosswalk and fairwalk), "Both crosswalk and fairwalk cannot be true"
@@ -151,7 +150,7 @@ def _get_node2vec_model(embedding_dim, num_nodes, edge_index, weighted_adj_path=
         )
 
 
-def get_node2vec_trained_get_embs(file_path):
+def get_feature_trained_get_embs(file_path):
     return torch.from_numpy(np.load(file_path).astype(np.float32))
 
 
@@ -159,7 +158,11 @@ def train_node2vec_get_embs(file_path, **kwargs):
     model = _get_node2vec_model(**kwargs)
     return model.train_and_get_embs(file_path)
 
-def store_crosswalk_weights(file_path, edge_index, **kwargs):
+def train_deepwalk_get_embs(file_path, **kwargs):
+    model = _get_deepwalk_model(**kwargs)
+    return model.train_and_get_embs(file_path)
+
+def store_weighted_adj(file_path, edge_index, **kwargs):
     # make this edge index symmetric
     edge_index = torch.cat([edge_index, edge_index.flip(0)], dim=1)
     model = _get_node2vec_model(edge_index=edge_index, **kwargs)
@@ -212,7 +215,7 @@ def train_model_and_get_embs(adj, model_name, X, sampler, gnn_layers, epochs, le
         edge_index=edge_index,
         sampler=sampler
     )
-    dataloader = NeighborEdgeSampler(dataset, batch_size=256 * 3, shuffle=True, num_workers=4, pin_memory=True)
+    dataloader = NeighborEdgeSampler(dataset, batch_size=256 * 3, shuffle=True, num_workers=NUM_WORKERS, pin_memory=True)
     model = get_gnn_model(model_name=model_name, emb_dim=128, num_layers=gnn_layers, num_features=X.shape[1], learn_outvec=learn_outvec)
     from residual2vec.residual2vec_sgd import residual2vec_sgd as rv
     frame = rv(noise_sampler=False, window_length=5, num_walks=10, walk_length=80, batch_size=256 * 3).fit()
@@ -221,7 +224,7 @@ def train_model_and_get_embs(adj, model_name, X, sampler, gnn_layers, epochs, le
     batch_size = 256 * 3
     model.eval()
     from tqdm import tqdm
-    dataloader = NeighborEdgeSampler(dataset, batch_size=batch_size, shuffle=False, num_workers=4, pin_memory=True)
+    dataloader = NeighborEdgeSampler(dataset, batch_size=batch_size, shuffle=False, num_workers=NUM_WORKERS, pin_memory=True, transforming=True)
     with torch.no_grad():
         for idx, batch in enumerate(tqdm(dataloader, desc="Generating node embeddings")):
             a, _, _ = batch
