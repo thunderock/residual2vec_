@@ -241,15 +241,16 @@ class Fairwalk(Node2Vec):
             )[1]
 
         # balance transition probability
-        Ahat = A.copy()
+        Ahat = A.astype(np.float32).copy()
         num_nodes = A.shape[0]
         for i in range(num_nodes):
             # Compute the out-deg
-            node_ids = A.indices[A.indptr[i] : A.indptr[i + 1]]
+            node_ids = A.indices[A.indptr[i] : A.indptr[i + 1]].copy()
             _, gids, freq = np.unique(
                 self.group_membership[node_ids], return_inverse=True, return_counts=True
             )
-            w = 1 / freq[gids]
+            freq = freq.astype(np.float32)
+            w = 1. / freq[gids]
 
             Ahat.data[A.indptr[i] : A.indptr[i + 1]] = w
         return Ahat.copy()

@@ -209,6 +209,7 @@ def get_gnn_model(model_name, num_features, emb_dim, dataset=None, num_layers=No
 def train_model_and_get_embs(adj, model_name, X, sampler, gnn_layers, epochs, learn_outvec, model_dim=128):
     num_nodes = adj.shape[0]
     edge_index = get_edge_index_from_sparse_path(adj)
+    print(edge_index.shape)
     from dataset.triplet_dataset import TripletGraphDataset, NeighborEdgeSampler
     dataset = TripletGraphDataset(
         X=X,
@@ -236,6 +237,25 @@ def train_model_and_get_embs(adj, model_name, X, sampler, gnn_layers, epochs, le
             else:
                 embs[idx * batch_size:(idx + 1) * batch_size, :] = a
     return embs
+
+def get_reweighted_graph(adj, crosswalk, fairwalk, group_membership=None):
+    from utils import graph
+    from graph_embeddings import Fairwalk as fw
+    assert adj.shape[0] == adj.shape[1] and not (crosswalk and fairwalk) and sparse.issparse(adj)
+    # check symmetry
+    assert (adj != adj.T).nnz == 0, "Adj matrix is not symmetric"
+    A_ = adj.copy()
+    if crosswalk:
+        G = graph.from_numpy(adj, undirected=True)
+        G.attr = group_membership
+        n_groups = np.unique(group_membership).shape[0]
+        graph.set_weights(G, exp_=2, p_bndry=.7, l=n_groups)
+        A_ = graph.edge_weights_to_sparse(G, adj)
+    if fairwalk:
+        G = fw(group_membership=group_membership)
+        A_ = G._get_adj_matrix(adj)
+    return A_
+
 
 
 def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2vec: bool, fairwalk: bool, model_name: str, learn_outvec:bool=True, model_dim=128):
