@@ -10,7 +10,7 @@ from utils.config import GPU_ID, DISABLE_TQDM
 import networkx as nx
 from tqdm import tqdm
 import torch
-from tqdm import trange
+
 
 def _negative_sampling_sparse(edge_index, n_nodes, n_neg_samples=None, iter_limit=1000, return_pos_samples=False):
     # removing duplicated edges (because of symmetry
@@ -32,7 +32,7 @@ def _negative_sampling_sparse(edge_index, n_nodes, n_neg_samples=None, iter_limi
         # removing self loops and start less than end
         # this doesn't change the fact that sampling is proportional to degree because all these are bidirectional edges
         end_nodes, start_nodes = np.maximum(start_nodes, end_nodes), np.minimum(start_nodes, end_nodes)
-        mask = [start_nodes != end_nodes]
+        mask = start_nodes != end_nodes
         start_nodes = start_nodes[mask]
         end_nodes = end_nodes[mask]
 
@@ -43,16 +43,17 @@ def _negative_sampling_sparse(edge_index, n_nodes, n_neg_samples=None, iter_limi
 
         # optional randomize start and end nodes across axis=1
         # removing edges that are already present in the graph
-        mask = (adj[start_nodes, end_nodes] == 0)
+        mask = adj[start_nodes, end_nodes] == 0
         if mask.size:
             mask = np.array(mask.flat)
             start_nodes = start_nodes[mask]
             end_nodes = end_nodes[mask]
 
         # removing edges in negative_edges, taking != 0 because it is faster than == 0
-        mask = (neg_adj[start_nodes, end_nodes] != 0)
+        mask = neg_adj[start_nodes, end_nodes] != 0
         if mask.size:
-            mask = mask.nonzero()[1]
+            # convert matrix to numpy array
+            mask = np.squeeze(np.asarray(mask.todense()))
             start_nodes = start_nodes[~mask]
             end_nodes = end_nodes[~mask]
         # adding these to negative edges
@@ -62,7 +63,7 @@ def _negative_sampling_sparse(edge_index, n_nodes, n_neg_samples=None, iter_limi
         # only fill upper triangular part, therefore total number of edges is number of ones
         sampled = neg_adj.nnz
         iterations += 1
-
+    # return neg_adj
     neg_edge_index = torch.from_numpy(np.vstack(neg_adj.nonzero())).long()
     # this will contain duplicates because of symmetry
     neg_edge_index = torch.unique(torch.sort(neg_edge_index, dim=0).values, dim=1)
@@ -120,4 +121,5 @@ def get_edges_fastknn_faiss(emb, k=10, batch_size=2000):
         "source": np.repeat(np.arange(n_nodes), k),
         "target": targets,
     })
+
 

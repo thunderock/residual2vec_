@@ -11,251 +11,251 @@
 
 
 which python;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
 
 
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
 
 
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-
-
-
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-
-
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-
-
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_one gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-
-which python;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-
-
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-
-
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
 
 
 
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
 
 
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
 
 
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_two gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_one gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
 
 which python;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
 
 
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
 
 
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
 
 
 
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
 
 
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
 
 
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_three gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_two gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
 
 
 which python;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
 
 
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
 
 
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
 
 
 
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
 
 
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
 
 
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_four gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_three gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
 
 
 which python;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polbook  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
 
 
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# 
+
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
 
 
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polbook  --nolock --ignore-incomplete;
+
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+
+
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+
+
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_four gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+
+
+which python;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+
+
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+
+
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
 
 
 
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polbook  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=polblog  --nolock --ignore-incomplete;
 
 
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
 
 
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
-snakemake -R --until generate_node_embeddings  -call --config root=polbook_five gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polbook  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=word2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+# snakemake -R --until generate_node_embeddings  -call --config root=polblog_five gnn_model=word2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
 
 
