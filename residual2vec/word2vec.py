@@ -5,7 +5,7 @@ from torch import FloatTensor, LongTensor
 
 
 class Word2Vec(nn.Module):
-    def __init__(self, vocab_size, embedding_size, padding_idx):
+    def __init__(self, vocab_size, embedding_size, padding_idx, learn_outvec=True):
         super(Word2Vec, self).__init__()
         self.vocab_size = vocab_size
         self.embedding_size = embedding_size
@@ -37,6 +37,7 @@ class Word2Vec(nn.Module):
         )
         self.ivectors.weight.requires_grad = True
         self.ovectors.weight.requires_grad = True
+        self.learn_outvec = learn_outvec
 
     def forward(self, data):
         return self.forward_i(data)
@@ -47,6 +48,8 @@ class Word2Vec(nn.Module):
         return self.ivectors(v)
 
     def forward_o(self, data):
+        if not self.learn_outvec:
+            return self.forward_i(data)
         v = LongTensor(data)
         v = v.cuda() if self.ovectors.weight.is_cuda else v
         return self.ovectors(v)

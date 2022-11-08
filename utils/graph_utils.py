@@ -10,14 +10,16 @@ from utils.config import GPU_ID, DISABLE_TQDM
 import networkx as nx
 from tqdm import tqdm
 import torch
-from tqdm import trange
+
 
 def _negative_sampling_sparse(edge_index, n_nodes, n_neg_samples=None, iter_limit=1000, return_pos_samples=False):
     # removing duplicated edges (because of symmetry
     edge_index = torch.unique(torch.sort(edge_index, dim=0).values, dim=1)
     n_neg_samples = edge_index.size(1) if n_neg_samples is None else n_neg_samples
     adj = get_torch_sparse_from_edge_index(edge_index, n_nodes).to_scipy(layout='csr')
-    neg_adj = get_torch_sparse_from_edge_index(torch.empty((2, 0), dtype=torch.long), n_nodes).to_scipy(layout='csr')
+    # we only need the upper triangular part of the adjacency matrix
+    neg_adj = sparse.triu(get_torch_sparse_from_edge_index(torch.empty((2, 0), dtype=torch.long), n_nodes).to_scipy(layout='csr', dtype=torch.bool), k=1, format='lil')
+
     nodes = torch.concat((edge_index[0], edge_index[1])).numpy()
     iterations, sampled = 0, 0
     while sampled < n_neg_samples and iterations < iter_limit:
@@ -26,32 +28,42 @@ def _negative_sampling_sparse(edge_index, n_nodes, n_neg_samples=None, iter_limi
         start_nodes = nodes[np.random.randint(0, n_nodes, (remaining,))]
         # choosing end nodes with replacement
         end_nodes = nodes[np.random.randint(0, n_nodes, (remaining,))]
+
         # removing self loops and start less than end
-        mask = (start_nodes != end_nodes) & (start_nodes < end_nodes)
+        # this doesn't change the fact that sampling is proportional to degree because all these are bidirectional edges
+        end_nodes, start_nodes = np.maximum(start_nodes, end_nodes), np.minimum(start_nodes, end_nodes)
+        mask = start_nodes != end_nodes
         start_nodes = start_nodes[mask]
         end_nodes = end_nodes[mask]
 
+        # pick unique pairs here
+        mask = np.unique(np.stack((start_nodes, end_nodes)), axis=1, return_index=True)[1]
+        start_nodes = start_nodes[mask]
+        end_nodes = end_nodes[mask]
+
+        # optional randomize start and end nodes across axis=1
         # removing edges that are already present in the graph
-        mask = (adj[start_nodes, end_nodes] == 0)
+        mask = adj[start_nodes, end_nodes] == 0
         if mask.size:
             mask = np.array(mask.flat)
             start_nodes = start_nodes[mask]
             end_nodes = end_nodes[mask]
 
-        # removing edges in negative_edges
-        mask = (neg_adj[start_nodes, end_nodes] == 0)
+        # removing edges in negative_edges, taking != 0 because it is faster than == 0
+        mask = neg_adj[start_nodes, end_nodes] != 0
         if mask.size:
-            mask = np.array(mask.flat)
-            start_nodes = start_nodes[mask]
-            end_nodes = end_nodes[mask]
-
+            # convert matrix to numpy array
+            mask = np.squeeze(np.asarray(mask.todense()))
+            start_nodes = start_nodes[~mask]
+            end_nodes = end_nodes[~mask]
         # adding these to negative edges
         neg_adj[start_nodes, end_nodes] = 1
-        # should be symmetric
-        neg_adj[end_nodes, start_nodes] = 1
-        sampled = neg_adj.nnz // 2
+        # should be symmetric, dont need this because start nodes are always smaller than end nodes
+        # neg_adj[end_nodes, start_nodes] = 1
+        # only fill upper triangular part, therefore total number of edges is number of ones
+        sampled = neg_adj.nnz
         iterations += 1
-
+    # return neg_adj
     neg_edge_index = torch.from_numpy(np.vstack(neg_adj.nonzero())).long()
     # this will contain duplicates because of symmetry
     neg_edge_index = torch.unique(torch.sort(neg_edge_index, dim=0).values, dim=1)
@@ -109,4 +121,5 @@ def get_edges_fastknn_faiss(emb, k=10, batch_size=2000):
         "source": np.repeat(np.arange(n_nodes), k),
         "target": targets,
     })
+
 
