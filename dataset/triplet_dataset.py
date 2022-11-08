@@ -107,11 +107,11 @@ class NeighborEdgeSampler(torch.utils.data.DataLoader):
             return x, x, x
         else:
             for idx, n_id in enumerate((a, p, n)):
-                if idx == 2:
-                    # in case of negativly sampled node
-                    adj_t, node_ids = self.neg_adj_t.sample_adj(n_id, self.edge_sample_size, replace=False)
-                else:
-                    adj_t, node_ids = self.adj_t.sample_adj(n_id, self.edge_sample_size, replace=False)
+                # if idx == 2:
+                #     # in case of negativly sampled node
+                #     adj_t, node_ids = self.neg_adj_t.sample_adj(n_id, self.edge_sample_size, replace=False)
+                # else:
+                adj_t, node_ids = self.adj_t.sample_adj(n_id, self.edge_sample_size, replace=False)
                 row, col, _ = adj_t.coo()
                 edge_index = torch.stack([row, col], dim=0)
                 adjs.append(edge_index)
