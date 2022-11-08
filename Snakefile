@@ -186,8 +186,8 @@ rule train_gnn:
 
 rule generate_crosswalk_weights:
     output:
-        crosswalk_weighted_adj =  FileResources(root=DATA_ROOT, fairwalk=False, crosswalk=True, r2v="doesnt_matter", model_name="doesnt_matter",
-            node2vec="doesnt_matter", dataset=DATASET).adj_path,
+        # crosswalk_weighted_adj =  FileResources(root=DATA_ROOT, fairwalk=False, crosswalk=True, r2v="doesnt_matter", model_name="doesnt_matter",
+        #     node2vec="doesnt_matter", dataset=DATASET).adj_path,
         fairwalk_weighted_adj =  FileResources(root=DATA_ROOT,fairwalk=True,crosswalk=False,r2v="doesnt_matter",model_name="doesnt_matter",
             node2vec="doesnt_matter", dataset=DATASET).adj_path,
         unweighted_adj =  FileResources(root=DATA_ROOT,fairwalk=False,crosswalk=False,r2v="doesnt_matter",model_name="doesnt_matter",
@@ -224,15 +224,15 @@ rule generate_crosswalk_weights:
         n.train_test_split()
         # nodes are made symmetric here
 
-        snakemake_utils.store_weighted_adj(
-            file_path=output.crosswalk_weighted_adj,
-            crosswalk=True,
-            fairwalk=False,
-            embedding_dim=params.NODE_TO_VEC_DIM,
-            num_nodes=num_nodes,
-            edge_index=n.train_edges,
-            group_membership=d.get_grouped_col()
-        )
+        # snakemake_utils.store_weighted_adj(
+        #     file_path=output.crosswalk_weighted_adj,
+        #     crosswalk=True,
+        #     fairwalk=False,
+        #     embedding_dim=params.NODE_TO_VEC_DIM,
+        #     num_nodes=num_nodes,
+        #     edge_index=n.train_edges,
+        #     group_membership=d.get_grouped_col()
+        # )
         snakemake_utils.store_weighted_adj(
             file_path=output.fairwalk_weighted_adj,
             crosswalk=False,
