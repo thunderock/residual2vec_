@@ -328,7 +328,8 @@ All of these models take $16$ dimensional node2vec ~\cite{grover_node2vec_2016} 
 
 This method is independent of the model used to encode network nodes. In this case we show word2vec, GAT and GCN. We also show the results of the baseline method which is the same as the proposed method but the negative samples are generated randomly from the network. Here is the structure of GAT and GCN, models used in this paper.
 
-The input to our model 
+The input to our model is a triplet of nodes $(i,j,j')$ where $j$ is a positive sample and $j'$ is a negative sample where each sample is represented by a deepwalk features and the set of features of neighbors of the node, generated from positive or negative adjacency matrix depending on whether it is $j$ or $j'$. The output of the model are the ivectors of the nodes and the object function maximizes the separation of the dot product of positive and negative ivectors with the ivector of current context.
+
 
 % \begin{table*}[h]
 %   \caption{Models}
