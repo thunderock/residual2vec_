@@ -25,10 +25,10 @@ def _negative_sampling_sparse(edge_index, n_nodes, n_neg_samples=None, iter_limi
     while sampled < n_neg_samples and iterations < iter_limit:
         remaining = n_neg_samples - sampled
         # choosing start nodes with replacement
-        start_nodes = nodes[np.random.randint(0, n_nodes, (remaining,))]
+        end_nodes = nodes[np.random.randint(0, n_nodes, (remaining,))]
         # choosing end nodes with replacement
         
-        end_nodes = np.random.choice(n_nodes, (remaining,)) 
+        start_nodes = np.random.choice(n_nodes, (remaining,))
 
         # removing self loops and start less than end
         # this doesn't change the fact that sampling is proportional to degree because all these are bidirectional edges
