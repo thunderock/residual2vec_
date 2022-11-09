@@ -45,12 +45,18 @@ class FileResources(object):
                 return str(j(self.root, "{}_crosswalk_node2vec.npy".format(self.dataset)))
             else:
                 return str(j(self.root, "{}_crosswalk_deepwalk.npy".format(self.dataset)))
-        else:
+        elif self.fairwalk:
             # faiwalk
             if self.node2vec:
                 return str(j(self.root, "{}_fairwalk_node2vec.npy".format(self.dataset)))
             else:
                 return str(j(self.root, "{}_fairwalk_deepwalk.npy".format(self.dataset)))
+        else:
+            # no walk
+            if self.node2vec:
+                return str(j(self.root, "{}_node2vec.npy".format(self.dataset)))
+            else:
+                return str(j(self.root, "{}_deepwalk.npy".format(self.dataset)))
 
     @property
     def model_weights(self):

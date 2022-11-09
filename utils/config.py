@@ -59,9 +59,9 @@ R2V_TRAINING_EPOCHS = {
 NUM_GNN_LAYERS = {
     'pokec': 5,
     'small_pokec': 5,
-    'airport': 3,
-    'polbook': 3,
-    'polblog': 3
+    'airport': 4,
+    'polbook': 4,
+    'polblog': 4
 }
 
 NUM_NEGATIVE_SAMPLING = {
