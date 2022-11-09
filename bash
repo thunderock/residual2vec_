@@ -7,7 +7,7 @@
 #SBATCH --mail-user=ashutiwa@iu.edu
 #SBATCH --gpus-per-node p100:1
 #SBATCH --cpus-per-task=20
-#
+#SBATCH -A legacy-projects
 
 which python;
 # fairwalk + dw
