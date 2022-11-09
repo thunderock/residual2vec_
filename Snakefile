@@ -61,6 +61,7 @@ rule train_gnn:
         SET_DEVICE = SET_DEVICE,
         RV_NUM_WALKS= 100
     run:
+        assert not (CROSSWALK or FAIRWALK)
         os.environ["SET_GPU"] = params.SET_DEVICE
         import torch
         from dataset import triplet_dataset
@@ -285,6 +286,7 @@ rule train_features_2_vec:
         edge_index = snakemake_utils.get_edge_index_from_sparse_path(input.weighted_adj)
         num_nodes = snakemake_utils.get_num_nodes_from_adj(input.weighted_adj)
 
+        feature_dim = 128 if (CROSSWALK or FAIRWALK) else params.NODE_TO_VEC_DIM
         labels = snakemake_utils.get_dataset(DATASET).get_grouped_col()
         if NODE2VEC:
             snakemake_utils.train_node2vec_get_embs(
@@ -292,7 +294,7 @@ rule train_features_2_vec:
                 file_path=output.features,
                 crosswalk=CROSSWALK,
                 fairwalk=FAIRWALK,
-                embedding_dim=params.NODE_TO_VEC_DIM,
+                embedding_dim=feature_dim,
                 num_nodes=num_nodes,
                 weighted_adj_path=input.weighted_adj,
                 group_membership=labels
@@ -303,7 +305,7 @@ rule train_features_2_vec:
                 file_path=output.features,
                 crosswalk=CROSSWALK,
                 fairwalk=FAIRWALK,
-                embedding_dim=params.NODE_TO_VEC_DIM,
+                embedding_dim=feature_dim,
                 num_nodes=num_nodes,
                 weighted_adj_path=input.weighted_adj,
                 group_membership=labels
@@ -326,6 +328,7 @@ rule generate_node_embeddings:
         RV_NUM_WALKS= 100
     threads: 20
     run:
+        assert not (CROSSWALK or FAIRWALK)
         os.environ["SET_GPU"] = params.SET_DEVICE
         import torch
         import numpy as np

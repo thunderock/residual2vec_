@@ -258,7 +258,7 @@ def get_reweighted_graph(adj, crosswalk, fairwalk, group_membership=None):
 
 
 
-def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2vec: bool, fairwalk: bool, model_name: str, learn_outvec:bool=True, model_dim=128):
+def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2vec: bool, fairwalk: bool, model_name: str=None, learn_outvec:bool=True, model_dim=128):
     """
     returns embs given dataset name
     dataset: name of dataset
@@ -270,23 +270,30 @@ def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2ve
     """
     assert not (crosswalk and fairwalk)
     assert dataset_name in ['airport', 'polbook', 'polblog', 'small_pokec', 'pokec']
-    assert model_name in ['gcn', 'gat']
+
     dataset = get_dataset(dataset_name)
     group_membership = dataset.get_grouped_col()
     edge_index, num_nodes = dataset.edge_index, dataset.X.shape[0]
     edge_index = torch.unique(torch.cat([edge_index, edge_index.flip(0)], dim=1), dim=1)
-
+    return_features = crosswalk or fairwalk
+    num_features = model_dim if return_features else 16
     # create data to train
     if node2vec:
         # using node2vec node features
-        feature_model = _get_node2vec_model(embedding_dim=16, num_nodes=num_nodes, edge_index=edge_index, crosswalk=crosswalk, fairwalk=fairwalk, group_membership=group_membership)
+        feature_model = _get_node2vec_model(embedding_dim=num_features, num_nodes=num_nodes, edge_index=edge_index, crosswalk=crosswalk, fairwalk=fairwalk, group_membership=group_membership)
     else:
         # use deepwalk node features
-        feature_model = _get_deepwalk_model(embedding_dim=16, num_nodes=num_nodes, edge_index=edge_index, crosswalk=crosswalk, fairwalk=fairwalk, group_membership=group_membership)
+        feature_model = _get_deepwalk_model(embedding_dim=num_features, num_nodes=num_nodes, edge_index=edge_index, crosswalk=crosswalk, fairwalk=fairwalk, group_membership=group_membership)
+
     # weighted adj matrix
     adj = feature_model.adj
     # train and get embs
-    X = torch.from_numpy(feature_model.train_and_get_embs(save=None).astype(np.float32))
+    X = feature_model.train_and_get_embs(save=None).astype(np.float32)
+    if return_features:
+        return X
+    assert not (crosswalk and fairwalk)
+
+    X = torch.from_numpy(X)
 
     # use weights in case of crosswalk or fairwalk
     use_weights = True if (crosswalk or fairwalk) else False
@@ -298,5 +305,7 @@ def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2ve
     else:
         from torch_geometric.utils import negative_sampling
         sampler = negative_sampling
+
+    assert model_name in ['gcn', 'gat']
     return train_model_and_get_embs(adj=adj, model_name=model_name, X=X, sampler=sampler, gnn_layers=NUM_GNN_LAYERS[dataset_name], epochs=R2V_TRAINING_EPOCHS[dataset_name], learn_outvec=learn_outvec, model_dim=model_dim)
 
