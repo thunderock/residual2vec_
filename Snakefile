@@ -1,7 +1,7 @@
 import os
 from utils.snakemake_utils import get_string_boolean, FileResources
 import wandb
-from utils.config import R2V_TRAINING_EPOCHS, NUM_NEGATIVE_SAMPLING
+from utils.config import R2V_TRAINING_EPOCHS, NUM_NEGATIVE_SAMPLING, NUM_THREADS
 # os.environ["CUDA_VISIBLE_DEVICES"]=""
 # config = {'gnn_model': 'gat', 'crosswalk': 'true',
 #           'r2v': 'true', 'dataset': 'pokec', 'device': 'cuda:0'}
@@ -53,11 +53,11 @@ rule train_gnn:
         weighted_adj=file_resources.adj_path
     output:
         model_weights = file_resources.model_weights
-    threads: 20
+    threads: NUM_THREADS[DATASET]
     params:
         BATCH_SIZE = 256 * 3,
         NODE_TO_VEC_DIM= 16,
-        NUM_WORKERS = 20,
+        NUM_WORKERS = NUM_THREADS[DATASET],
         SET_DEVICE = SET_DEVICE,
         RV_NUM_WALKS= 100
     run:
@@ -199,7 +199,7 @@ rule generate_crosswalk_weights:
     params:
         BATCH_SIZE=256 * 3,
         NODE_TO_VEC_DIM=16,
-        NUM_WORKERS=20,
+        NUM_WORKERS=NUM_THREADS[DATASET],
         SET_DEVICE=SET_DEVICE,
         RV_NUM_WALKS=100
     threads: 10
@@ -268,11 +268,11 @@ rule train_features_2_vec:
         weighted_adj=file_resources.adj_path
     output:
         features = file_resources.feature_embs
-    threads: 20
+    threads: NUM_THREADS[DATASET]
     params:
         BATCH_SIZE = 256 * 3,
         NODE_TO_VEC_DIM= 16,
-        NUM_WORKERS = 20,
+        NUM_WORKERS = NUM_THREADS[DATASET],
         SET_DEVICE = SET_DEVICE,
         RV_NUM_WALKS= 100
     run:
@@ -323,10 +323,10 @@ rule generate_node_embeddings:
     params:
         BATCH_SIZE = 256 * 3,
         NODE_TO_VEC_DIM= 16,
-        NUM_WORKERS = 20,
+        NUM_WORKERS = NUM_THREADS[DATASET],
         SET_DEVICE = SET_DEVICE,
         RV_NUM_WALKS= 100
-    threads: 20
+    threads: NUM_THREADS[DATASET]
     run:
         assert not (CROSSWALK or FAIRWALK)
         os.environ["SET_GPU"] = params.SET_DEVICE

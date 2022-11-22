@@ -50,7 +50,7 @@ if CUDA:
     # GPU_ID = int(DEVICE.split(":")[1])
     print(f"Using GPU: {DEVICE}")
 R2V_TRAINING_EPOCHS = {
-    'pokec': 2,
+    'pokec': 1,
     'small_pokec': 4,
     'airport': 100,
     'polbook': 200,
@@ -70,6 +70,14 @@ NUM_NEGATIVE_SAMPLING = {
     'airport': 4,
     'polbook': 10,
     'polblog': 10
+}
+
+NUM_THREADS = {
+    'pokec': 40,
+    'small_pokec': 20,
+    'airport': 20,
+    'polbook': 20,
+    'polblog': 20
 }
 
 NUM_WORKERS = 20
