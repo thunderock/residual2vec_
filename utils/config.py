@@ -73,7 +73,7 @@ NUM_NEGATIVE_SAMPLING = {
 }
 
 NUM_THREADS = {
-    'pokec': 30,
+    'pokec': 20,
     'small_pokec': 20,
     'airport': 20,
     'polbook': 20,
