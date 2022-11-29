@@ -264,7 +264,7 @@ def get_reweighted_graph(adj, crosswalk, fairwalk, group_membership=None):
 
 
 
-def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2vec: bool, fairwalk: bool, model_name: str=None, learn_outvec:bool=True, model_dim=128):
+def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2vec: bool, fairwalk: bool, model_name: str=None, learn_outvec:bool=True, model_dim=128, adj=None):
     """
     returns embs given dataset name
     dataset: name of dataset
@@ -276,7 +276,7 @@ def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2ve
     """
     assert not (crosswalk and fairwalk)
     assert dataset_name in ['airport', 'polbook', 'polblog', 'small_pokec', 'pokec']
-
+    IS_ADJ = sparse.issparse(adj)
     dataset = get_dataset(dataset_name)
     group_membership = dataset.get_grouped_col()
     edge_index, num_nodes = dataset.edge_index, dataset.X.shape[0]
@@ -286,13 +286,13 @@ def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2ve
     # create data to train
     if node2vec:
         # using node2vec node features
-        feature_model = _get_node2vec_model(embedding_dim=num_features, num_nodes=num_nodes, edge_index=edge_index, crosswalk=crosswalk, fairwalk=fairwalk, group_membership=group_membership)
+        feature_model = _get_node2vec_model(embedding_dim=num_features, num_nodes=num_nodes, edge_index=edge_index, crosswalk=crosswalk, fairwalk=fairwalk, group_membership=group_membership, weighted_adj_path=adj if IS_ADJ else None)
     else:
         # use deepwalk node features
-        feature_model = _get_deepwalk_model(embedding_dim=num_features, num_nodes=num_nodes, edge_index=edge_index, crosswalk=crosswalk, fairwalk=fairwalk, group_membership=group_membership)
+        feature_model = _get_deepwalk_model(embedding_dim=num_features, num_nodes=num_nodes, edge_index=edge_index, crosswalk=crosswalk, fairwalk=fairwalk, group_membership=group_membership, weighted_adj_path=adj if adj else None)
 
     # weighted adj matrix
-    adj = feature_model.adj
+    adj = adj if IS_ADJ else feature_model.adj
     # train and get embs
     X = feature_model.train_and_get_embs(save=None).astype(np.float32)
     if return_features:

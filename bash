@@ -37,7 +37,7 @@ snakemake   generate_node_embeddings  -call --config root=polblog_one gnn_model=
 
 # random + dw
 snakemake   generate_node_embeddings  -call --config root=polblog_one gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
-snakemake   generate_node_embeddings  -call --config root=polblog_one gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;SBATCH -A legacy-projects
+snakemake   generate_node_embeddings  -call --config root=polblog_one gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
 
 
 which python;

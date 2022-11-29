@@ -35,7 +35,7 @@ class WeightedNode2Vec(Node2Vec):
         if isinstance(group_membership, torch.Tensor):
             self.group_membership = group_membership.numpy()
 
-        if not weighted_adj:
+        if isinstance(edge_index, torch.Tensor):
             assert edge_index is not None
             row, col = edge_index
             adj = SparseTensor(row=row, col=col, sparse_sizes=(num_nodes, num_nodes))
@@ -54,7 +54,7 @@ class WeightedNode2Vec(Node2Vec):
 
 class UnWeightedNode2Vec(Node2Vec):
     def __init__(self, num_nodes, embedding_dim, weighted_adj, edge_index):
-        if not weighted_adj:
+        if isinstance(edge_index, torch.Tensor):
             assert edge_index is not None
             row, col = edge_index
             adj = SparseTensor(row=row, col=col, sparse_sizes=(num_nodes, num_nodes))
@@ -78,7 +78,7 @@ class FairWalkNode2Vec(Node2Vec):
         if isinstance(group_membership, torch.Tensor):
             self.group_membership = group_membership.numpy()
 
-        if not weighted_adj:
+        if isinstance(edge_index, torch.Tensor):
             assert edge_index is not None
             row, col = edge_index
             adj = SparseTensor(row=row, col=col, sparse_sizes=(num_nodes, num_nodes))
