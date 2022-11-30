@@ -289,10 +289,10 @@ def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2ve
         feature_model = _get_node2vec_model(embedding_dim=num_features, num_nodes=num_nodes, edge_index=edge_index, crosswalk=crosswalk, fairwalk=fairwalk, group_membership=group_membership, weighted_adj_path=adj if IS_ADJ else None)
     else:
         # use deepwalk node features
-        feature_model = _get_deepwalk_model(embedding_dim=num_features, num_nodes=num_nodes, edge_index=edge_index, crosswalk=crosswalk, fairwalk=fairwalk, group_membership=group_membership, weighted_adj_path=adj if adj else None)
+        feature_model = _get_deepwalk_model(embedding_dim=num_features, num_nodes=num_nodes, edge_index=edge_index, crosswalk=crosswalk, fairwalk=fairwalk, group_membership=group_membership, weighted_adj_path=adj if IS_ADJ else None)
 
     # weighted adj matrix
-    adj = adj if IS_ADJ else feature_model.adj
+    adj = get_reweighted_graph(adj=adj, crosswalk=crosswalk, fairwalk=fairwalk, group_membership=group_membership) if IS_ADJ else feature_model.adj
     # train and get embs
     X = feature_model.train_and_get_embs(save=None).astype(np.float32)
     if return_features:
