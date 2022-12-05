@@ -81,8 +81,6 @@ class NeighborEdgeSampler(torch.utils.data.DataLoader):
         num_nodes = self.dataset.X.shape[0]
         self.features = dataset.num_features
         self.adj_t = self._get_adj_t(edge_index, num_nodes)
-        self.neg_adj_t = self._get_adj_t(dataset.neg_edge_index, num_nodes)
-        self.neg_adj_t.storage.rowptr()
         self.adj_t.storage.rowptr()
         if not edge_sample_size:
             edge_sample_size = num_nodes
@@ -98,7 +96,8 @@ class NeighborEdgeSampler(torch.utils.data.DataLoader):
             batch = [torch.tensor(b) for b in batch]
         batch = torch.stack(batch)
         a, p, n = batch[:, 0], batch[:, 1], batch[:, 2]
-        adjs, nids = [], []
+
+        x = 3 * [None]
         if self.transforming:
             adj_t, node_ids = self.adj_t.sample_adj(a, self.edge_sample_size, replace=False)
             row, col, _ = adj_t.coo()
@@ -107,19 +106,12 @@ class NeighborEdgeSampler(torch.utils.data.DataLoader):
             return x, x, x
         else:
             for idx, n_id in enumerate((a, p, n)):
-                if idx == 2:
-                    # in case of negativly sampled node
-                    adj_t, node_ids = self.neg_adj_t.sample_adj(n_id, self.edge_sample_size, replace=False)
-                else:
-                    adj_t, node_ids = self.adj_t.sample_adj(n_id, self.edge_sample_size, replace=False)
+                adj_t, node_ids = self.adj_t.sample_adj(n_id, self.edge_sample_size, replace=False)
                 row, col, _ = adj_t.coo()
                 edge_index = torch.stack([row, col], dim=0)
-                adjs.append(edge_index)
-                nids.append(node_ids)
+                x[idx] = (self.dataset.X[n_id], self.dataset.X[node_ids], edge_index)
         # get this features from dataset itself in future
-        return (self.dataset.X[a], self.dataset.X[nids[0]], adjs[0]), \
-               (self.dataset.X[p], self.dataset.X[nids[1]], adjs[1]), \
-               (self.dataset.X[n], self.dataset.X[nids[2]], adjs[2])
+        return x
 
     def __repr__(self) -> str:
         return '{}({}, batch_size={})'.format(self.__class__.__name__, len(self.dataset), self.batch_size)

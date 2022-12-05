@@ -1,1643 +1,817 @@
 
-% Journals
-
-% First the Full Name is given, then the abbreviation used in the AMS Math
-% Reviews, with an indication if it could not be found there.
-% Note the 2nd overwrites the 1st, so swap them if you want the full name.
-
- %{AMS}
- @String{AMSTrans = "American Mathematical Society Translations" }
- @String{AMSTrans = "Amer. Math. Soc. Transl." }
- @String{BullAMS = "Bulletin of the American Mathematical Society" }
- @String{BullAMS = "Bull. Amer. Math. Soc." }
- @String{ProcAMS = "Proceedings of the American Mathematical Society" }
- @String{ProcAMS = "Proc. Amer. Math. Soc." }
- @String{TransAMS = "Transactions of the American Mathematical Society" }
- @String{TransAMS = "Trans. Amer. Math. Soc." }
-
- %ACM
- @String{CACM = "Communications of the {ACM}" }
- @String{CACM = "Commun. {ACM}" }
- @String{CompServ = "Comput. Surveys" }
- @String{JACM = "J. ACM" }
- @String{ACMMathSoft = "{ACM} Transactions on Mathematical Software" }
- @String{ACMMathSoft = "{ACM} Trans. Math. Software" }
- @String{SIGNUM = "{ACM} {SIGNUM} Newsletter" }
- @String{SIGNUM = "{ACM} {SIGNUM} Newslett." }
-
- @String{AmerSocio = "American Journal of Sociology" }
- @String{AmerStatAssoc = "Journal of the American Statistical Association" }
- @String{AmerStatAssoc = "J. Amer. Statist. Assoc." }
- @String{ApplMathComp = "Applied Mathematics and Computation" }
- @String{ApplMathComp = "Appl. Math. Comput." }
- @String{AmerMathMonthly = "American Mathematical Monthly" }
- @String{AmerMathMonthly = "Amer. Math. Monthly" }
- @String{BIT = "{BIT}" }
- @String{BritStatPsych = "British Journal of Mathematical and Statistical
-          Psychology" }
- @String{BritStatPsych = "Brit. J. Math. Statist. Psych." }
- @String{CanMathBull = "Canadian Mathematical Bulletin" }
- @String{CanMathBull = "Canad. Math. Bull." }
- @String{CompApplMath = "Journal of Computational and Applied Mathematics" }
- @String{CompApplMath = "J. Comput. Appl. Math." }
- @String{CompPhys = "Journal of Computational Physics" }
- @String{CompPhys = "J. Comput. Phys." }
- @String{CompStruct = "Computers and Structures" }
- @String{CompStruct = "Comput. \& Structures" }
- @String{CompJour = "The Computer Journal" }
- @String{CompJour = "Comput. J." }
- @String{CompSysSci = "Journal of Computer and System Sciences" }
- @String{CompSysSci = "J. Comput. System Sci." }
- @String{Computing = "Computing" }
- @String{ContempMath = "Contemporary Mathematics" }
- @String{ContempMath = "Contemp. Math." }
- @String{Crelle = "Crelle's Journal" }
- @String{GiornaleMath = "Giornale di Mathematiche" }
- @String{GiornaleMath = "Giorn. Mat." } % didn't find in AMS MR., ibid.
-
- %IEEE
- @String{Computer = "{IEEE} Computer" }
- @String{IEEETransComp = "{IEEE} Transactions on Computers" }
- @String{IEEETransComp = "{IEEE} Trans. Comput." }
- @String{IEEETransAC = "{IEEE} Transactions on Automatic Control" }
- @String{IEEETransAC = "{IEEE} Trans. Automat. Control" }
- @String{IEEESpec = "{IEEE} Spectrum" } % didn't find in AMS MR
- @String{ProcIEEE = "Proceedings of the {IEEE}" }
- @String{ProcIEEE = "Proc. {IEEE}" } % didn't find in AMS MR
- @String{IEEETransAeroElec = "{IEEE} Transactions on Aerospace and Electronic
-     Systems" }
- @String{IEEETransAeroElec = "{IEEE} Trans. Aerospace Electron. Systems" }
-
- @String{IMANumerAna = "{IMA} Journal of Numerical Analysis" }
- @String{IMANumerAna = "{IMA} J. Numer. Anal." }
- @String{InfProcLet = "Information Processing Letters" }
- @String{InfProcLet = "Inform. Process. Lett." }
- @String{InstMathApp = "Journal of the Institute of Mathematics and
-     its Applications" }
- @String{InstMathApp = "J. Inst. Math. Appl." }
- @String{IntControl = "International Journal of Control" }
- @String{IntControl = "Internat. J. Control" }
- @String{IntNumerEng = "International Journal for Numerical Methods in
-     Engineering" }
- @String{IntNumerEng = "Internat. J. Numer. Methods Engrg." }
- @String{IntSuper = "International Journal of Supercomputing Applications" }
- @String{IntSuper = "Internat. J. Supercomputing Applic." } % didn't find
-%% in AMS MR
- @String{Kibernetika = "Kibernetika" }
- @String{JResNatBurStand = "Journal of Research of the National Bureau
-     of Standards" }
- @String{JResNatBurStand = "J. Res. Nat. Bur. Standards" }
- @String{LinAlgApp = "Linear Algebra and its Applications" }
- @String{LinAlgApp = "Linear Algebra Appl." }
- @String{MathAnaAppl = "Journal of Mathematical Analysis and Applications" }
- @String{MathAnaAppl = "J. Math. Anal. Appl." }
- @String{MathAnnalen = "Mathematische Annalen" }
- @String{MathAnnalen = "Math. Ann." }
- @String{MathPhys = "Journal of Mathematical Physics" }
- @String{MathPhys = "J. Math. Phys." }
- @String{MathComp = "Mathematics of Computation" }
- @String{MathComp = "Math. Comp." }
- @String{MathScand = "Mathematica Scandinavica" }
- @String{MathScand = "Math. Scand." }
- @String{TablesAidsComp = "Mathematical Tables and Other Aids to Computation" }
- @String{TablesAidsComp = "Math. Tables Aids Comput." }
- @String{NumerMath = "Numerische Mathematik" }
- @String{NumerMath = "Numer. Math." }
- @String{PacificMath = "Pacific Journal of Mathematics" }
- @String{PacificMath = "Pacific J. Math." }
- @String{ParDistComp = "Journal of Parallel and Distributed Computing" }
- @String{ParDistComp = "J. Parallel and Distrib. Comput." } % didn't find
-%% in AMS MR
- @String{ParComputing = "Parallel Computing" }
- @String{ParComputing = "Parallel Comput." }
- @String{PhilMag = "Philosophical Magazine" }
- @String{PhilMag = "Philos. Mag." }
- @String{ProcNAS = "Proceedings of the National Academy of Sciences
-                    of the USA" }
- @String{ProcNAS = "Proc. Nat. Acad. Sci. U. S. A." }
- @String{Psychometrika = "Psychometrika" }
- @String{QuartMath = "Quarterly Journal of Mathematics, Oxford, Series (2)" }
- @String{QuartMath = "Quart. J. Math. Oxford Ser. (2)" }
- @String{QuartApplMath = "Quarterly of Applied Mathematics" }
- @String{QuartApplMath = "Quart. Appl. Math." }
- @String{RevueInstStat = "Review of the International Statisical Institute" }
- @String{RevueInstStat = "Rev. Inst. Internat. Statist." }
-
- %SIAM
- @String{JSIAM = "Journal of the Society for Industrial and Applied
-     Mathematics" }
- @String{JSIAM = "J. Soc. Indust. Appl. Math." }
- @String{JSIAMB = "Journal of the Society for Industrial and Applied
-     Mathematics, Series B, Numerical Analysis" }
- @String{JSIAMB = "J. Soc. Indust. Appl. Math. Ser. B Numer. Anal." }
- @String{SIAMAlgMeth = "{SIAM} Journal on Algebraic and Discrete Methods" }
- @String{SIAMAlgMeth = "{SIAM} J. Algebraic Discrete Methods" }
- @String{SIAMAppMath = "{SIAM} Journal on Applied Mathematics" }
- @String{SIAMAppMath = "{SIAM} J. Appl. Math." }
- @String{SIAMComp = "{SIAM} Journal on Computing" }
- @String{SIAMComp = "{SIAM} J. Comput." }
- @String{SIAMMatrix = "{SIAM} Journal on Matrix Analysis and Applications" }
- @String{SIAMMatrix = "{SIAM} J. Matrix Anal. Appl." }
- @String{SIAMNumAnal = "{SIAM} Journal on Numerical Analysis" }
- @String{SIAMNumAnal = "{SIAM} J. Numer. Anal." }
- @String{SIAMReview = "{SIAM} Review" }
- @String{SIAMReview = "{SIAM} Rev." }
- @String{SIAMSciStat = "{SIAM} Journal on Scientific and Statistical
-     Computing" }
- @String{SIAMSciStat = "{SIAM} J. Sci. Statist. Comput." }
-
- @String{SoftPracExp = "Software Practice and Experience" }
- @String{SoftPracExp = "Software Prac. Experience" } % didn't find in AMS MR
- @String{StatScience = "Statistical Science" }
- @String{StatScience = "Statist. Sci." }
- @String{Techno = "Technometrics" }
- @String{USSRCompMathPhys = "{USSR} Computational Mathematics and Mathematical
-     Physics" }
- @String{USSRCompMathPhys = "{U. S. S. R.} Comput. Math. and Math. Phys." }
- @String{VLSICompSys = "Journal of {VLSI} and Computer Systems" }
- @String{VLSICompSys = "J. {VLSI} Comput. Syst." }
- @String{ZAngewMathMech = "Zeitschrift fur Angewandte Mathematik und
-     Mechanik" }
- @String{ZAngewMathMech = "Z. Angew. Math. Mech." }
- @String{ZAngewMathPhys = "Zeitschrift fur Angewandte Mathematik und Physik" }
- @String{ZAngewMathPhys = "Z. Angew. Math. Phys." }
-
-% Publishers % ================================================= |
-
- @String{Academic = "Academic Press" }
- @String{ACMPress = "{ACM} Press" }
- @String{AdamHilger = "Adam Hilger" }
- @String{AddisonWesley = "Addison-Wesley" }
- @String{AllynBacon = "Allyn and Bacon" }
- @String{AMS = "American Mathematical Society" }
- @String{Birkhauser = "Birkha{\"u}ser" }
- @String{CambridgePress = "Cambridge University Press" }
- @String{Chelsea = "Chelsea" }
- @String{ClaredonPress = "Claredon Press" }
- @String{DoverPub = "Dover Publications" }
- @String{Eyolles = "Eyolles" }
- @String{HoltRinehartWinston = "Holt, Rinehart and Winston" }
- @String{Interscience = "Interscience" }
- @String{JohnsHopkinsPress = "The Johns Hopkins University Press" }
- @String{JohnWileySons = "John Wiley and Sons" }
- @String{Macmillan = "Macmillan" }
- @String{MathWorks = "The Math Works Inc." }
- @String{McGrawHill = "McGraw-Hill" }
- @String{NatBurStd = "National Bureau of Standards" }
- @String{NorthHolland = "North-Holland" }
- @String{OxfordPress = "Oxford University Press" }  %address Oxford or London?
- @String{PergamonPress = "Pergamon Press" }
- @String{PlenumPress = "Plenum Press" }
- @String{PrenticeHall = "Prentice-Hall" }
- @String{SIAMPub = "{SIAM} Publications" }
- @String{Springer = "Springer-Verlag" }
- @String{TexasPress = "University of Texas Press" }
- @String{VanNostrand = "Van Nostrand" }
- @String{WHFreeman = "W. H. Freeman and Co." }
-
-%Entries
-
-@Article{Abril07,
-  author        = "Patricia S. Abril and Robert Plant",
-  title         = "The patent holder's dilemma: Buy, sell, or troll?",
-  journal       = "Communications of the ACM",
-  volume        = "50",
-  number        = "1",
-  month         = jan,
-  year          = "2007",
-  pages         = "36--44",
-  doi           = "10.1145/1188913.1188915",
-  url           = "http://doi.acm.org/10.1145/1219092.1219093",
-  note          = "",
-}
-
-@Article{Cohen07,
-  author        = "Sarah Cohen and Werner Nutt and Yehoshua Sagic",
-  title         = "Deciding equivalances among conjunctive aggregate queries",
-  journal       = JACM,
-  articleno     = 5,
-  numpages      = 50,
-  volume        = 54,
-  number        = 2,
-  month         = apr,
-  year          = 2007,
-  doi           = "10.1145/1219092.1219093",
-  url           = "http://doi.acm.org/10.1145/1219092.1219093",
-  acmid         = 1219093,
-}
-
-
-@periodical{JCohen96,
-  key =          "Cohen",
-  editor =       "Jacques Cohen",
-  title =        "Special issue: Digital Libraries",
-  journal =      CACM,
-  volume =       "39",
-  number =       "11",
-  month =        nov,
-  year =         "1996",
-}
-
-
-@Book{Kosiur01,
-  author =       "David Kosiur",
-  title =        "Understanding Policy-Based Networking",
-  publisher =    "Wiley",
-  year =         "2001",
-  address =      "New York, NY",
-  edition =      "2nd.",
-  editor =       "",
-  volume =       "",
-  number =       "",
-  series =       "",
-  month =        "",
-  note =         "",
-}
-
-
-@Book{Harel79,
-  author =       "David Harel",
-  year =         "1979",
-  title =        "First-Order Dynamic Logic",
-  series =       "Lecture Notes in Computer Science",
-  volume =       "68",
-  address =      "New York, NY",
-  publisher =    "Springer-Verlag",
-  doi =          "10.1007/3-540-09237-4",
-  url =          "http://dx.doi.org/10.1007/3-540-09237-4",
-  editor =       "",
-  number =       "",
-  month =        "",
-  note =         "",
-}
-
-
-@Inbook{Editor00,
-  author =       "",
-  editor =       "Ian Editor",
-  title =        "The title of book one",
-  subtitle =     "The book subtitle",
-  series =       "The name of the series one",
-  year =         "2007",
-  volume =       "9",
-  address =      "Chicago",
-  edition =      "1st.",
-  publisher =    "University of Chicago Press",
-  doi =          "10.1007/3-540-09237-4",
-  url =          "http://dx.doi.org/10.1007/3-540-09456-9",
-  chapter =      "",
-  pages =        "",
-  number =       "",
-  type =         "",
-  month =        "",
-  note =         "",
-}
-
-%
-@InBook{Editor00a,
-  author =       "",
-  editor =       "Ian Editor",
-  title =        "The title of book two",
-  subtitle =     "The book subtitle",
-  series =       "The name of the series two",
-  year =         "2008",
-  address =      "Chicago",
-  edition =      "2nd.",
-  publisher =    "University of Chicago Press",
-  doi =          "10.1007/3-540-09237-4",
-  url =          "http://dx.doi.org/10.1007/3-540-09456-9",
-  volume =       "",
-  chapter =      "100",
-  pages =        "",
-  number =       "",
-  type =         "",
-  month =        "",
-  note =         "",
-}
-
-
-% incollection (has an editor, title, and possibly a booktitle)
-@Incollection{Spector90,
-  author =       "Asad Z. Spector",
-  title =        "Achieving application requirements",
-  booktitle =    "Distributed Systems",
-  publisher =    "ACM Press",
-  address =      "New York, NY",
-  year =         "1990",
-  edition =      "2nd.",
-  chapter =      "",
-  editor =       "Sape Mullender",
-  pages =        "19--33",
-  doi =          "10.1145/90417.90738",
-  url =          "http://doi.acm.org/10.1145/90417.90738",
-  volume =       "",
-  number =       "",
-  series =       "",
-  type =         "",
-  month =        "",
-  note =         "",
-}
-
-
-% incollection (has an editor, title, and possibly a booktitle)
-@Incollection{Douglass98,
-  author =       "Bruce P. Douglass and David Harel and Mark B. Trakhtenbrot",
-  title =        "Statecarts in use: structured analysis and object-orientation",
-  series =       "Lecture Notes in Computer Science",
-  booktitle =    "Lectures on Embedded Systems",
-  publisher =    "Springer-Verlag",
-  address =      "London",
-  volume =       "1494",
-  year =         "1998",
-  chapter =      "",
-  editor =       "Grzegorz Rozenberg and Frits W. Vaandrager",
-  pages =        "368--394",
-  doi =          "10.1007/3-540-65193-4_29",
-  url =          "http://dx.doi.org/10.1007/3-540-65193-4_29",
-  edition =      "",
-  number =       "",
-  type =         "",
-  month =        "",
-  note =         "",
-}
-
-
-@Book{Knuth97,
-  author =       "Donald E. Knuth",
-  title =        "The Art of Computer Programming, Vol. 1: Fundamental Algorithms (3rd. ed.)",
-  publisher =    "Addison Wesley Longman Publishing Co., Inc.",
-  year =         "1997",
-  address =      "",
-  edition =      "",
-  editor =       "",
-  volume =       "",
-  number =       "",
-  series =       "",
-  month =        "",
-  note =         "",
-}
-
-
-@Book{Knuth98,
-  author =       "Donald E. Knuth",
-  year =         "1998",
-  title =        "The Art of Computer Programming",
-  series =       "Fundamental Algorithms",
-  volume =       "1",
-  edition =      "3rd",
-  address =      "",
-  publisher =    "Addison Wesley Longman Publishing Co., Inc.",
-  doi =          "",
-  url =          "",
-  editor =       "",
-  number =       "",
-  month =        "",
-  note =         "(book)",
-}
-
-%Inbook{Knuth97,
-%  author =       "Donald E. Knuth",
-%  title =        "The Art of Computer Programming",
-%  booktitle =    "the booktitle",
-%  edition =      "3",
-%  volume =       "1",
-%  year =         "1997",
-%  publisher =    "Addison Wesley Longman Publishing Co., Inc.",
-%  editor =       "",
-%  number =       "",
-%  series =       "Fundamental Algorithms",
-%  type =         "",
-%  chapter =      "",
-%  pages =        "",
-%  address =      "",
-%  month =        "",
-%  note =         "(inbook)",
-%}
-
-%INBOOK{DK:73-inbook-full,
-%   author = "Donald E. Knuth",
-%   title = "Fundamental Algorithms (inbook w series)",
-%   volume = 1,
-%   series = "The Art of Computer Programming",
-%   publisher = "Addison-Wesley",
-%   address = "Reading, Massachusetts",
-%   edition = "Second",
-%   month = "10~" # jan,
-%   year = "1973",
-%   type = "Section",
-%   chapter = "1.2",
-%   pages = "10--119",
-%   note = "Full INBOOK entry (w series)",
-%}
-
-%INcollection{DK:74-incoll,
-%   author = "Donald E. Knuth",
-%   title = "Fundamental Algorithms (incoll)",
-%   volume = 1,
-%   booktitle = "The Art of Computer Programming",
-%   publisher = "Addison-Wesley",
-%   address = "Reading, Massachusetts",
-%   month = "10~" # jan,
-%   year = "1974",
-%   pages = "10--119",
-%   editor = "Bernard Rous",
-%   note = "This is a full incoll entry with an editor",
-%}
-
-%INcollection{DK:75-incollws,
-%   author = "Donald E. Knuth",
-%   title = "Fundamental Algorithms (incoll w series)",
-%   volume = 1,
-%   booktitle = "The Art of Computer Programming",
-%   series = "The Art of Computer Programming",
-%   publisher = "Addison-Wesley",
-%   address = "Reading, Massachusetts",
-%   month = "10~" # jan,
-%   year = "1975",
-%   pages = "10--119",
-%   editor = "Bernard Rous",
-%   note = "This is a full incoll entry with an editor and series",
-%}
-
-
-@incollection{GM05,
-Author= "Dan Geiger and Christopher Meek",
-Title= "Structured Variational Inference Procedures and their Realizations (as incol)",
-Year= 2005,
-Booktitle="Proceedings of Tenth International Workshop on Artificial Intelligence and Statistics, {\rm The Barbados}",
-Publisher="The Society for Artificial Intelligence and Statistics",
-Month= jan,
-Editors= "Z. Ghahramani and R. Cowell"
-}
-
-@Inproceedings{Smith10,
-  author =       "Stan W. Smith",
-  title =        "An experiment in bibliographic mark-up: Parsing metadata for XML export",
-  booktitle =    "Proceedings of the 3rd. annual workshop on Librarians and Computers",
-  series =       "LAC '10",
-  editor =       "Reginald N. Smythe and Alexander Noble",
-  volume =       "3",
-  year =         "2010",
-  publisher =    "Paparazzi Press",
-  address =      "Milan Italy",
-  pages =        "422--431",
-  doi =          "99.9999/woot07-S422",
-  url =          "http://dx.doi.org/99.0000/woot07-S422",
-  number =       "",
-  month =        "",
-  organization = "",
-  note =         "",
-}
-
-@Inproceedings{VanGundy07,
-  author =       "Matthew Van Gundy and Davide Balzarotti and Giovanni Vigna",
-  year =         2007,
-  title =        "Catch me, if you can: Evading network signatures with web-based polymorphic worms",
-  booktitle =    "Proceedings of the first USENIX workshop on Offensive Technologies",
-  series =       "WOOT '07",
-  publisher =    "USENIX Association",
-  address =      "Berkley, CA",
-  articleno =    {Paper 7},
-  numpages =     9,
-}
-
-@Inproceedings{VanGundy08,
-  author =       "Matthew Van Gundy and Davide Balzarotti and Giovanni Vigna",
-  year =         2008,
-  title =        "Catch me, if you can: Evading network signatures with web-based polymorphic worms",
-  booktitle =    "Proceedings of the first USENIX workshop on Offensive Technologies",
-  series =       "WOOT '08",
-  publisher =    "USENIX Association",
-  address =      "Berkley, CA",
-  articleno =    7,
-  numpages =     2,
-  pages =        "99-100",
-}
-
-@Inproceedings{VanGundy09,
-  author =       "Matthew Van Gundy and Davide Balzarotti and Giovanni Vigna",
-  year =         2009,
-  title =        "Catch me, if you can: Evading network signatures with web-based polymorphic worms",
-  booktitle =    "Proceedings of the first USENIX workshop on Offensive Technologies",
-  series =       "WOOT '09",
-  publisher =    "USENIX Association",
-  address =      "Berkley, CA",
-  pages =        "90--100",
-}
-
-@Inproceedings{Andler79,
-  author =       "Sten Andler",
-  title =        "Predicate Path expressions",
-  booktitle =    "Proceedings of the 6th. ACM SIGACT-SIGPLAN symposium on Principles of Programming Languages",
-  series =       "POPL '79",
-  year =         "1979",
-  publisher =    "ACM Press",
-  address =      "New York, NY",
-  pages =        "226--236",
-  doi =          "10.1145/567752.567774",
-  url =          "http://doi.acm.org/10.1145/567752.567774",
-  editor =       "",
-  volume =       "",
-  number =       "",
-  month =        "",
-  organization = "",
-  note =         "",
-}
-
-@Techreport{Harel78,
-  author =       "David Harel",
-  year =         "1978",
-  title =        "LOGICS of Programs: AXIOMATICS and DESCRIPTIVE POWER",
-  institution =  "Massachusetts Institute of Technology",
-  type =         "MIT Research Lab Technical Report",
-  number =       "TR-200",
-  address =      "Cambridge, MA",
-  month =        "",
-  note =         "",
-}
-
-@MASTERSTHESIS{anisi03,
-author = {David A. Anisi},
-title = {Optimal Motion Control of a Ground Vehicle},
-school = {Royal Institute of Technology (KTH), Stockholm, Sweden},
-intitution = {FOI-R-0961-SE, Swedish Defence Research Agency (FOI)},
-year = {2003},
-}
-
-
-@Phdthesis{Clarkson85,
-  author =       "Kenneth L. Clarkson",
-  year =         "1985",
-  title =        "Algorithms for Closest-Point Problems (Computational Geometry)",
-  school =       "Stanford University",
-  address =      "Palo Alto, CA",
-  note =         "UMI Order Number: AAT 8506171",
-  type =         "",
-  month =        "",
-}
-
-
-@online{Thornburg01,
-  author =       "Harry Thornburg",
-  year =         "2001",
-  title =        "Introduction to Bayesian Statistics",
-  url =          "http://ccrma.stanford.edu/~jos/bayes/bayes.html",
-  month =        mar,
-  lastaccessed = "March 2, 2005",
-}
-
-
-@online{Ablamowicz07,
-  author =       "Rafal Ablamowicz and Bertfried Fauser",
-  year =         "2007",
-  title =        "CLIFFORD: a Maple 11 Package for Clifford Algebra Computations, version 11",
-  url =          "http://math.tntech.edu/rafal/cliff11/index.html",
-  lastaccessed = "February 28, 2008",
-}
-
-
-@misc{Poker06,
-  author =       "Poker-Edge.Com",
-  year =         "2006",
-  month =        mar,
-  title =        "Stats and Analysis",
-  lastaccessed = "June 7, 2006",
-  url =          "http://www.poker-edge.com/stats.php",
-}
-
-@misc{Obama08,
-  author        = "Barack Obama",
-  year          = "2008",
-  title         = "A more perfect union",
-  howpublished  = "Video",
-  day           = "5",
-  url           = "http://video.google.com/videoplay?docid=6528042696351994555",
-  month         = mar,
-  lastaccessed  = "March 21, 2008",
-  note          =  "",
-}
-
-@misc{JoeScientist001,
-  author =       "Joseph Scientist",
-  year =         "2009",
-  title =        "The fountain of youth",
-  note =         "Patent No. 12345, Filed July 1st., 2008, Issued Aug. 9th., 2009",
-  url =          "",
-  howpublished = "",
-  month =        aug,
-  lastaccessed = "",
-}
-
-
-@Inproceedings{Novak03,
-  author =       "Dave Novak",
-  title =        "Solder man",
-  booktitle =    "ACM SIGGRAPH 2003 Video Review on Animation theater Program: Part I - Vol. 145 (July 27--27, 2003)",
-  year =         "2003",
-  publisher =    "ACM Press",
-  address =      "New York, NY",
-  pages =        "4",
-  month =        "March 21, 2008",
-  doi =          "99.9999/woot07-S422",
-  url =          "http://video.google.com/videoplay?docid=6528042696351994555",
-  note =         "",
-  howpublished = "Video",
-  editor =       "",
-  volume =       "",
-  number =       "",
-  series =       "",
-  organization = "",
-  distinctURL = 1
-}
-
-
-@article{Lee05,
-  author =       "Newton Lee",
-  year =         "2005",
-  title =        "Interview with Bill Kinder: January 13, 2005",
-  journal =      "Comput. Entertain.",
-  eid =          "4",
-  volume =       "3",
-  number =       "1",
-  month =        "Jan.-March",
-  doi =          "10.1145/1057270.1057278",
-  url =          "http://doi.acm.org/10.1145/1057270.1057278",
-  howpublished = "Video",
-  note =         "",
-}
-
-@article{rous08,
-  author =       "Bernard Rous",
-  year =         "2008",
-  title =        "The Enabling of Digital Libraries",
-  journal =      "Digital Libraries",
-  volume =       "12",
-  number =       "3",
-  month =        jul,
-  articleno =    "Article~5",
-  doi =          "",
-  url =          "",
-  howpublished = "",
-  note =         "To appear",
-}
-
-@article{384253,
- author = {Werneck,, Renato and Setubal,, Jo\~{a}o and da Conceic\~{a}o,, Arlindo},
- title = {(old) Finding minimum congestion spanning trees},
- journal = {J. Exp. Algorithmics},
- volume = {5},
- year = {2000},
- issn = {1084-6654},
- pages = {11},
- doi = {http://doi.acm.org/10.1145/351827.384253},
- publisher = {ACM},
- address = {New York, NY, USA},
- }
-
-
-@article{Werneck:2000:FMC:351827.384253,
- author = {Werneck, Renato and Setubal, Jo\~{a}o and da Conceic\~{a}o, Arlindo},
- title = {(new) Finding minimum congestion spanning trees},
- journal = {J. Exp. Algorithmics},
- volume = 5,
- month = dec,
- year = 2000,
- issn = {1084-6654},
- articleno = 11,
- url = {http://portal.acm.org/citation.cfm?id=351827.384253},
- doi = {10.1145/351827.384253},
- acmid = 384253,
- publisher = {ACM},
- address = {New York, NY, USA},
-}
-
-@article{1555162,
- author = {Conti, Mauro and Di Pietro, Roberto and Mancini, Luigi V. and Mei, Alessandro},
- title = {(old) Distributed data source verification in wireless sensor networks},
- journal = {Inf. Fusion},
- volume = {10},
- number = {4},
- year = {2009},
- issn = {1566-2535},
- pages = {342--353},
- doi = {http://dx.doi.org/10.1016/j.inffus.2009.01.002},
- publisher = {Elsevier Science Publishers B. V.},
- address = {Amsterdam, The Netherlands, The Netherlands},
- }
-
-@article{Conti:2009:DDS:1555009.1555162,
- author = {Conti, Mauro and Di Pietro, Roberto and Mancini, Luigi V. and Mei, Alessandro},
- title = {(new) Distributed data source verification in wireless sensor networks},
- journal = {Inf. Fusion},
- volume = {10},
- number = {4},
- month = oct,
- year = {2009},
- issn = {1566-2535},
- pages = {342--353},
- numpages = {12},
- url = {http://portal.acm.org/citation.cfm?id=1555009.1555162},
- doi = {10.1016/j.inffus.2009.01.002},
- acmid = {1555162},
- publisher = {Elsevier Science Publishers B. V.},
- address = {Amsterdam, The Netherlands, The Netherlands},
- keywords = {Clone detection, Distributed protocol, Securing data fusion, Wireless sensor networks},
-}
-
-@inproceedings{Li:2008:PUC:1358628.1358946,
- author = {Li, Cheng-Lun and Buyuktur, Ayse G. and Hutchful, David K. and Sant, Natasha B. and Nainwal, Satyendra K.},
- title = {Portalis: using competitive online interactions to support aid initiatives for the homeless},
- booktitle = {CHI '08 extended abstracts on Human factors in computing systems},
- year = {2008},
- isbn = {978-1-60558-012-X},
- location = {Florence, Italy},
- pages = {3873--3878},
- numpages = {6},
- url = {http://portal.acm.org/citation.cfm?id=1358628.1358946},
- doi = {10.1145/1358628.1358946},
- acmid = {1358946},
- publisher = {ACM},
- address = {New York, NY, USA},
- keywords = {cscw, distributed knowledge acquisition, incentive design, online games, recommender systems, reputation systems, user studies, virtual community},
-}
-
-@book{Hollis:1999:VBD:519964,
- author = {Hollis, Billy S.},
- title = {Visual Basic 6: Design, Specification, and Objects with Other},
- year = {1999},
- isbn = {0130850845},
- edition = {1st},
- publisher = {Prentice Hall PTR},
- address = {Upper Saddle River, NJ, USA},
- }
-
-
-@book{Goossens:1999:LWC:553897,
- author = {Goossens, Michel and Rahtz, S. P. and Moore, Ross and Sutor, Robert S.},
- title = {The  Latex Web Companion: Integrating TEX, HTML, and XML},
- year = {1999},
- isbn = {0201433117},
- edition = {1st},
- publisher = {Addison-Wesley Longman Publishing Co., Inc.},
- address = {Boston, MA, USA},
- }
-
-% need to test genres for errant isbn output
-
-% techreport
-@techreport{897367,
- author = {Buss, Jonathan F. and Rosenberg, Arnold L. and Knott, Judson D.},
- title = {Vertex Types in Book-Embeddings},
- year = {1987},
- source = {http://www.ncstrl.org:8900/ncstrl/servlet/search?formname=detail\&id=oai%3Ancstrlh%3Aumass_cs%3Ancstrl.umassa_cs%2F%2FUM-CS-1987-018},
- publisher = {University of Massachusetts},
- address = {Amherst, MA, USA},
- }
-
-@techreport{Buss:1987:VTB:897367,
- author = {Buss, Jonathan F. and Rosenberg, Arnold L. and Knott, Judson D.},
- title = {Vertex Types in Book-Embeddings},
- year = {1987},
- source = {http://www.ncstrl.org:8900/ncstrl/servlet/search?formname=detail\&id=oai%3Ancstrlh%3Aumass_cs%3Ancstrl.umassa_cs%2F%2FUM-CS-1987-018},
- publisher = {University of Massachusetts},
- address = {Amherst, MA, USA},
- }
-
-% whole proceedings
-
-@proceedings{Czerwinski:2008:1358628,
- author = {},
- note = {General Chair-Czerwinski, Mary and General Chair-Lund, Arnie and Program Chair-Tan, Desney},
- title = {CHI '08: CHI '08 extended abstracts on Human factors in computing systems},
- year = {2008},
- isbn = {978-1-60558-012-X},
- location = {Florence, Italy},
- order_no = {608085},
- publisher = {ACM},
- address = {New York, NY, USA},
- }
-
-% phdthesis
-
-@phdthesis{Clarkson:1985:ACP:911891,
- author = {Clarkson, Kenneth Lee},
- advisor = {Yao, Andrew C.},
- title = {Algorithms for Closest-Point Problems (Computational Geometry)},
- year = {1985},
- note = {AAT 8506171},
- school = {Stanford University},
- address = {Stanford, CA, USA},
- }
-% school is being picked up -- but not publisher (which is OK)
-% Also -- the title is NOT being output in italics !!! Arrrrgh! - I fixed it. :-)
-
-
-%%% compare with 'old'
-%%% atsign-Phdthesis{Clarkson85,
-%%%  author =       "Kenneth L. Clarkson",
-%%%  year =         "1985",
-%%%  title =        "Algorithms for Closest-Point Problems (Computational Geometry)",
-%%%  school =       "Stanford University",
-%%%  address =      "Palo Alto, CA",
-%%%  note =         "UMI Order Number: AAT 8506171",
-%%%  type =         "",
-%%%  month =        "",
-%%%}
-
-% A bibliography
-@Article{1984:1040142,
- key = {{$\!\!$}},
- journal = {SIGCOMM Comput. Commun. Rev.},
- year = {1984},
- issn = {0146-4833},
- volume = {13-14},
- number = {5-1},
- issue_date = {January/April 1984},
- publisher = {ACM},
- address = {New York, NY, USA},
- }
-
-
-% grinder
-@inproceedings{2004:ITE:1009386.1010128,
- key = {IEEE},
- title = {IEEE TCSC Executive Committee},
- booktitle = {Proceedings of the IEEE International Conference on Web Services},
- series = {ICWS '04},
- year = {2004},
- isbn = {0-7695-2167-3},
- pages = {21--22},
- url = {http://dx.doi.org/10.1109/ICWS.2004.64},
- doi = {http://dx.doi.org/10.1109/ICWS.2004.64},
- acmid = {1010128},
- publisher = {IEEE Computer Society},
- address = {Washington, DC, USA},
-}
-
-% div book
-@book{Mullender:1993:DS:302430,
- editor = {Mullender, Sape},
- title = {Distributed systems (2nd Ed.)},
- year = {1993},
- isbn = {0-201-62427-3},
- publisher = {ACM Press/Addison-Wesley Publishing Co.},
- address = {New York, NY, USA},
- }
-
-% master thesis (as techreport and thesis)
-
-@techreport{Petrie:1986:NAD:899644,
- author = {Petrie, Charles J.},
- title = {New Algorithms for Dependency-Directed Backtracking (Master's thesis)},
- year = {1986},
- source = {http://www.ncstrl.org:8900/ncstrl/servlet/search?formname=detail\&id=oai%3Ancstrlh%3Autexas_cs%3AUTEXAS_CS%2F%2FAI86-33},
- publisher = {University of Texas at Austin},
- address = {Austin, TX, USA},
- }
-
-@MASTERSTHESIS{Petrie:1986:NAD:12345,
- author = {Petrie, Charles J.},
- title = {New Algorithms for Dependency-Directed Backtracking (Master's thesis)},
- year = {1986},
- source = {http://www.ncstrl.org:8900/ncstrl/servlet/search?formname=detail\&id=oai%3Ancstrlh%3Autexas_cs%3AUTEXAS_CS%2F%2FAI86-33},
- school = {University of Texas at Austin},
- address = {Austin, TX, USA},
- }
-
-
-
-
-@BOOK{book-minimal,
-   author = "Donald E. Knuth",
-   title = "Seminumerical Algorithms",
-   publisher = "Addison-Wesley",
-   year = "1981",
-}
-
-% incollection (has an editor, title, and possibly a booktitle)
-@INcollection{KA:2001,
- author = {Kong, Wei-Chang},
- Title = {The implementation of electronic commerce in SMEs in Singapore (as Incoll)},
- booktitle = {E-commerce and cultural values},
- year = {2001},
- isbn = {1-59140-056-2},
- pages = {51--74},
- numpages = {24},
- url = {http://portal.acm.org/citation.cfm?id=887006.887010},
- acmid = {887010},
- publisher = {IGI Publishing},
- address = {Hershey, PA, USA},
-}
-
-
-% with bibfield 'type' before chapter (note no editor)
-@INBOOK{KAGM:2001,
- author = {Kong, Wei-Chang},
- type = {Name of Chapter:},
- chapter = {The implementation of electronic commerce in SMEs in Singapore (Inbook-w-chap-w-type)},
- title = {E-commerce and cultural values},
- year = {2001},
- isbn = {1-59140-056-2},
- pages = {51--74},
- numpages = {24},
- url = {http://portal.acm.org/citation.cfm?id=887006.887010},
- acmid = {887010},
- publisher = {IGI Publishing},
- address = {Hershey, PA, USA},
-}
-
-%%% Notes! This is because the atsign-INBOOK citation type specifies EITHER
-%%% editor or author, but not both. In my experiments with the harvard/dcu
-%%% bibtex style (and presumably this applies to other styles too), bibtex
-%%% ignores the editor information if author information exists in an
-%%% atsign-INBOOK entry. atsign-INCOLLECTION is far more commonly used in my references,
-%%% and in the absence of an editor I believe most bibtex styles will just
-%%% ommit the editor from the reference - the chapter information will not
-%%% end up in the in-text citation as you suggest it should be but at least
-%%% there is a place to put the editor if necessary.
-
-
-
-% was 'Inbook' -- changed to incollection - (editor is different to author) - need to tell Asad to codify as such.
-@incollection{Kong:2002:IEC:887006.887010,
-  author =      {Kong, Wei-Chang},
-  editor =      {Theerasak Thanasankit},
-  title =       {Chapter 9},
-  booktitle =   {E-commerce and cultural values (Incoll-w-text (chap 9) 'title')},
-  year =        {2002},
-  address =     {Hershey, PA, USA},
-  publisher =   {IGI Publishing},
-  url =         {http://portal.acm.org/citation.cfm?id=887006.887010},
-  pages =       {51--74},
-  numpages =    {24},
-  acmid =       {887010},
-  isbn =        {1-59140-056-2},
-  number =      "",
-  type =        "",
-  month =       "",
-  note =        "",
-}
-
-% incol when the chapter is 'text' - due to presence of editor (different to author)
-@incollection{Kong:2003:IEC:887006.887011,
- author = {Kong, Wei-Chang},
- title = {The implementation of electronic commerce in SMEs in Singapore (Incoll)},
- booktitle = {E-commerce and cultural values},
- editor = {Thanasankit, Theerasak},
- year = {2003},
- isbn = {1-59140-056-2},
- pages = {51--74},
- numpages = {24},
- url = {http://portal.acm.org/citation.cfm?id=887006.887010},
- acmid = {887010},
- publisher = {IGI Publishing},
- address = {Hershey, PA, USA},
-}
-
-% ------ test
-%incollection{Kong:2003:IEC:887006.887010,
-% author = {Kong, Wei-Chang},
-% chapter = {The implementation of electronic commerce in SMEs in Singapore (Incoll-text-in-chap)},
-% booktitle = {booktitle E-commerce and cultural values},
-% title =   {The title},
-% editor = {Thanasankit, Theerasak},
-% year = {2003},
-% isbn = {1-59140-056-2},
-% pages = {51--74},
-% numpages = {24},
-% url = {http://portal.acm.org/citation.cfm?id=887006.887010},
-% acmid = {887010},
-% publisher = {IGI Publishing},
-% address = {Hershey, PA, USA},
-%}
-
-
-% ---------
-
-
-
-
-
-% Need inbook with num in chapter
-
-% and inbook with number in chapter
-@InBook{Kong:2004:IEC:123456.887010,
-  author =      {Kong, Wei-Chang},
-  editor =      {Theerasak Thanasankit},
-  title =       {E-commerce and cultural values - (InBook-num-in-chap)},
-  chapter =     {9},
-  year =        {2004},
-  address =     {Hershey, PA, USA},
-  publisher =   {IGI Publishing},
-  url =         {http://portal.acm.org/citation.cfm?id=887006.887010},
-  pages =       {51--74},
-  numpages =    {24},
-  acmid =       {887010},
-  isbn =        {1-59140-056-2},
-  number =      "",
-  type =        "",
-  month =       "",
-  note =        "",
-}
-
-
-% and inbook with text in chapter
-@Inbook{Kong:2005:IEC:887006.887010,
-  author =      {Kong, Wei-Chang},
-  editor =      {Theerasak Thanasankit},
-  title =       {E-commerce and cultural values (Inbook-text-in-chap)},
-  chapter =     {The implementation of electronic commerce in SMEs in Singapore},
-  year =        {2005},
-  address =     {Hershey, PA, USA},
-  publisher =   {IGI Publishing},
-  url =         {http://portal.acm.org/citation.cfm?id=887006.887010},
-  type =        {Chapter:},
-  pages =       {51--74},
-  numpages =    {24},
-  acmid =       {887010},
-  isbn =        {1-59140-056-2},
-  number =      "",
-  month =       "",
-  note =        "",
-}
-
-
-% and inbook with a num and type field
-@Inbook{Kong:2006:IEC:887006.887010,
-  author =      {Kong, Wei-Chang},
-  editor =      {Theerasak Thanasankit},
-  title =       {E-commerce and cultural values (Inbook-num chap)},
-  chapter =     {22},
-  year =        {2006},
-  address =     {Hershey, PA, USA},
-  publisher =   {IGI Publishing},
-  url =         {http://portal.acm.org/citation.cfm?id=887006.887010},
-  type =        {Chapter (in type field)},
-  pages =       {51--74},
-  numpages =    {24},
-  acmid =       {887010},
-  isbn =        {1-59140-056-2},
-  number =      "",
-  month =       "",
-  note =        "",
-}
-
-
-% and incol coz we have a BLANK chapter - due to presence of editor
-%atIncollection{Kong:2006:IEC:887006.887011,
-%  author =     {Kong, Wei-Chang},
-%  editor =     {Theerasak Thanasankit},
-%  title =      "The title"
-%  booktitle =  {E-commerce and cultural values (Incol-coz-blank-chap)},
-%  year =       {2006},
-%  address =    {Hershey, PA, USA},
-%  publisher =  {IGI Publishing},
-%  url =        {http://portal.acm.org/citation.cfm?id=887006.887010},
-%  type =       {Type!},
-%  chapter =    {},
-%  pages =      {51--74},
-%  numpages =   {24},
-%  acmid =      {887010},
-%  isbn =       {1-59140-056-2},
-%  number =     "",
-%  month =      "",
-%  note =       "",
-%}
-
-@article{SaeediMEJ10,
-            author = {Mehdi Saeedi and Morteza Saheb Zamani and Mehdi Sedighi},
-            title = {A library-based synthesis methodology for reversible logic},
-            journal = {Microelectron. J.},
-            volume = {41},
-            number = {4},
-            month = apr,
-            year = {2010},
-            pages = {185--194},
-}
-
-@ARTICLE{SaeediJETC10,
-            author = {Mehdi Saeedi and Morteza Saheb Zamani and Mehdi Sedighi and Zahra Sasanian},
-            title = {Synthesis of Reversible Circuit Using Cycle-Based Approach},
-            journal = {J. Emerg. Technol. Comput. Syst.},
-            volume = {6},
-            number = {4},
-            month = dec,
-            year = {2010}
-            }
-
-% Asad's new version
-@article{Kirschmer:2010:AEI:1958016.1958018,
- author = {Kirschmer, Markus and Voight, John},
- title = {Algorithmic Enumeration of Ideal Classes for Quaternion Orders},
- journal = {SIAM J. Comput.},
- issue_date = {January 2010},
- volume = {39},
- number = {5},
- month = jan,
- year = {2010},
- issn = {0097-5397},
- pages = {1714--1747},
- numpages = {34},
- url = {http://dx.doi.org/10.1137/080734467},
- doi = {https://doi.org/10.1137/080734467},
- acmid = {1958018},
- publisher = {Society for Industrial and Applied Mathematics},
- address = {Philadelphia, PA, USA},
- keywords = {ideal classes, maximal orders, number theory, quaternion algebras},
-}
-
-
-% incol due to presence of booktitle
-@incollection{Hoare:1972:CIN:1243380.1243382,
- author = {Hoare, C. A. R.},
- title = {Chapter II: Notes on data structuring},
- booktitle = {Structured programming (incoll)},
- editor = {Dahl, O. J. and Dijkstra, E. W. and Hoare, C. A. R.},
- year = {1972},
- isbn = {0-12-200550-3},
- pages = {83--174},
- numpages = {92},
- url = {http://portal.acm.org/citation.cfm?id=1243380.1243382},
- acmid = {1243382},
- publisher = {Academic Press Ltd.},
- address = {London, UK, UK},
-}
-
-% incol due to presence of booktitle
-@incollection{Lee:1978:TQA:800025.1198348,
- author = {Lee, Jan},
- title = {Transcript of question and answer session},
- booktitle = {History of programming languages I (incoll)},
- editor = {Wexelblat, Richard L.},
- year = {1981},
- isbn = {0-12-745040-8},
- pages = {68--71},
- numpages = {4},
- url = {http://doi.acm.org/10.1145/800025.1198348},
- doi = {http://doi.acm.org/10.1145/800025.1198348},
- acmid = {1198348},
- publisher = {ACM},
- address = {New York, NY, USA},
-}
-
-% incol due to booktitle
-@incollection{Dijkstra:1979:GSC:1241515.1241518,
- author = {Dijkstra, E.},
- title = {Go to statement considered harmful},
- booktitle = {Classics in software engineering (incoll)},
- year = {1979},
- isbn = {0-917072-14-6},
- pages = {27--33},
- numpages = {7},
- url = {http://portal.acm.org/citation.cfm?id=1241515.1241518},
- acmid = {1241518},
- publisher = {Yourdon Press},
- address = {Upper Saddle River, NJ, USA},
-}
-
-% incol due to booktitle
-@incollection{Wenzel:1992:TVA:146022.146089,
- author = {Wenzel, Elizabeth M.},
- title = {Three-dimensional virtual acoustic displays},
- booktitle = {Multimedia interface design (incoll)},
- year = {1992},
- isbn = {0-201-54981-6},
- pages = {257--288},
- numpages = {32},
- url = {http://portal.acm.org/citation.cfm?id=146022.146089},
- doi = {10.1145/146022.146089},
- acmid = {146089},
- publisher = {ACM},
- address = {New York, NY, USA},
-}
-
-% incol due to booktitle
-@incollection{Mumford:1987:MES:54905.54911,
- author = {Mumford, E.},
- title = {Managerial expert systems and organizational change: some critical research issues},
- booktitle = {Critical issues in information systems research (incoll)},
- year = {1987},
- isbn = {0-471-91281-6},
- pages = {135--155},
- numpages = {21},
- url = {http://portal.acm.org/citation.cfm?id=54905.54911},
- acmid = {54911},
- publisher = {John Wiley \& Sons, Inc.},
- address = {New York, NY, USA},
-}
-
-@book{McCracken:1990:SSC:575315,
- author = {McCracken, Daniel D. and Golden, Donald G.},
- title = {Simplified Structured COBOL with Microsoft/MicroFocus COBOL},
- year = {1990},
- isbn = {0471514071},
- publisher = {John Wiley \& Sons, Inc.},
- address = {New York, NY, USA},
-}
-
-% Let's include Boris / BBeeton entries  (multi-volume works)
-
-@book {MR781537,
-    AUTHOR = {H{\"o}rmander, Lars},
-     TITLE = {The analysis of linear partial differential operators. {III}},
-    SERIES = {Grundlehren der Mathematischen Wissenschaften [Fundamental
-              Principles of Mathematical Sciences]},
-    VOLUME = {275},
-      NOTE = {Pseudodifferential operators},
-PUBLISHER = {Springer-Verlag},
-   ADDRESS = {Berlin, Germany},
-      YEAR = {1985},
-     PAGES = {viii+525},
-      ISBN = {3-540-13828-5},
-   MRCLASS = {35-02 (35Sxx 47G05 58G15)},
-  MRNUMBER = {781536 (87d:35002a)},
-MRREVIEWER = {Min You Qi},
-}
-
-@book {MR781536,
-    AUTHOR = {H{\"o}rmander, Lars},
-     TITLE = {The analysis of linear partial differential operators. {IV}},
-    SERIES = {Grundlehren der Mathematischen Wissenschaften [Fundamental
-              Principles of Mathematical Sciences]},
-    VOLUME = {275},
-      NOTE = {Fourier integral operators},
-PUBLISHER = {Springer-Verlag},
-   ADDRESS = {Berlin, Germany},
-      YEAR = {1985},
-     PAGES = {vii+352},
-      ISBN = {3-540-13829-3},
-   MRCLASS = {35-02 (35Sxx 47G05 58G15)},
-  MRNUMBER = {781537 (87d:35002b)},
-MRREVIEWER = {Min You Qi},
-}
-
-%%%%%%%%%%%%%%%%%%%%%% Start of Aptara sample bib entries
-
-% acmsmall-sam.bib
-@InProceedings{Adya-01,
-  author        = {A. Adya and P. Bahl and J. Padhye and A.Wolman and L. Zhou},
-  title         = {A multi-radio unification protocol for {IEEE} 802.11 wireless networks},
-  booktitle     = {Proceedings of the IEEE 1st International Conference on Broadnets Networks (BroadNets'04)},
-  publisher     = "IEEE",
-  address       = "Los Alamitos, CA",
-  year          = {2004},
-  pages         = "210--217"
-}
-
-@article{Akyildiz-01,
-  author        = {I. F. Akyildiz and W. Su and Y. Sankarasubramaniam and E. Cayirci},
-  title         = {Wireless Sensor Networks: A Survey},
-  journal       = {Comm. ACM},
-  volume        = 38,
-  number        = "4",
-  year          = {2002},
-  pages         = "393--422"
-}
-
-@article{Akyildiz-02,
-  author        = {I. F. Akyildiz and T. Melodia and K. R. Chowdhury},
-  title         = {A Survey on Wireless Multimedia Sensor Networks},
-  journal       = {Computer Netw.},
-  volume        = 51,
-  number        = "4",
-  year          = {2007},
-  pages         = "921--960"
-}
-
-@InProceedings{Bahl-02,
-  author        = {P. Bahl and R. Chancre and J. Dungeon},
-  title         = {{SSCH}: Slotted Seeded Channel Hopping for Capacity Improvement in {IEEE} 802.11 Ad-Hoc Wireless Networks},
-  booktitle     = {Proceeding of the 10th International Conference on Mobile Computing and Networking (MobiCom'04)},
-  publisher     = "ACM",
-  address       = "New York, NY",
-  year          = {2004},
-  pages         = "112--117"
-}
-
-@misc{CROSSBOW,
-  key       = {CROSSBOW},
-  title     = {{XBOW} Sensor Motes Specifications},
-  note      = {http://www.xbow.com},
-  year      = 2008
-}
-
-@article{Culler-01,
-  author        = {D. Culler and D. Estrin and M. Srivastava},
-  title         = {Overview of Sensor Networks},
-  journal       = {IEEE Comput.},
-  volume        = 37,
-  number        = "8 (Special Issue on Sensor Networks)",
-  publisher     = "IEEE",
-  address       = "Los Alamitos, CA",
-  year          = {2004},
-  pages         = "41--49"
-}
-
-@misc{Harvard-01,
-    key         = {Harvard CodeBlue},
-    title       = {{CodeBlue}: Sensor Networks for Medical Care},
-    note        = {http://www.eecs.harvard.edu/mdw/ proj/codeblue/},
-    year        = 2008
-}
-
-@InProceedings{Natarajan-01,
-    author      = {A. Natarajan and M. Motani and B. de Silva and K. Yap and K. C. Chua},
-    title       = {Investigating Network Architectures for Body Sensor Networks},
-    booktitle   = {Network Architectures},
-    editor      = {G. Whitcomb and P. Neece},
-    publisher   = "Keleuven Press",
-    address     = "Dayton, OH",
-    year        = {2007},
-    pages       = "322--328",
-    eprint      = "960935712",
-    primaryclass = "cs",
-}
-
-@techreport{Tzamaloukas-01,
-  author        = {A. Tzamaloukas and J. J. Garcia-Luna-Aceves},
-  title         = {Channel-Hopping Multiple Access},
-  number =        {I-CA2301},
-  institution =   {Department of Computer Science, University of California},
-  address =       {Berkeley, CA},
-  year          = {2000}
-}
-
-@BOOK{Zhou-06,
-  author        = {G. Zhou and J. Lu and C.-Y. Wan and M. D. Yarvis and J. A. Stankovic},
-  title         = {Body Sensor Networks},
-  publisher     = "MIT Press",
-  address       = "Cambridge, MA",
-  year          = {2008}
-}
-
-@mastersthesis{ko94,
-author = "Jacob Kornerup",
-title = "Mapping Powerlists onto Hypercubes",
-school = "The University of Texas at Austin",
-note = "(In preparation)",
-year = "1994"}
-%month = "dec",}
-
-@PhdThesis{gerndt:89,
-  author =       "Michael Gerndt",
-  title =        "Automatic Parallelization for Distributed-Memory
-                  Multiprocessing Systems",
-  school =       "University of Bonn",
-  year =         1989,
-  address =      "Bonn, Germany",
-  month =        dec
-}
-
-@article{6:1:1,
-author = "J. E. {Archer, Jr.} and R. Conway and F. B. Schneider",
-title = "User recovery and reversal in interactive systems",
-journal = "ACM Trans. Program. Lang. Syst.",
-volume =  "6",
-number = "1",
-month = jan,
-year = 1984,
-pages = "1--19"}
-
-@article{7:1:137,
-author = "D. D. Dunlop and V. R. Basili",
-title = "Generalizing specifications for uniformly implemented loops",
-journal = "ACM Trans. Program. Lang. Syst.",
-volume =  "7",
-number = "1",
-month = jan,
-year = 1985,
-pages = "137--158"}
-
-@article{7:2:183,
-author = "J. Heering and P. Klint",
-title = "Towards monolingual programming environments",
-journal = "ACM Trans. Program. Lang. Syst.",
-volume =  "7",
-number = "2",
-month = apr,
-year = 1985,
-pages = "183--213"}
-
-@book{knuth:texbook,
-author = "Donald E. Knuth",
-title = "The {\TeX{}book}",
-publisher = "Addison-Wesley",
-address = "Reading, MA.",
-year = 1984}
-
-@article{6:3:380,
-author = "E. Korach and D.  Rotem and N. Santoro",
-title = "Distributed algorithms for finding centers and medians in networks",
-journal = "ACM Trans. Program. Lang. Syst.",
-volume =  "6",
-number = "3",
-month = jul,
-year = 1984,
-pages = "380--401"}
-
-@book{Lamport:LaTeX,
-author = "Leslie Lamport",
-title = "\it {\LaTeX}: A Document Preparation System",
-publisher = "Addison-Wesley",
-address = "Reading, MA.",
-year = 1986}
-
-@article{7:3:359,
-author = "F. Nielson",
-title = "Program transformations in a denotational setting",
-journal = "ACM Trans. Program. Lang. Syst.",
-volume =  "7",
-number = "3",
-month = jul,
-year = 1985,
-pages = "359--379"}
-
-%testing
-@BOOK{test,
-   author = "Donald E. Knuth",
-   title = "Seminumerical Algorithms",
-   volume = 2,
-   series = "The Art of Computer Programming",
-   publisher = "Addison-Wesley",
-   address = "Reading, MA",
-   edition = "2nd",
-   month = "10~" # jan,
-   year = "1981",
-}
-
-@inproceedings{reid:scribe,
-author = "Brian K. Reid",
-title = "A high-level approach to computer document formatting",
-booktitle = "Proceedings of the 7th Annual Symposium on Principles of
-  Programming Languages",
-month = jan,
-year = 1980,
-publisher = "ACM",
-address = "New York",
-pages = "24--31"}
-
-@article{Zhou:2010:MMS:1721695.1721705,
- author = {Zhou, Gang and Wu, Yafeng and Yan, Ting and He, Tian and Huang, Chengdu and Stankovic, John A. and Abdelzaher, Tarek F.},
- title = {A multifrequency MAC specially designed for wireless sensor network applications},
- journal = {ACM Trans. Embed. Comput. Syst.},
- issue_date = {March 2010},
- volume = 9,
- number = 4,
- month = {April},
- year = 2010,
- issn = {1539-9087},
- pages = {39:1--39:41},
- articleno = 39,
- numpages = 41,
- url = {http://doi.acm.org/10.1145/1721695.1721705},
- doi = {10.1145/1721695.1721705},
- acmid = 1721705,
- publisher = {ACM},
- address = {New York, NY, USA},
- keywords = {Wireless sensor networks, media access control, multi-channel, radio interference, time synchronization},
-}
-
-
-@online{TUGInstmem,
-  key =          {TUG},
-  year  =        2017,
-  title =        "Institutional members of the {\TeX} Users Group",
-  url =          "http://wwtug.org/instmem.html",
-  lastaccessed = "May 27, 2017",
-}
-
-@online{CTANacmart,
-  author =    {Boris Veytsman},
-  title =  {acmart---{C}lass for typesetting publications of {ACM}},
-  year = 2017,
-  url =    {http://www.ctan.org/pkg/acmart},
-  lastaccessed = {May 27, 2017}
-  }
-
-@ARTICLE{bowman:reasoning,
-    author = {Bowman, Mic and Debray, Saumya K. and Peterson, Larry L.},
-    title = {Reasoning About Naming Systems},
-    journal = {ACM Trans. Program. Lang. Syst.},
-    volume = {15},
-    number = {5},
-    pages = {795-825},
-    month = {November},
-    year = {1993},
-    doi = {10.1145/161468.161471},
-}
-
-@ARTICLE{braams:babel,
-    author = {Braams, Johannes},
-    title = {Babel, a Multilingual Style-Option System for Use with LaTeX's Standard Document Styles},
-    journal = {TUGboat},
-    volume = {12},
-    number = {2},
-    pages = {291-301},
-    month = {June},
-    year = {1991},
-}
-
-@INPROCEEDINGS{clark:pct,
-  AUTHOR = "Malcolm Clark",
-  TITLE = "Post Congress Tristesse",
-  BOOKTITLE = "TeX90 Conference Proceedings",
-  PAGES = "84-89",
-  ORGANIZATION = "TeX Users Group",
-  MONTH = "March",
-  YEAR = {1991}
-}
-
-@ARTICLE{herlihy:methodology,
-    author = {Herlihy, Maurice},
-    title = {A Methodology for Implementing Highly Concurrent Data Objects},
-    journal = {ACM Trans. Program. Lang. Syst.},
-    volume = {15},
-    number = {5},
-    pages = {745-770},
-    month = {November},
-    year = {1993},
-    doi = {10.1145/161468.161469},
-}
-
-@BOOK{salas:calculus,
-  AUTHOR = "S.L. Salas and Einar Hille",
-  TITLE = "Calculus: One and Several Variable",
-  PUBLISHER = "John Wiley and Sons",
-  ADDRESS = "New York",
-  YEAR = "1978"
-}
-
-@MANUAL{Fear05,
-  title =        {Publication quality tables in {\LaTeX}},
-  author =       {Simon Fear},
-  month =        {April},
-  year =         2005,
-  note =         {\url{http://www.ctan.org/pkg/booktabs}}
-}
-
-@Manual{Amsthm15,
-  title =        {Using the amsthm Package},
-  organization = {American Mathematical Society},
-  month =        {April},
-  year =         2015,
-  note =         {\url{http://www.ctan.org/pkg/amsthm}}
-}
-
-@ArtifactSoftware{R,
-    title = {R: A Language and Environment for Statistical Computing},
-    author = {{R Core Team}},
-    organization = {R Foundation for Statistical Computing},
-    address = {Vienna, Austria},
-    year = {2019},
-    url = {https://www.R-project.org/},
-}
-
-@ArtifactDataset{UMassCitations,
- author    =  {Sam Anzaroot and Andrew McCallum},
- title     =  {{UMass} Citation Field Extraction Dataset},
- year      = 2013,
- url       =
-    {http://www.iesl.cs.umass.edu/data/data-umasscitationfield},
- lastaccessed = {May 27, 2019}
-}
-
-@Eprint{Bornmann2019,
-       author = {Bornmann, Lutz and Wray, K. Brad and Haunschild,
-                  Robin},
-        title = {Citation concept analysis {(CCA)}---A new form of
-                  citation analysis revealing the usefulness of
-                  concepts for other researchers illustrated by two
-                  exemplary case studies including classic books by
-                  {Thomas S.~Kuhn} and {Karl R.~Popper}},
-     keywords = {Computer Science - Digital Libraries},
-         year = 2019,
-        month = "May",
-          eid = {arXiv:1905.12410},
-archivePrefix = {arXiv},
-       eprint = {1905.12410},
- primaryClass = {cs.DL},
-}
-
-@Eprint{AnzarootPBM14,
-  author    = {Sam Anzaroot and
-               Alexandre Passos and
-               David Belanger and
-               Andrew McCallum},
-  title     = {Learning Soft Linear Constraints with Application to
-                  Citation Field Extraction},
-  year      = {2014},
-  archivePrefix = {arXiv},
-  eprint    = {1403.1349},
-}
-
-@inproceedings{Hagerup1993,
-title        = {Maintaining Discrete Probability Distributions Optimally},
-author       = {Hagerup, Torben and Mehlhorn, Kurt and Munro, J. Ian},
-booktitle    = {Proceedings of the 20th International Colloquium on Automata, Languages and Programming},
-series       = {Lecture Notes in Computer Science},
-volume       = {700},
-pages        = {253--264},
-year         = {1993},
-publisher    = {Springer-Verlag},
-address      = {Berlin},
+@article{mengAnalysisNode2vecRandom2020,
+	title = {Analysis of node2vec random walks on networks},
+	volume = {476},
+	url = {https://royalsocietypublishing.org/doi/full/10.1098/rspa.2020.0447},
+	doi = {10.1098/rspa.2020.0447},
+	abstract = {Random walks have been proven to be useful for constructing various algorithms to gain information on networks. Algorithm node2vec employs biased random walks to realize embeddings of nodes into low-dimensional spaces, which can then be used for tasks such as multi-label classification and link prediction. The performance of the node2vec algorithm in these applications is considered to depend on properties of random walks that the algorithm uses. In the present study, we theoretically and numerically analyse random walks used by the node2vec. Those random walks are second-order Markov chains. We exploit the mapping of its transition rule to a transition probability matrix among directed edges to analyse the stationary probability, relaxation times in terms of the spectral gap of the transition probability matrix, and coalescence time. In particular, we show that node2vec random walk accelerates diffusion when walkers are designed to avoid both backtracking and visiting a neighbour of the previously visited node but do not avoid them completely.},
+	number = {2243},
+	urldate = {2022-08-31},
+	journal = {Proceedings of the Royal Society A: Mathematical, Physical and Engineering Sciences},
+	author = {Meng, Lingqi and Masuda, Naoki},
+	month = nov,
+	year = {2020},
+	note = {Publisher: Royal Society},
+	pages = {20200447},
+	file = {Meng&Masuda-2020-Proceedings_of_the_Royal_Society_A_Mathematical,_Physical_and_Engineering_Sciences-Analysis_of_node2vec_random_walks_on_networks.pdf:/Users/skojaku-admin/Library/CloudStorage/GoogleDrive-skojaku@iu.edu/My Drive/Zotero/Meng&Masuda-2020-Proceedings_of_the_Royal_Society_A_Mathematical,_Physical_and_Engineering_Sciences-Analysis_of_node2vec_random_walks_on_networks.pdf:application/pdf},
+}
+
+@article{vonluxburgTutorialSpectralClustering2007,
+	title = {A tutorial on spectral clustering},
+	volume = {17},
+	issn = {1573-1375},
+	url = {https://doi.org/10.1007/s11222-007-9033-z},
+	doi = {10.1007/s11222-007-9033-z},
+	abstract = {In recent years, spectral clustering has become one of the most popular modern clustering algorithms. It is simple to implement, can be solved efficiently by standard linear algebra software, and very often outperforms traditional clustering algorithms such as the k-means algorithm. On the first glance spectral clustering appears slightly mysterious, and it is not obvious to see why it works at all and what it really does. The goal of this tutorial is to give some intuition on those questions. We describe different graph Laplacians and their basic properties, present the most common spectral clustering algorithms, and derive those algorithms from scratch by several different approaches. Advantages and disadvantages of the different spectral clustering algorithms are discussed.},
+	language = {en},
+	number = {4},
+	urldate = {2022-08-22},
+	journal = {Statistics and Computing},
+	author = {von Luxburg, Ulrike},
+	month = dec,
+	year = {2007},
+	pages = {395--416},
+	file = {Full Text PDF:/Users/skojaku-admin/Zotero/storage/3ZGUSVGE/von Luxburg - 2007 - A tutorial on spectral clustering.pdf:application/pdf},
+}
+
+@misc{peixotoGraphtoolPythonLibrary2017,
+	title = {The graph-tool python library},
+	copyright = {Creative Commons Attribution 4.0 International},
+	url = {https://figshare.com/articles/dataset/graph_tool/1164194},
+	abstract = {Graph-tool is an efficient Python module for manipulation and statistical analysis of graphs (a.k.a. networks). Contrary to most other python modules with similar functionality, the core data structures and algorithms are implemented in C++, making extensive use of template metaprogramming, based heavily on the Boost Graph Library. This confers it a level of performance that is comparable (both in memory usage and computation time) to that of a pure C/C++ library.},
+	urldate = {2022-08-18},
+	publisher = {figshare},
+	author = {Peixoto, Tiago P.},
+	year = {2017},
+	doi = {10.6084/M9.FIGSHARE.1164194},
+	note = {Artwork Size: 136152697 Bytes
+Pages: 136152697 Bytes
+Type: dataset},
+}
+@misc{https://doi.org/10.48550/arxiv.1710.10903,
+  doi = {10.48550/ARXIV.1710.10903},
+
+  url = {https://arxiv.org/abs/1710.10903},
+
+  author = {Veličković, Petar and Cucurull, Guillem and Casanova, Arantxa and Romero, Adriana and Liò, Pietro and Bengio, Yoshua},
+
+  keywords = {Machine Learning (stat.ML), Artificial Intelligence (cs.AI), Machine Learning (cs.LG), Social and Information Networks (cs.SI), FOS: Computer and information sciences, FOS: Computer and information sciences},
+
+  title = {Graph Attention Networks},
+
+  publisher = {arXiv},
+
+  year = {2017},
+
+  copyright = {arXiv.org perpetual, non-exclusive license}
+}
+
+@misc{https://doi.org/10.48550/arxiv.1609.02907,
+  doi = {10.48550/ARXIV.1609.02907},
+
+  url = {https://arxiv.org/abs/1609.02907},
+
+  author = {Kipf, Thomas N. and Welling, Max},
+
+  keywords = {Machine Learning (cs.LG), Machine Learning (stat.ML), FOS: Computer and information sciences, FOS: Computer and information sciences},
+
+  title = {Semi-Supervised Classification with Graph Convolutional Networks},
+
+  publisher = {arXiv},
+
+  year = {2016},
+
+  copyright = {arXiv.org perpetual, non-exclusive license}
+}
+
+@article{rosvallMapsRandomWalks2008,
+	title = {Maps of random walks on complex networks reveal community structure},
+	volume = {105},
+	url = {https://www.pnas.org/doi/10.1073/pnas.0706851105},
+	doi = {10.1073/pnas.0706851105},
+	number = {4},
+	urldate = {2022-08-18},
+	journal = {Proceedings of the National Academy of Sciences},
+	author = {Rosvall, Martin and Bergstrom, Carl T.},
+	month = jan,
+	year = {2008},
+	note = {Publisher: Proceedings of the National Academy of Sciences},
+	pages = {1118--1123},
+	file = {Rosvall&Bergstrom-2008-Proceedings_of_the_National_Academy_of_Sciences-Maps_of_random_walks_on_complex_networks_reveal_community_structure.pdf:/Users/skojaku-admin/Library/CloudStorage/GoogleDrive-skojaku@iu.edu/My Drive/Zotero/Rosvall&Bergstrom-2008-Proceedings_of_the_National_Academy_of_Sciences-Maps_of_random_walks_on_complex_networks_reveal_community_structure.pdf:application/pdf},
+}
+
+@misc{MapsRandomWalks,
+	title = {Maps of random walks on complex networks reveal community structure {\textbar} {PNAS}},
+	url = {https://www.pnas.org/doi/10.1073/pnas.0706851105},
+	urldate = {2022-08-18},
+}
+
+@article{lancichinettiBenchmarkGraphsTesting2008,
+	title = {Benchmark graphs for testing community detection algorithms},
+	volume = {78},
+	url = {https://link.aps.org/doi/10.1103/PhysRevE.78.046110},
+	doi = {10.1103/PhysRevE.78.046110},
+	abstract = {Community structure is one of the most important features of real networks and reveals the internal organization of the nodes. Many algorithms have been proposed but the crucial issue of testing, i.e., the question of how good an algorithm is, with respect to others, is still open. Standard tests include the analysis of simple artificial graphs with a built-in community structure, that the algorithm has to recover. However, the special graphs adopted in actual tests have a structure that does not reflect the real properties of nodes and communities found in real networks. Here we introduce a class of benchmark graphs, that account for the heterogeneity in the distributions of node degrees and of community sizes. We use this benchmark to test two popular methods of community detection, modularity optimization, and Potts model clustering. The results show that the benchmark poses a much more severe test to algorithms than standard benchmarks, revealing limits that may not be apparent at a first analysis.},
+	number = {4},
+	urldate = {2022-08-18},
+	journal = {Physical Review E},
+	author = {Lancichinetti, Andrea and Fortunato, Santo and Radicchi, Filippo},
+	month = oct,
+	year = {2008},
+	note = {Publisher: American Physical Society},
+	pages = {046110},
+	file = {Lancichinetti_et_al-2008-Physical_Review_E-Benchmark_graphs_for_testing_community_detection_algorithms.pdf:/Users/skojaku-admin/Library/CloudStorage/GoogleDrive-skojaku@iu.edu/My Drive/Zotero/Lancichinetti_et_al-2008-Physical_Review_E-Benchmark_graphs_for_testing_community_detection_algorithms.pdf:application/pdf},
+}
+
+@article{tandonCommunityDetectionNetworks2021,
+	title = {Community detection in networks using graph embeddings},
+	volume = {103},
+	url = {https://link.aps.org/doi/10.1103/PhysRevE.103.022316},
+	doi = {10.1103/PhysRevE.103.022316},
+	abstract = {Graph embedding methods are becoming increasingly popular in the machine learning community, where they are widely used for tasks such as node classification and link prediction. Embedding graphs in geometric spaces should aid the identification of network communities as well because nodes in the same community should be projected close to each other in the geometric space, where they can be detected via standard data clustering algorithms. In this paper, we test the ability of several graph embedding techniques to detect communities on benchmark graphs. We compare their performance against that of traditional community detection algorithms. We find that the performance is comparable, if the parameters of the embedding techniques are suitably chosen. However, the optimal parameter set varies with the specific features of the benchmark graphs, like their size, whereas popular community detection algorithms do not require any parameter. So, it is not possible to indicate beforehand good parameter sets for the analysis of real networks. This finding, along with the high computational cost of embedding a network and grouping the points, suggests that, for community detection, current embedding techniques do not represent an improvement over network clustering algorithms.},
+	number = {2},
+	urldate = {2022-08-18},
+	journal = {Physical Review E},
+	author = {Tandon, Aditya and Albeshri, Aiiad and Thayananthan, Vijey and Alhalabi, Wadee and Radicchi, Filippo and Fortunato, Santo},
+	month = feb,
+	year = {2021},
+	note = {Publisher: American Physical Society},
+	pages = {022316},
+	file = {Tandon_et_al-2021-Physical_Review_E-Community_detection_in_networks_using_graph_embeddings.pdf:/Users/skojaku-admin/Library/CloudStorage/GoogleDrive-skojaku@iu.edu/My Drive/Zotero/Tandon_et_al-2021-Physical_Review_E-Community_detection_in_networks_using_graph_embeddings.pdf:application/pdf},
+}
+
+@article{gatesElementcentricClusteringComparison2019,
+	title = {Element-centric clustering comparison unifies overlaps and hierarchy},
+	volume = {9},
+	copyright = {2019 The Author(s)},
+	issn = {2045-2322},
+	url = {https://www.nature.com/articles/s41598-019-44892-y},
+	doi = {10.1038/s41598-019-44892-y},
+	abstract = {Clustering is one of the most universal approaches for understanding complex data. A pivotal aspect of clustering analysis is quantitatively comparing clusterings; clustering comparison is the basis for many tasks such as clustering evaluation, consensus clustering, and tracking the temporal evolution of clusters. In particular, the extrinsic evaluation of clustering methods requires comparing the uncovered clusterings to planted clusterings or known metadata. Yet, as we demonstrate, existing clustering comparison measures have critical biases which undermine their usefulness, and no measure accommodates both overlapping and hierarchical clusterings. Here we unify the comparison of disjoint, overlapping, and hierarchically structured clusterings by proposing a new element-centric framework: elements are compared based on the relationships induced by the cluster structure, as opposed to the traditional cluster-centric philosophy. We demonstrate that, in contrast to standard clustering similarity measures, our framework does not suffer from critical biases and naturally provides unique insights into how the clusterings differ. We illustrate the strengths of our framework by revealing new insights into the organization of clusters in two applications: the improved classification of schizophrenia based on the overlapping and hierarchical community structure of fMRI brain networks, and the disentanglement of various social homophily factors in Facebook social networks. The universality of clustering suggests far-reaching impact of our framework throughout all areas of science.},
+	language = {en},
+	number = {1},
+	urldate = {2022-08-18},
+	journal = {Scientific Reports},
+	author = {Gates, Alexander J. and Wood, Ian B. and Hetrick, William P. and Ahn, Yong-Yeol},
+	month = jun,
+	year = {2019},
+	note = {Number: 1
+Publisher: Nature Publishing Group},
+	pages = {8574},
+	file = {Gates_et_al-2019-Scientific_Reports-Element-centric_clustering_comparison_unifies_overlaps_and_hierarchy.pdf:/Users/skojaku-admin/Library/CloudStorage/GoogleDrive-skojaku@iu.edu/My Drive/Zotero/Gates_et_al-2019-Scientific_Reports-Element-centric_clustering_comparison_unifies_overlaps_and_hierarchy.pdf:application/pdf},
+}
+
+@misc{benaych-georgesSpectralRadiiSparse2021,
+	title = {Spectral radii of sparse random matrices},
+	url = {http://arxiv.org/abs/1704.02945},
+	doi = {10.48550/arXiv.1704.02945},
+	abstract = {We establish bounds on the spectral radii for a large class of sparse random matrices, which includes the adjacency matrices of inhomogeneous Erd{\textbackslash}H\{o\}s-R{\textbackslash}'enyi graphs. Our error bounds are sharp for a large class of sparse random matrices. In particular, for the Erd{\textbackslash}H\{o\}s-R{\textbackslash}'enyi graph \$G(n,d/n)\$, our results imply that the smallest and second-largest eigenvalues of the adjacency matrix converge to the edges of the support of the asymptotic eigenvalue distribution provided that \$d {\textbackslash}gg {\textbackslash}log n\$. Together with the companion paper [3], where we analyse the extreme eigenvalues in the complementary regime \$d {\textbackslash}ll {\textbackslash}log n\$, this establishes a crossover in the behaviour of the extreme eigenvalues around \$d {\textbackslash}sim {\textbackslash}log n\$. Our results also apply to non-Hermitian sparse random matrices, corresponding to adjacency matrices of directed graphs. The proof combines (i) a new inequality between the spectral radius of a matrix and the spectral radius of its nonbacktracking version together with (ii) a new application of the method of moments for nonbacktracking matrices.},
+	urldate = {2022-08-16},
+	publisher = {arXiv},
+	author = {Benaych-Georges, Florent and Bordenave, Charles and Knowles, Antti},
+	month = jan,
+	year = {2021},
+	note = {arXiv:1704.02945 [math]},
+	file = {arXiv Fulltext PDF:/Users/skojaku-admin/Zotero/storage/NEPPXAQK/Benaych-Georges et al. - 2021 - Spectral radii of sparse random matrices.pdf:application/pdf},
+}
+
+@article{decelleAsymptoticAnalysisStochastic2011,
+	title = {Asymptotic analysis of the stochastic block model for modular networks and its algorithmic applications},
+	volume = {84},
+	url = {https://link.aps.org/doi/10.1103/PhysRevE.84.066106},
+	doi = {10.1103/PhysRevE.84.066106},
+	abstract = {In this paper we extend our previous work on the stochastic block model, a commonly used generative model for social and biological networks, and the problem of inferring functional groups or communities from the topology of the network. We use the cavity method of statistical physics to obtain an asymptotically exact analysis of the phase diagram. We describe in detail properties of the detectability-undetectability phase transition and the easy-hard phase transition for the community detection problem. Our analysis translates naturally into a belief propagation algorithm for inferring the group memberships of the nodes in an optimal way, i.e., that maximizes the overlap with the underlying group memberships, and learning the underlying parameters of the block model. Finally, we apply the algorithm to two examples of real-world networks and discuss its performance.},
+	number = {6},
+	urldate = {2022-07-12},
+	journal = {Physical Review E},
+	author = {Decelle, Aurelien and Krzakala, Florent and Moore, Cristopher and Zdeborová, Lenka},
+	month = dec,
+	year = {2011},
+	note = {Publisher: American Physical Society},
+	pages = {066106},
+	file = {Submitted Version:/Users/skojaku-admin/Zotero/storage/4UZNT3HP/Decelle et al. - 2011 - Asymptotic analysis of the stochastic block model .pdf:application/pdf},
+}
+
+@article{chenUniversalPhaseTransition2015,
+	title = {Universal phase transition in community detectability under a stochastic block model},
+	volume = {91},
+	url = {https://link.aps.org/doi/10.1103/PhysRevE.91.032804},
+	doi = {10.1103/PhysRevE.91.032804},
+	abstract = {We prove the existence of an asymptotic phase-transition threshold on community detectability for the spectral modularity method [M. E. J. Newman, Phys. Rev. E 74, 036104 (2006) and Proc. Natl. Acad. Sci. (USA) 103, 8577 (2006)] under a stochastic block model. The phase transition on community detectability occurs as the intercommunity edge connection probability p grows. This phase transition separates a subcritical regime of small p, where modularity-based community detection successfully identifies the communities, from a supercritical regime of large p where successful community detection is impossible. We show that, as the community sizes become large, the asymptotic phase-transition threshold p∗ is equal to √p1p2, where pi(i=1,2) is the within-community edge connection probability. Thus the phase-transition threshold is universal in the sense that it does not depend on the ratio of community sizes. The universal phase-transition phenomenon is validated by simulations for moderately sized communities. Using the derived expression for the phase-transition threshold, we propose an empirical method for estimating this threshold from real-world data.},
+	number = {3},
+	urldate = {2022-07-12},
+	journal = {Physical Review E},
+	author = {Chen, Pin-Yu and Hero, Alfred O.},
+	month = mar,
+	year = {2015},
+	note = {Publisher: American Physical Society},
+	pages = {032804},
+	file = {Accepted Version:/Users/skojaku-admin/Zotero/storage/MBQDTFCC/Chen and Hero - 2015 - Universal phase transition in community detectabil.pdf:application/pdf},
+}
+
+@article{chenPhaseTransitionsSpectral2015,
+	title = {Phase {Transitions} in {Spectral} {Community} {Detection}},
+	volume = {63},
+	issn = {1941-0476},
+	url = {https://ieeexplore.ieee.org/document/7120167},
+	doi = {10.1109/TSP.2015.2442958},
+	abstract = {Consider a network consisting of two subnetworks (communities) connected by some external edges. Given the network topology, the community detection problem can be cast as a graph partitioning problem that aims to identify the external edges as the graph cut that separates these two subnetworks. In this paper, we consider a general model where two arbitrarily connected subnetworks are connected by random external edges. Using random matrix theory and concentration inequalities, we show that when one performs community detection via spectral clustering there exists an abrupt phase transition as a function of the random external edge connection probability. Specifically, the community detection performance transitions from almost perfect detectability to low detectability near some critical value of the random external edge connection probability. We derive upper and lower bounds on the critical value and show that the bounds are equal to each other when two subnetwork sizes are identical. Using simulated and experimental data we show how these bounds can be empirically estimated to validate the detection reliability of any discovered communities.},
+	number = {16},
+	journal = {IEEE Transactions on Signal Processing},
+	author = {Chen, Pin-Yu and Hero, Alfred O.},
+	month = aug,
+	year = {2015},
+	note = {Conference Name: IEEE Transactions on Signal Processing},
+	pages = {4339--4347},
+	file = {Submitted Version:/Users/skojaku-admin/Zotero/storage/KEESP2DZ/Chen and Hero - 2015 - Phase Transitions in Spectral Community Detection.pdf:application/pdf},
+}
+
+@inproceedings{kawamotoMeanfieldTheoryGraph2018,
+	title = {Mean-field theory of graph neural networks in graph partitioning},
+	volume = {31},
+	url = {https://proceedings.neurips.cc/paper/2018/hash/f6e794a75c5d51de081dbefa224304f9-Abstract.html},
+	abstract = {A theoretical performance analysis of the graph neural network (GNN) is presented. For classification tasks, the neural network approach has the advantage in terms of flexibility that it can be employed in a data-driven manner, whereas Bayesian inference requires the assumption of a specific model. A fundamental question is then whether GNN has a high accuracy in addition to this flexibility. Moreover, whether the achieved performance is predominately a result of the backpropagation or the architecture itself is a matter of considerable interest. To gain a better insight into these questions, a mean-field theory of a minimal GNN architecture is developed for the graph partitioning problem. This demonstrates a good agreement with numerical experiments.},
+	urldate = {2022-07-08},
+	booktitle = {Advances in {Neural} {Information} {Processing} {Systems}},
+	publisher = {Curran Associates, Inc.},
+	author = {Kawamoto, Tatsuro and Tsubaki, Masashi and Obuchi, Tomoyuki},
+	year = {2018},
+	file = {Kawamoto_et_al-2018-Advances_in_Neural_Information_Processing_Systems-Mean-field_theory_of_graph_neural_networks_in_graph_partitioning.pdf:/Users/skojaku-admin/Library/CloudStorage/GoogleDrive-skojaku@iu.edu/My Drive/Zotero/Kawamoto_et_al-2018-Advances_in_Neural_Information_Processing_Systems-Mean-field_theory_of_graph_neural_networks_in_graph_partitioning.pdf:application/pdf},
+}
+
+@article{kawamotoAlgorithmicDetectabilityThreshold2018,
+	title = {Algorithmic detectability threshold of the stochastic block model},
+	volume = {97},
+	url = {https://link.aps.org/doi/10.1103/PhysRevE.97.032301},
+	doi = {10.1103/PhysRevE.97.032301},
+	abstract = {The assumption that the values of model parameters are known or correctly learned, i.e., the Nishimori condition, is one of the requirements for the detectability analysis of the stochastic block model in statistical inference. In practice, however, there is no example demonstrating that we can know the model parameters beforehand, and there is no guarantee that the model parameters can be learned accurately. In this study, we consider the expectation–maximization (EM) algorithm with belief propagation (BP) and derive its algorithmic detectability threshold. Our analysis is not restricted to the community structure but includes general modular structures. Because the algorithm cannot always learn the planted model parameters correctly, the algorithmic detectability threshold is qualitatively different from the one with the Nishimori condition.},
+	number = {3},
+	urldate = {2022-07-07},
+	journal = {Physical Review E},
+	author = {Kawamoto, Tatsuro},
+	month = mar,
+	year = {2018},
+	note = {Publisher: American Physical Society},
+	pages = {032301},
+	file = {Submitted Version:/Users/skojaku-admin/Zotero/storage/DQ7EJ68X/Kawamoto - 2018 - Algorithmic detectability threshold of the stochas.pdf:application/pdf},
+}
+
+@article{radicchiParadoxCommunityDetection2014,
+	title = {A paradox in community detection},
+	volume = {106},
+	issn = {0295-5075},
+	url = {https://doi.org/10.1209/0295-5075/106/38001},
+	doi = {10.1209/0295-5075/106/38001},
+	abstract = {Recent research has shown that virtually all algorithms aimed at the identification of communities in networks are affected by the same main limitation: the impossibility to detect communities, even when these are well defined, if the average value of the difference between internal and external node degrees does not exceed a strictly positive value, in the literature known as detectability threshold. Here, we counterintuitively show that the value of this threshold is inversely proportional to the intrinsic quality of communities: the detection of well-defined modules is thus more difficult than the identification of ill-defined communities.},
+	language = {en},
+	number = {3},
+	urldate = {2022-07-06},
+	journal = {EPL (Europhysics Letters)},
+	author = {Radicchi, Filippo},
+	month = may,
+	year = {2014},
+	note = {Publisher: IOP Publishing},
+	pages = {38001},
+	file = {Submitted Version:/Users/skojaku-admin/Zotero/storage/CJ9ASXPM/Radicchi - 2014 - A paradox in community detection.pdf:application/pdf},
+}
+
+@inproceedings{aroraImplicitRegularizationDeep2019,
+	title = {Implicit {Regularization} in {Deep} {Matrix} {Factorization}},
+	volume = {32},
+	url = {https://proceedings.neurips.cc/paper/2019/hash/c0c783b5fc0d7d808f1d14a6e9c8280d-Abstract.html},
+	abstract = {Efforts to understand the generalization mystery in deep learning have led to the belief that gradient-based optimization induces a form of implicit regularization, a bias towards models of low "complexity."  We study the implicit regularization of gradient descent over deep linear neural networks for matrix completion and sensing, a model referred to as deep matrix factorization.  Our first finding, supported by theory and experiments, is that adding depth to a matrix factorization enhances an implicit tendency towards low-rank solutions, oftentimes leading to more accurate recovery.  Secondly, we present theoretical and empirical arguments questioning a nascent view by which implicit regularization in matrix factorization can be captured using simple mathematical norms.  Our results point to the possibility that the language of standard regularizers may not be rich enough to fully encompass the implicit regularization brought forth by gradient-based optimization.},
+	urldate = {2022-07-02},
+	booktitle = {Advances in {Neural} {Information} {Processing} {Systems}},
+	publisher = {Curran Associates, Inc.},
+	author = {Arora, Sanjeev and Cohen, Nadav and Hu, Wei and Luo, Yuping},
+	year = {2019},
+	file = {Arora_et_al-2019-Advances_in_Neural_Information_Processing_Systems-Implicit_Regularization_in_Deep_Matrix_Factorization.pdf:/Users/skojaku-admin/Library/CloudStorage/GoogleDrive-skojaku@iu.edu/My Drive/Zotero/Arora_et_al-2019-Advances_in_Neural_Information_Processing_Systems-Implicit_Regularization_in_Deep_Matrix_Factorization.pdf:application/pdf},
+}
+
+@article{delvenneStabilityGraphCommunities2010,
+	title = {Stability of graph communities across time scales},
+	volume = {107},
+	url = {https://www.pnas.org/doi/10.1073/pnas.0903215107},
+	doi = {10.1073/pnas.0903215107},
+	number = {29},
+	urldate = {2022-07-01},
+	journal = {Proceedings of the National Academy of Sciences},
+	author = {Delvenne, J.-C. and Yaliraki, S. N. and Barahona, M.},
+	month = jul,
+	year = {2010},
+	note = {Publisher: Proceedings of the National Academy of Sciences},
+	pages = {12755--12760},
+	file = {Delvenne_et_al-2010-Proceedings_of_the_National_Academy_of_Sciences-Stability_of_graph_communities_across_time_scales.pdf:/Users/skojaku-admin/Library/CloudStorage/GoogleDrive-skojaku@iu.edu/My Drive/Zotero/Delvenne_et_al-2010-Proceedings_of_the_National_Academy_of_Sciences-Stability_of_graph_communities_across_time_scales.pdf:application/pdf},
+}
+
+@inproceedings{mikolovDistributedRepresentationsWords2013,
+	title = {Distributed {Representations} of {Words} and {Phrases} and their {Compositionality}},
+	volume = {26},
+	url = {https://proceedings.neurips.cc/paper/2013/hash/9aa42b31882ec039965f3c4923ce901b-Abstract.html},
+	abstract = {The recently introduced continuous Skip-gram model is an efficient method for learning high-quality distributed vector representations that capture a large number of precise syntactic and semantic word relationships.  In this paper we present several improvements that make the Skip-gram model more expressive and enable it to learn higher quality vectors more rapidly.  We show that by subsampling frequent words we obtain significant speedup,  and also learn higher quality representations as measured by our tasks. We also introduce Negative Sampling, a simplified variant of Noise Contrastive Estimation (NCE) that learns more accurate vectors for frequent words compared to the hierarchical softmax.   An inherent limitation of word representations is their indifference to word order and their inability to represent idiomatic phrases.  For example, the meanings of Canada'' and "Air'' cannot be easily combined to obtain "Air Canada''.  Motivated by this example, we present a simple and efficient method for finding phrases, and show that their vector representations can be accurately learned by the Skip-gram model. "},
+	urldate = {2022-06-30},
+	booktitle = {Advances in {Neural} {Information} {Processing} {Systems}},
+	publisher = {Curran Associates, Inc.},
+	author = {Mikolov, Tomas and Sutskever, Ilya and Chen, Kai and Corrado, Greg S and Dean, Jeff},
+	year = {2013},
+	file = {Mikolov_et_al-2013-Advances_in_Neural_Information_Processing_Systems-Distributed_Representations_of_Words_and_Phrases_and_their_Compositionality.pdf:/Users/skojaku-admin/Library/CloudStorage/GoogleDrive-skojaku@iu.edu/My Drive/Zotero/Mikolov_et_al-2013-Advances_in_Neural_Information_Processing_Systems-Distributed_Representations_of_Words_and_Phrases_and_their_Compositionality.pdf:application/pdf},
+}
+
+@inproceedings{qiuNetworkEmbeddingMatrix2018,
+	address = {New York, NY, USA},
+	series = {{WSDM} '18},
+	title = {Network {Embedding} as {Matrix} {Factorization}: {Unifying} {DeepWalk}, {LINE}, {PTE}, and node2vec},
+	isbn = {978-1-4503-5581-0},
+	shorttitle = {Network {Embedding} as {Matrix} {Factorization}},
+	url = {https://doi.org/10.1145/3159652.3159706},
+	doi = {10.1145/3159652.3159706},
+	abstract = {Since the invention of word2vec, the skip-gram model has significantly advanced the research of network embedding, such as the recent emergence of the DeepWalk, LINE, PTE, and node2vec approaches. In this work, we show that all of the aforementioned models with negative sampling can be unified into the matrix factorization framework with closed forms. Our analysis and proofs reveal that: (1) DeepWalk empirically produces a low-rank transformation of a network's normalized Laplacian matrix; (2) LINE, in theory, is a special case of DeepWalk when the size of vertices' context is set to one; (3) As an extension of LINE, PTE can be viewed as the joint factorization of multiple networks» Laplacians; (4) node2vec is factorizing a matrix related to the stationary distribution and transition probability tensor of a 2nd-order random walk. We further provide the theoretical connections between skip-gram based network embedding algorithms and the theory of graph Laplacian. Finally, we present the NetMF method as well as its approximation algorithm for computing network embedding. Our method offers significant improvements over DeepWalk and LINE for conventional network mining tasks. This work lays the theoretical foundation for skip-gram based network embedding methods, leading to a better understanding of latent network representation learning.},
+	urldate = {2022-06-29},
+	booktitle = {Proceedings of the {Eleventh} {ACM} {International} {Conference} on {Web} {Search} and {Data} {Mining}},
+	publisher = {Association for Computing Machinery},
+	author = {Qiu, Jiezhong and Dong, Yuxiao and Ma, Hao and Li, Jian and Wang, Kuansan and Tang, Jie},
+	month = feb,
+	year = {2018},
+	keywords = {graph embedding},
+	pages = {459--467},
+	file = {Submitted Version:/Users/skojaku-admin/Zotero/storage/HM4C6ZZF/Qiu et al. - 2018 - Network Embedding as Matrix Factorization Unifyin.pdf:application/pdf},
+}
+
+@inproceedings{levyNeuralWordEmbedding2014,
+	title = {Neural {Word} {Embedding} as {Implicit} {Matrix} {Factorization}},
+	volume = {27},
+	url = {https://papers.nips.cc/paper/2014/hash/feab05aa91085b7a8012516bc3533958-Abstract.html},
+	abstract = {We analyze skip-gram with negative-sampling (SGNS), a word embedding method introduced by Mikolov et al., and show that it is implicitly factorizing a word-context matrix, whose cells are the pointwise mutual information (PMI) of the respective word and context pairs, shifted by a global constant. We find that another embedding method, NCE, is implicitly factorizing a similar matrix, where each cell is the (shifted) log conditional probability of a word given its context. We show that using a sparse Shifted Positive PMI word-context matrix to represent words improves results on two word similarity tasks and one of two analogy tasks. When dense low-dimensional vectors are preferred, exact factorization with SVD can achieve solutions that are at least as good as SGNS's solutions for word similarity tasks. On analogy questions SGNS remains superior to SVD. We conjecture that this stems from the weighted nature of SGNS's factorization.},
+	urldate = {2022-06-30},
+	booktitle = {Advances in {Neural} {Information} {Processing} {Systems}},
+	publisher = {Curran Associates, Inc.},
+	author = {Levy, Omer and Goldberg, Yoav},
+	year = {2014},
+	keywords = {graph embedding},
+	file = {Full Text PDF:/Users/skojaku-admin/Zotero/storage/Z5N4UHN8/Levy and Goldberg - 2014 - Neural Word Embedding as Implicit Matrix Factoriza.pdf:application/pdf},
+}
+
+@inproceedings{penningtonGloVeGlobalVectors2014,
+	address = {Doha, Qatar},
+	title = {{GloVe}: {Global} {Vectors} for {Word} {Representation}},
+	shorttitle = {{GloVe}},
+	url = {https://aclanthology.org/D14-1162},
+	doi = {10.3115/v1/D14-1162},
+	urldate = {2022-06-30},
+	booktitle = {Proceedings of the 2014 {Conference} on {Empirical} {Methods} in {Natural} {Language} {Processing} ({EMNLP})},
+	publisher = {Association for Computational Linguistics},
+	author = {Pennington, Jeffrey and Socher, Richard and Manning, Christopher},
+	month = oct,
+	year = {2014},
+	keywords = {graph embedding},
+	pages = {1532--1543},
+	file = {Full Text PDF:/Users/skojaku-admin/Zotero/storage/TGUEJ39E/Pennington et al. - 2014 - GloVe Global Vectors for Word Representation.pdf:application/pdf},
+}
+
+@inproceedings{groverNode2vecScalableFeature2016,
+	address = {New York, NY, USA},
+	series = {{KDD} '16},
+	title = {node2vec: {Scalable} {Feature} {Learning} for {Networks}},
+	isbn = {978-1-4503-4232-2},
+	shorttitle = {node2vec},
+	url = {https://doi.org/10.1145/2939672.2939754},
+	doi = {10.1145/2939672.2939754},
+	abstract = {Prediction tasks over nodes and edges in networks require careful effort in engineering features used by learning algorithms. Recent research in the broader field of representation learning has led to significant progress in automating prediction by learning the features themselves. However, present feature learning approaches are not expressive enough to capture the diversity of connectivity patterns observed in networks. Here we propose node2vec, an algorithmic framework for learning continuous feature representations for nodes in networks. In node2vec, we learn a mapping of nodes to a low-dimensional space of features that maximizes the likelihood of preserving network neighborhoods of nodes. We define a flexible notion of a node's network neighborhood and design a biased random walk procedure, which efficiently explores diverse neighborhoods. Our algorithm generalizes prior work which is based on rigid notions of network neighborhoods, and we argue that the added flexibility in exploring neighborhoods is the key to learning richer representations. We demonstrate the efficacy of node2vec over existing state-of-the-art techniques on multi-label classification and link prediction in several real-world networks from diverse domains. Taken together, our work represents a new way for efficiently learning state-of-the-art task-independent representations in complex networks.},
+	urldate = {2022-06-29},
+	booktitle = {Proceedings of the 22nd {ACM} {SIGKDD} {International} {Conference} on {Knowledge} {Discovery} and {Data} {Mining}},
+	publisher = {Association for Computing Machinery},
+	author = {Grover, Aditya and Leskovec, Jure},
+	month = aug,
+	year = {2016},
+	keywords = {graph embedding, detectability limit},
+	pages = {855--864},
+	file = {Full Text PDF:/Users/skojaku-admin/Zotero/storage/H8BYE5FW/Grover and Leskovec - 2016 - node2vec Scalable Feature Learning for Networks.pdf:application/pdf},
+}
+
+@inproceedings{perozziDeepWalkOnlineLearning2014,
+	address = {New York, NY, USA},
+	series = {{KDD} '14},
+	title = {{DeepWalk}: online learning of social representations},
+	isbn = {978-1-4503-2956-9},
+	shorttitle = {{DeepWalk}},
+	url = {https://doi.org/10.1145/2623330.2623732},
+	doi = {10.1145/2623330.2623732},
+	abstract = {We present DeepWalk, a novel approach for learning latent representations of vertices in a network. These latent representations encode social relations in a continuous vector space, which is easily exploited by statistical models. DeepWalk generalizes recent advancements in language modeling and unsupervised feature learning (or deep learning) from sequences of words to graphs. DeepWalk uses local information obtained from truncated random walks to learn latent representations by treating walks as the equivalent of sentences. We demonstrate DeepWalk's latent representations on several multi-label network classification tasks for social networks such as BlogCatalog, Flickr, and YouTube. Our results show that DeepWalk outperforms challenging baselines which are allowed a global view of the network, especially in the presence of missing information. DeepWalk's representations can provide F1 scores up to 10\% higher than competing methods when labeled data is sparse. In some experiments, DeepWalk's representations are able to outperform all baseline methods while using 60\% less training data. DeepWalk is also scalable. It is an online learning algorithm which builds useful incremental results, and is trivially parallelizable. These qualities make it suitable for a broad class of real world applications such as network classification, and anomaly detection.},
+	urldate = {2022-06-29},
+	booktitle = {Proceedings of the 20th {ACM} {SIGKDD} international conference on {Knowledge} discovery and data mining},
+	publisher = {Association for Computing Machinery},
+	author = {Perozzi, Bryan and Al-Rfou, Rami and Skiena, Steven},
+	month = aug,
+	year = {2014},
+	keywords = {graph embedding, detectability limit},
+	pages = {701--710},
+	file = {Submitted Version:/Users/skojaku-admin/Zotero/storage/D4X5NZRI/Perozzi et al. - 2014 - DeepWalk online learning of social representation.pdf:application/pdf},
+}
+
+@article{belkinLaplacianEigenmapsDimensionality2003,
+	title = {Laplacian {Eigenmaps} for {Dimensionality} {Reduction} and {Data} {Representation}},
+	volume = {15},
+	issn = {0899-7667},
+	doi = {10.1162/089976603321780317},
+	abstract = {One of the central problems in machine learning and pattern recognition is to develop appropriate representations for complex data. We consider the problem of constructing a representation for data lying on a low-dimensional manifold embedded in a high-dimensional space. Drawing on the correspondence between the graph Laplacian, the Laplace Beltrami operator on the manifold, and the connections to the heat equation, we propose a geometrically motivated algorithm for representing the high-dimensional data. The algorithm provides a computationally efficient approach to nonlinear dimensionality reduction that has locality-preserving properties and a natural connection to clustering. Some potential applications and illustrative examples are discussed.},
+	number = {6},
+	journal = {Neural Computation},
+	author = {Belkin, Mikhail and Niyogi, Partha},
+	month = jun,
+	year = {2003},
+	note = {Conference Name: Neural Computation},
+	keywords = {detectability limit},
+	pages = {1373--1396},
+	file = {Submitted Version:/Users/skojaku-admin/Zotero/storage/UJTQHBZ7/Belkin and Niyogi - 2003 - Laplacian Eigenmaps for Dimensionality Reduction a.pdf:application/pdf},
+}
+
+@article{coifmanDiffusionMaps2006,
+	series = {Special {Issue}: {Diffusion} {Maps} and {Wavelets}},
+	title = {Diffusion maps},
+	volume = {21},
+	issn = {1063-5203},
+	url = {https://www.sciencedirect.com/science/article/pii/S1063520306000546},
+	doi = {10.1016/j.acha.2006.04.006},
+	abstract = {In this paper, we provide a framework based upon diffusion processes for finding meaningful geometric descriptions of data sets. We show that eigenfunctions of Markov matrices can be used to construct coordinates called diffusion maps that generate efficient representations of complex geometric structures. The associated family of diffusion distances, obtained by iterating the Markov matrix, defines multiscale geometries that prove to be useful in the context of data parametrization and dimensionality reduction. The proposed framework relates the spectral properties of Markov processes to their geometric counterparts and it unifies ideas arising in a variety of contexts such as machine learning, spectral graph theory and eigenmap methods.},
+	language = {en},
+	number = {1},
+	urldate = {2022-06-30},
+	journal = {Applied and Computational Harmonic Analysis},
+	author = {Coifman, Ronald R. and Lafon, Stéphane},
+	month = jul,
+	year = {2006},
+	keywords = {detectability limit},
+	pages = {5--30},
+	file = {Full Text:/Users/skojaku-admin/Zotero/storage/G9QSNTFV/Coifman and Lafon - 2006 - Diffusion maps.pdf:application/pdf},
+}
+
+@inproceedings{kunegisLearningSpectralGraph2009,
+	address = {New York, NY, USA},
+	series = {{ICML} '09},
+	title = {Learning spectral graph transformations for link prediction},
+	isbn = {978-1-60558-516-1},
+	url = {https://doi.org/10.1145/1553374.1553447},
+	doi = {10.1145/1553374.1553447},
+	abstract = {We present a unified framework for learning link prediction and edge weight prediction functions in large networks, based on the transformation of a graph's algebraic spectrum. Our approach generalizes several graph kernels and dimensionality reduction methods and provides a method to estimate their parameters efficiently. We show how the parameters of these prediction functions can be learned by reducing the problem to a one-dimensional regression problem whose runtime only depends on the method's reduced rank and that can be inspected visually. We derive variants that apply to undirected, weighted, unweighted, unipartite and bipartite graphs. We evaluate our method experimentally using examples from social networks, collaborative filtering, trust networks, citation networks, authorship graphs and hyperlink networks.},
+	urldate = {2022-06-27},
+	booktitle = {Proceedings of the 26th {Annual} {International} {Conference} on {Machine} {Learning}},
+	publisher = {Association for Computing Machinery},
+	author = {Kunegis, Jérôme and Lommatzsch, Andreas},
+	month = jun,
+	year = {2009},
+	keywords = {embedding},
+	pages = {561--568},
+	file = {Kunegis&Lommatzsch-2009-Proceedings_of_the_26th_Annual_International_Conference_on_Machine_Learning-Learning_spectral_graph_transformations_for_link_prediction.pdf:/Users/skojaku-admin/Library/CloudStorage/GoogleDrive-skojaku@iu.edu/My Drive/Zotero/Kunegis&Lommatzsch-2009-Proceedings_of_the_26th_Annual_International_Conference_on_Machine_Learning-Learning_spectral_graph_transformations_for_link_prediction.pdf:application/pdf},
+}
+
+@inproceedings{tangLINELargescaleInformation2015,
+	address = {Republic and Canton of Geneva, CHE},
+	series = {{WWW} '15},
+	title = {{LINE}: {Large}-scale {Information} {Network} {Embedding}},
+	isbn = {978-1-4503-3469-3},
+	shorttitle = {{LINE}},
+	url = {https://doi.org/10.1145/2736277.2741093},
+	doi = {10.1145/2736277.2741093},
+	abstract = {This paper studies the problem of embedding very large information networks into low-dimensional vector spaces, which is useful in many tasks such as visualization, node classification, and link prediction. Most existing graph embedding methods do not scale for real world information networks which usually contain millions of nodes. In this paper, we propose a novel network embedding method called the ``LINE,'' which is suitable for arbitrary types of information networks: undirected, directed, and/or weighted. The method optimizes a carefully designed objective function that preserves both the local and global network structures. An edge-sampling algorithm is proposed that addresses the limitation of the classical stochastic gradient descent and improves both the effectiveness and the efficiency of the inference. Empirical experiments prove the effectiveness of the LINE on a variety of real-world information networks, including language networks, social networks, and citation networks. The algorithm is very efficient, which is able to learn the embedding of a network with millions of vertices and billions of edges in a few hours on a typical single machine. The source code of the LINE is available online{\textbackslash}footnote\{{\textbackslash}url\{https://github.com/tangjianpku/LINE\}\}.},
+	urldate = {2022-06-24},
+	booktitle = {Proceedings of the 24th {International} {Conference} on {World} {Wide} {Web}},
+	publisher = {International World Wide Web Conferences Steering Committee},
+	author = {Tang, Jian and Qu, Meng and Wang, Mingzhe and Zhang, Ming and Yan, Jun and Mei, Qiaozhu},
+	month = may,
+	year = {2015},
+	pages = {1067--1077},
+	file = {Tang_et_al-2015-Proceedings_of_the_24th_International_Conference_on_World_Wide_Web-LINE.pdf:/Users/skojaku-admin/Library/CloudStorage/GoogleDrive-skojaku@iu.edu/My Drive/Zotero/Tang_et_al-2015-Proceedings_of_the_24th_International_Conference_on_World_Wide_Web-LINE.pdf:application/pdf},
+}
+
+@book{koshyCatalanNumbersApplications2008,
+	address = {New York},
+	title = {Catalan {Numbers} with {Applications}},
+	isbn = {978-0-19-533454-8},
+	url = {https://oxford.universitypressscholarship.com/10.1093/acprof:oso/9780195334548.001.0001/acprof-9780195334548},
+	abstract = {Fibonacci and Lucas sequences are “two shining stars in the vast array of integer sequences,” and because of their ubiquitousness, tendency to appear in quite unexpected and unrelated places, abundant applications, and intriguing properties, they have fascinated amateurs and mathematicians alike. However, Catalan numbers are even more fascinating. Like the North Star in the evening sky, they are a beautiful and bright light in the mathematical heavens. They continue to provide a fertile ground for number theorists, especially, Catalan enthusiasts and computer scientists. Since the publication of Euler's triangulation problem (1751) and Catalan's parenthesization problem (1838), over 400 articles and problems on Catalan numbers have appeared in various periodicals. As Martin Gardner noted, even though many amateurs and mathematicians may know the abc's of Catalan sequence, they may not be familiar with their myriad unexpected occurrences, delightful applications, properties, or the beautiful and surprising relationships among numerous examples. Like Fibonacci and Lucas numbers, Catalan numbers are also an excellent source of fun and excitement. They can be used to generate interesting dividends for students, such as intellectual curiosity, experimentation, pattern recognition, conjecturing, and problem-solving techniques. The central character in the nth Catalan number is the central binomial coefficient. So, Catalan numbers can be extracted from Pascal's triangle. In fact, there are a number of ways they can be read from Pascal's triangle; every one of them is described and exemplified. This brings Catalan numbers a step closer to number-theory enthusiasts, especially.},
+	language = {eng},
+	urldate = {2022-06-24},
+	publisher = {Oxford University Press},
+	author = {Koshy, Thomas},
+	year = {2008},
+	doi = {10.1093/acprof:oso/9780195334548.001.0001},
+}
+
+@misc{zhangConsistencyRandomwalkBased2021,
+	title = {Consistency of random-walk based network embedding algorithms},
+	url = {http://arxiv.org/abs/2101.07354},
+	doi = {10.48550/arXiv.2101.07354},
+	abstract = {Random-walk based network embedding algorithms like node2vec and DeepWalk are widely used to obtain Euclidean representation of the nodes in a network prior to performing down-stream network inference tasks. Nevertheless, despite their impressive empirical performance, there is a lack of theoretical results explaining their behavior. In this paper we studied the node2vec and DeepWalk algorithms through the perspective of matrix factorization. We analyze these algorithms in the setting of community detection for stochastic blockmodel graphs; in particular we established large-sample error bounds and prove consistent community recovery of node2vec/DeepWalk embedding followed by k-means clustering. Our theoretical results indicate a subtle interplay between the sparsity of the observed networks, the window sizes of the random walks, and the convergence rates of the node2vec/DeepWalk embedding toward the embedding of the true but unknown edge probabilities matrix. More specifically, as the network becomes sparser, our results suggest using larger window sizes, or equivalently, taking longer random walks, in order to attain better convergence rate for the resulting embeddings. The paper includes numerical experiments corroborating these observations.},
+	urldate = {2022-06-23},
+	publisher = {arXiv},
+	author = {Zhang, Yichi and Tang, Minh},
+	month = jan,
+	year = {2021},
+	note = {Number: arXiv:2101.07354
+arXiv:2101.07354 [cs, stat]},
+	file = {Zhang&Tang-2021-Consistency_of_random-walk_based_network_embedding_algorithms.pdf:/Users/skojaku-admin/Library/CloudStorage/GoogleDrive-skojaku@iu.edu/My Drive/Zotero/Zhang&Tang-2021-Consistency_of_random-walk_based_network_embedding_algorithms.pdf:application/pdf},
+}
+
+@article{krzakalaSpectralRedemptionClustering2013,
+	title = {Spectral redemption in clustering sparse networks},
+	volume = {110},
+	url = {https://www.pnas.org/doi/10.1073/pnas.1312486110},
+	doi = {10.1073/pnas.1312486110},
+	number = {52},
+	urldate = {2022-06-23},
+	journal = {Proceedings of the National Academy of Sciences},
+	author = {Krzakala, Florent and Moore, Cristopher and Mossel, Elchanan and Neeman, Joe and Sly, Allan and Zdeborová, Lenka and Zhang, Pan},
+	month = dec,
+	year = {2013},
+	note = {Publisher: Proceedings of the National Academy of Sciences},
+	pages = {20935--20940},
+	file = {Krzakala_et_al-2013-Proceedings_of_the_National_Academy_of_Sciences-Spectral_redemption_in_clustering_sparse_networks.pdf:/Users/skojaku-admin/Library/CloudStorage/GoogleDrive-skojaku@iu.edu/My Drive/Zotero/Krzakala_et_al-2013-Proceedings_of_the_National_Academy_of_Sciences-Spectral_redemption_in_clustering_sparse_networks.pdf:application/pdf},
+}
+
+@misc{barotCommunityDetectionUsing2021,
+	title = {Community detection using low-dimensional network embedding algorithms},
+	url = {http://arxiv.org/abs/2111.05267},
+	doi = {10.48550/arXiv.2111.05267},
+	abstract = {With the increasing relevance of large networks in important areas such as the study of contact networks for spread of disease, or social networks for their impact on geopolitics, it has become necessary to study machine learning tools that are scalable to very large networks, often containing millions of nodes. One major class of such scalable algorithms is known as network representation learning or network embedding. These algorithms try to learn representations of network functionals (e.g.{\textasciitilde}nodes) by first running multiple random walks and then using the number of co-occurrences of each pair of nodes in observed random walk segments to obtain a low-dimensional representation of nodes on some Euclidean space. The aim of this paper is to rigorously understand the performance of two major algorithms, DeepWalk and node2vec, in recovering communities for canonical network models with ground truth communities. Depending on the sparsity of the graph, we find the length of the random walk segments required such that the corresponding observed co-occurrence window is able to perform almost exact recovery of the underlying community assignments. We prove that, given some fixed co-occurrence window, node2vec using random walks with a low non-backtracking probability can succeed for much sparser networks compared to DeepWalk using simple random walks. Moreover, if the sparsity parameter is low, we provide evidence that these algorithms might not succeed in almost exact recovery. The analysis requires developing general tools for path counting on random networks having an underlying low-rank structure, which are of independent interest.},
+	urldate = {2022-06-23},
+	publisher = {arXiv},
+	author = {Barot, Aman and Bhamidi, Shankar and Dhara, Souvik},
+	month = nov,
+	year = {2021},
+	note = {Number: arXiv:2111.05267
+arXiv:2111.05267 [cs, math, stat]},
+	keywords = {detectability limit},
+	file = {arXiv Fulltext PDF:/Users/skojaku-admin/Zotero/storage/UUGE2FUL/Barot et al. - 2021 - Community detection using low-dimensional network .pdf:application/pdf},
+}
+
+@article{youngFinitesizeAnalysisDetectability2017,
+	title = {Finite-size analysis of the detectability limit of the stochastic block model},
+	volume = {95},
+	doi = {10.1103/physreve.95.062304},
+	abstract = {It has been shown in recent years that the stochastic block model (SBM) is sometimes undetectable in the sparse limit, i.e., that no algorithm can identify a partition correlated with the partition used to generate an instance, if the instance is sparse enough and infinitely large. In this contribution, we treat the finite case explicitly, using arguments drawn from information theory and statistics. We give a necessary condition for finite-size detectability in the general SBM. We then distinguish the concept of average detectability from the concept of instance-by-instance detectability and give explicit formulas for both definitions. Using these formulas, we prove that there exist large equivalence classes of parameters, where widely different network ensembles are equally detectable with respect to our definitions of detectability. In an extensive case study, we investigate the finite-size detectability of a simplified variant of the SBM, which encompasses a number of important models as special cases. These models include the symmetric SBM, the planted coloring model, and more exotic SBMs not previously studied. We conclude with three appendices, where we study the interplay of noise and detectability, establish a connection between our information-theoretic approach and random matrix theory, and provide proofs of some of the more technical results.},
+	number = {6},
+	journal = {Physical Review E},
+	author = {Young, Jean-Gabriel and Desrosiers, Patrick and Hébert-Dufresne, Laurent and Laurence, Edward and Dubé, Louis J.},
+	month = jun,
+	year = {2017},
+	doi = {10.1103/physreve.95.062304},
+	note = {MAG ID: 2569164302},
+	keywords = {detectability limit},
+	pages = {062304},
+}
+
+@article{kawamotoLimitationsSpectralMethod2015,
+	title = {Limitations in the spectral method for graph partitioning: {Detectability} threshold and localization of eigenvectors.},
+	volume = {91},
+	doi = {10.1103/physreve.91.062803},
+	abstract = {Investigating the performance of different methods is a fundamental problem in graph partitioning. In this paper, we estimate the so-called detectability threshold for the spectral method with both unnormalized and normalized Laplacians in sparse graphs. The detectability threshold is the critical point at which the result of the spectral method is completely uncorrelated to the planted partition. We also analyze whether the localization of eigenvectors affects the partitioning performance in the detectable region. We use the replica method, which is often used in the field of spin-glass theory, and focus on the case of bisection. We show that the gap between the estimated threshold for the spectral method and the threshold obtained from Bayesian inference is considerable in sparse graphs, even without eigenvector localization. This gap closes in a dense limit.},
+	number = {6},
+	journal = {Physical Review E},
+	author = {Kawamoto, Tatsuro and Kabashima, Yoshiyuki},
+	month = jun,
+	year = {2015},
+	doi = {10.1103/physreve.91.062803},
+	pmid = {26172750},
+	note = {MAG ID: 2162403210},
+	keywords = {detectability limit},
+	pages = {062803},
+}
+
+@article{zhangScalableDetectionStatistically2014,
+	title = {Scalable detection of statistically significant communities and hierarchies, using message passing for modularity},
+	volume = {111},
+	doi = {10.1073/pnas.1409770111},
+	abstract = {Modularity is a popular measure of community structure. However, maximizing the modularity can lead to many competing partitions, with almost the same modularity, that are poorly correlated with each other. It can also produce illusory ‘‘communities’’ in random graphs where none exist. We address this problem by using the modularity as a Hamiltonian at finite temperature and using an efficient belief propagation algorithm to obtain the consensus of many partitions with high modularity, rather than looking for a single partition that maximizes it. We show analytically and numerically that the proposed algorithm works all of the way down to the detectability transition in networks generated by the stochastic block model. It also performs well on real-world networks, revealing large communities in some networks where previous work has claimed no communities exist. Finally we show that by applying our algorithm recursively, subdividing communities until no statistically significant subcommunities can be found, we can detect hierarchical structure in real-world networks more efficiently than previous methods.},
+	number = {51},
+	journal = {Proceedings of the National Academy of Sciences of the United States of America},
+	author = {Zhang, Pan and Moore, Cristopher},
+	month = dec,
+	year = {2014},
+	doi = {10.1073/pnas.1409770111},
+	pmcid = {4280643},
+	pmid = {25489096},
+	note = {MAG ID: 2156028561},
+	keywords = {detectability limit},
+	pages = {18144--18149},
+}
+
+@article{peixotoParsimoniousModuleInference2013,
+	title = {Parsimonious module inference in large networks},
+	volume = {110},
+	doi = {10.1103/physrevlett.110.148701},
+	abstract = {We investigate the detectability of modules in large networks when the number of modules is not known in advance. We employ the minimum description length principle which seeks to minimize the total amount of information required to describe the network, and avoid overfitting. According to this criterion, we obtain general bounds on the detectability of any prescribed block structure, given the number of nodes and edges in the sampled network. We also obtain that the maximum number of detectable blocks scales as √N, where N is the number of nodes in the network, for a fixed average degree ⟨k⟩. We also show that the simplicity of the minimum description length approach yields an efficient multilevel Monte Carlo inference algorithm with a complexity of O(τNlogN), if the number of blocks is unknown, and O(τN) if it is known, where τ is the mixing time of the Markov chain. We illustrate the application of the method on a large network of actors and films with over 106 edges, and a dissortative, bipartite block structure.},
+	number = {14},
+	journal = {Physical Review Letters},
+	author = {Peixoto, Tiago P.},
+	month = apr,
+	year = {2013},
+	doi = {10.1103/physrevlett.110.148701},
+	pmid = {25167049},
+	note = {MAG ID: 2038224551},
+	keywords = {detectability limit},
+	pages = {148701},
+}
+
+@article{chenPhaseTransitionsSpectral2015a,
+	title = {Phase {Transitions} in {Spectral} {Community} {Detection} of {Large} {Noisy} {Networks}},
+	abstract = {In this paper, we study the sensitivity of the spectral clustering based community detection algorithm subject to a Erdos-Renyi type random noise model. We prove phase transitions in community detectability as a function of the external edge connection probability and the noisy edge presence probability under a general network model where two arbitrarily connected communities are interconnected by random external edges. Specifically, the community detection performance transitions from almost perfect detectability to low detectability as the inter-community edge connection probability exceeds some critical value. We derive upper and lower bounds on the critical value and show that the bounds are identical when the two communities have the same size. The phase transition results are validated using network simulations. Using the derived expressions for the phase transition threshold we propose a method for estimating this threshold from observed data.},
+	journal = {arXiv: Social and Information Networks},
+	author = {Chen, Pin-Yu and Chen, Pin-Yu and Hero, Alfred O.},
+	month = apr,
+	year = {2015},
+	note = {MAG ID: 1517622252},
+	keywords = {detectability limit},
+}
+
+@article{kawamotoDetectabilitySpectralMethod2015,
+	title = {Detectability of the spectral method for sparse graph partitioning},
+	doi = {10.1209/0295-5075/112/40007},
+	abstract = {We show that modularity maximization with the resolution parameter offers a unifying framework of graph partitioning. In this framework, we demonstrate that the spectral method exhibits universal detectability, irrespective of the value of the resolution parameter, as long as the graph is partitioned. Furthermore, we show that when the resolution parameter is sufficiently small, a first-order phase transition occurs, resulting in the graph being unpartitioned.},
+	journal = {EPL},
+	author = {Kawamoto, Tatsuro and Kabashima, Yoshiyuki},
+	month = sep,
+	year = {2015},
+	doi = {10.1209/0295-5075/112/40007},
+	note = {MAG ID: 3105181037},
+	keywords = {detectability limit},
+}
+
+@article{radicchiDecodingCommunitiesNetworks2018,
+	title = {Decoding communities in networks.},
+	volume = {97},
+	doi = {10.1103/physreve.97.022316},
+	abstract = {According to a recent information-theoretical proposal, the problem of defining and identifying communities in networks can be interpreted as a classical communication task over a noisy channel: memberships of nodes are information bits erased by the channel, edges and non-edges in the network are parity bits introduced by the encoder but degraded through the channel, and a community identification algorithm is a decoder. The interpretation is perfectly equivalent to the one at the basis of well-known statistical inference algorithms for community detection. The only difference in the interpretation is that a noisy channel replaces a stochastic network model. However, the different perspective gives the opportunity to take advantage of the rich set of tools of coding theory to generate novel insights on the problem of community detection. In this paper, we illustrate two main applications of standard coding-theoretical methods to community detection. First, we leverage a state-of-the-art decoding technique to generate a family of quasi-optimal community detection algorithms. Second and more important, we show that the Shannon's noisy-channel coding theorem can be invoked to establish a lower bound, here named as decodability bound, for the maximum amount of noise tolerable by an ideal decoder to achieve perfect detection of communities. When computed for well-established synthetic benchmarks, the decodability bound explains accurately the performance achieved by the best community detection algorithms existing on the market, telling us that only little room for their improvement is still potentially left.},
+	number = {2},
+	journal = {Physical Review E},
+	author = {Radicchi, Filippo},
+	month = feb,
+	year = {2018},
+	doi = {10.1103/physreve.97.022316},
+	pmid = {29548249},
+	note = {MAG ID: 2770186095},
+	keywords = {detectability limit},
+	pages = {022316},
+}
+
+@article{radicchiDetectabilityCommunitiesHeterogeneous2013,
+	title = {Detectability of communities in heterogeneous networks},
+	volume = {88},
+	url = {https://link.aps.org/doi/10.1103/PhysRevE.88.010801},
+	doi = {10.1103/PhysRevE.88.010801},
+	abstract = {Communities are fundamental entities for the characterization of the structure of real networks. The standard approach to the identification of communities in networks is based on the optimization of a quality function known as modularity. Although modularity has been at the center of an intense research activity and many methods for its maximization have been proposed, not much is yet known about the necessary conditions that communities need to satisfy in order to be detectable with modularity maximization methods. Here, we develop a simple theory to establish these conditions, and we successfully apply it to various classes of network models. Our main result is that heterogeneity in the degree distribution helps modularity to correctly recover the community structure of a network and that, in the realistic case of scale-free networks with degree exponent γ{\textless}2.5, modularity is always able to detect the presence of communities.},
+	number = {1},
+	urldate = {2022-06-18},
+	journal = {Physical Review E},
+	author = {Radicchi, Filippo},
+	month = jul,
+	year = {2013},
+	note = {Publisher: American Physical Society},
+	keywords = {detectability limit},
+	pages = {010801},
+	file = {Radicchi-2013-Physical_Review_E-Detectability_of_communities_in_heterogeneous_networks.pdf:/Users/skojaku-admin/Library/CloudStorage/GoogleDrive-skojaku@iu.edu/My Drive/Zotero/Radicchi-2013-Physical_Review_E-Detectability_of_communities_in_heterogeneous_networks.pdf:application/pdf},
+}
+
+@article{nadakuditiGraphSpectraDetectability2012,
+	title = {Graph {Spectra} and the {Detectability} of {Community} {Structure} in {Networks}},
+	volume = {108},
+	url = {https://link.aps.org/doi/10.1103/PhysRevLett.108.188701},
+	doi = {10.1103/PhysRevLett.108.188701},
+	abstract = {We study networks that display community structure—groups of nodes within which connections are unusually dense. Using methods from random matrix theory, we calculate the spectra of such networks in the limit of large size, and hence demonstrate the presence of a phase transition in matrix methods for community detection, such as the popular modularity maximization method. The transition separates a regime in which such methods successfully detect the community structure from one in which the structure is present but is not detected. By comparing these results with recent analyses of maximum-likelihood methods, we are able to show that spectral modularity maximization is an optimal detection method in the sense that no other method will succeed in the regime where the modularity method fails.},
+	number = {18},
+	urldate = {2022-06-13},
+	journal = {Physical Review Letters},
+	author = {Nadakuditi, Raj Rao and Newman, M. E. J.},
+	month = may,
+	year = {2012},
+	note = {Publisher: American Physical Society},
+	keywords = {detectability limit},
+	pages = {188701},
+	file = {Nadakuditi&Newman-2012-Physical_Review_Letters-Graph_Spectra_and_the_Detectability_of_Community_Structure_in_Networks.pdf:/Users/skojaku-admin/Library/CloudStorage/GoogleDrive-skojaku@iu.edu/My Drive/Zotero/Nadakuditi&Newman-2012-Physical_Review_Letters-Graph_Spectra_and_the_Detectability_of_Community_Structure_in_Networks.pdf:application/pdf},
+}
+
+
+@misc{Dyer2014,
+  doi = {10.48550/ARXIV.1410.8251},
+  url = {https://arxiv.org/abs/1410.8251},
+  author = {Dyer, Chris},
+  keywords = {Machine Learning (cs.LG), FOS: Computer and information sciences, FOS: Computer and information sciences},
+  title = {Notes on Noise Contrastive Estimation and Negative Sampling},
+  publisher = {arXiv},
+  year = {2014},
+  copyright = {arXiv.org perpetual, non-exclusive license}
+}
+
+
+@inproceedings{Gutmann2010,
+  title = 	 {Noise-contrastive estimation: A new estimation principle for unnormalized statistical models},
+  author = 	 {Gutmann, Michael and Hyvärinen, Aapo},
+  booktitle = 	 {Proceedings of the Thirteenth International Conference on Artificial Intelligence and Statistics},
+  pages = 	 {297--304},
+  year = 	 {2010},
+  editor = 	 {Teh, Yee Whye and Titterington, Mike},
+  volume = 	 {9},
+  series = 	 {Proceedings of Machine Learning Research},
+  address = 	 {Chia Laguna Resort, Sardinia, Italy},
+  month = 	 {13--15 May},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v9/gutmann10a/gutmann10a.pdf},
+  url = 	 {https://proceedings.mlr.press/v9/gutmann10a.html},
+}
+
+
+@article{rahman_fairwalk_2019,
+	title = {Fairwalk: {Towards} {Fair} {Graph} {Embedding}},
+	shorttitle = {Fairwalk},
+	url = {https://www.ijcai.org/proceedings/2019/456},
+	abstract = {Electronic proceedings of IJCAI 2019},
+	urldate = {2022-07-29},
+	author = {Rahman, Tahleen and Surma, Bartlomiej and Backes, Michael and Zhang, Yang},
+	year = {2019},
+	pages = {3289--3295},
+	file = {Snapshot:/home/ashutosh/Zotero/storage/IIWYW39T/456.html:text/html},
+}
+
+@article{khajehnejad_crosswalk_2021,
+	title = {{CrossWalk}: {Fairness}-enhanced {Node} {Representation} {Learning}},
+	shorttitle = {{CrossWalk}},
+	url = {https://arxiv.org/abs/2105.02725v2},
+	doi = {10.48550/arXiv.2105.02725},
+	abstract = {The potential for machine learning systems to amplify social inequities and unfairness is receiving increasing popular and academic attention. Much recent work has focused on developing algorithmic tools to assess and mitigate such unfairness. However, there is little work on enhancing fairness in graph algorithms. Here, we develop a simple, effective and general method, CrossWalk, that enhances fairness of various graph algorithms, including influence maximization, link prediction and node classification, applied to node embeddings. CrossWalk is applicable to any random walk based node representation learning algorithm, such as DeepWalk and Node2Vec. The key idea is to bias random walks to cross group boundaries, by upweighting edges which (1) are closer to the groups' peripheries or (2) connect different groups in the network. CrossWalk pulls nodes that are near groups' peripheries towards their neighbors from other groups in the embedding space, while preserving the necessary structural properties of the graph. Extensive experiments show the effectiveness of our algorithm to enhance fairness in various graph algorithms, including influence maximization, link prediction and node classification in synthetic and real networks, with only a very small decrease in performance.},
+	language = {en},
+	urldate = {2022-07-29},
+	author = {Khajehnejad, Ahmad and Khajehnejad, Moein and Babaei, Mahmoudreza and Gummadi, Krishna P. and Weller, Adrian and Mirzasoleiman, Baharan},
+	month = may,
+	year = {2021},
+	file = {Full Text PDF:/home/ashutosh/Zotero/storage/TGRH7MDG/Khajehnejad et al. - 2021 - CrossWalk Fairness-enhanced Node Representation L.pdf:application/pdf;Snapshot:/home/ashutosh/Zotero/storage/F54CHELK/2105.html:text/html},
+}
+
+@article{kojaku_residual2vec_2021,
+	title = {{Residual2Vec}: {Debiasing} graph embedding with random graphs},
+	shorttitle = {{Residual2Vec}},
+	url = {https://www.semanticscholar.org/reader/25eedb8a3d68859d37efc114ce9b666ec5d78b3e},
+	abstract = {An academic search engine that utilizes artificial intelligence methods to provide highly relevant results and novel tools to filter them with ease.},
+	language = {en},
+	urldate = {2022-05-22},
+	journal = {undefined},
+	author = {Kojaku, Sadamori and Yoon, Jisung and Constantino, I. and Ahn, Yong-Yeol},
+	year = {2021},
+	file = {Full Text PDF:/home/ashutosh/Zotero/storage/ELDERR2S/Kojaku et al. - 2021 - Residual2Vec Debiasing graph embedding with rando.pdf:application/pdf;Snapshot:/home/ashutosh/Zotero/storage/H3HP4IM3/25eedb8a3d68859d37efc114ce9b666ec5d78b3e.html:text/html},
+}
+@misc{kipf2017semisupervised,
+      title={Semi-Supervised Classification with Graph Convolutional Networks},
+      author={Thomas N. Kipf and Max Welling},
+      year={2017},
+      eprint={1609.02907},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+
+@misc{https://doi.org/10.48550/arxiv.1710.10903,
+  doi = {10.48550/ARXIV.1710.10903},
+
+  url = {https://arxiv.org/abs/1710.10903},
+
+  author = {Veličković, Petar and Cucurull, Guillem and Casanova, Arantxa and Romero, Adriana and Liò, Pietro and Bengio, Yoshua},
+
+  keywords = {Machine Learning (stat.ML), Artificial Intelligence (cs.AI), Machine Learning (cs.LG), Social and Information Networks (cs.SI), FOS: Computer and information sciences, FOS: Computer and information sciences},
+
+  title = {Graph Attention Networks},
+
+  publisher = {arXiv},
+
+  year = {2017},
+
+  copyright = {arXiv.org perpetual, non-exclusive license}
+}
+
+@misc{grover_node2vec_2016,
+	title = {node2vec: {Scalable} {Feature} {Learning} for {Networks}},
+	shorttitle = {node2vec},
+	url = {http://arxiv.org/abs/1607.00653},
+	doi = {10.48550/arXiv.1607.00653},
+	abstract = {Prediction tasks over nodes and edges in networks require careful effort in engineering features used by learning algorithms. Recent research in the broader field of representation learning has led to significant progress in automating prediction by learning the features themselves. However, present feature learning approaches are not expressive enough to capture the diversity of connectivity patterns observed in networks. Here we propose node2vec, an algorithmic framework for learning continuous feature representations for nodes in networks. In node2vec, we learn a mapping of nodes to a low-dimensional space of features that maximizes the likelihood of preserving network neighborhoods of nodes. We define a flexible notion of a node's network neighborhood and design a biased random walk procedure, which efficiently explores diverse neighborhoods. Our algorithm generalizes prior work which is based on rigid notions of network neighborhoods, and we argue that the added flexibility in exploring neighborhoods is the key to learning richer representations. We demonstrate the efficacy of node2vec over existing state-of-the-art techniques on multi-label classification and link prediction in several real-world networks from diverse domains. Taken together, our work represents a new way for efficiently learning state-of-the-art task-independent representations in complex networks.},
+	urldate = {2022-10-01},
+	publisher = {arXiv},
+	author = {Grover, Aditya and Leskovec, Jure},
+	month = jul,
+	year = {2016},
+	note = {arXiv:1607.00653 [cs, stat]},
+	keywords = {Computer Science - Machine Learning, Statistics - Machine Learning, Computer Science - Social and Information Networks},
+	annote = {Comment: In Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, 2016},
+	file = {arXiv Fulltext PDF:/home/ashutosh/Zotero/storage/BLRLAUX7/Grover and Leskovec - 2016 - node2vec Scalable Feature Learning for Networks.pdf:application/pdf;arXiv.org Snapshot:/home/ashutosh/Zotero/storage/PLKINEMQ/1607.html:text/html},
+}
+@misc{snapnets,
+  author       = {Jure Leskovec and Andrej Krevl},
+  title        = {{SNAP Datasets}: {Stanford} Large Network Dataset Collection},
+  howpublished = {\url{http://snap.stanford.edu/data}},
+  month        = jun,
+  year         = 2014
+}
+
+@inproceedings{nr,
+     title={The Network Data Repository with Interactive Graph Analytics and Visualization},
+     author={Ryan A. Rossi and Nesreen K. Ahmed},
+     booktitle={AAAI},
+     url={https://networkrepository.com},
+     year={2015}
 }
