@@ -133,10 +133,7 @@ rule train_gnn:
                     dcsbm=True
                 )
             else:
-                noise_sampler = ConfigModelNodeSampler(
-                    window_length=1,
-                    dcsbm=True
-                )
+                noise_sampler = ConfigModelNodeSampler()
             model = rv.residual2vec_sgd(
                 noise_sampler=noise_sampler,
                 window_length=1,
@@ -404,10 +401,7 @@ rule generate_node_embeddings:
                     dcsbm=True
                 )
             else:
-                noise_sampler = ConfigModelNodeSampler(
-                    window_length=1,
-                    dcsbm=True
-                )
+                noise_sampler = ConfigModelNodeSampler()
             model = rv.residual2vec_sgd(
                 noise_sampler=noise_sampler,
                 window_length=1,
