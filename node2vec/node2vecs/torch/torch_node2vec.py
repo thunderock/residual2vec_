@@ -5,12 +5,12 @@
 # @Last Modified time: 2022-10-24 23:48:37
 import numpy as np
 from . import utils
-from node2vecs.node2vec import Node2Vec
+from node2vec.node2vecs.node2vec import Node2Vec
 from .models import Word2Vec
 from .loss import Node2VecTripletLoss
 from .dataset import TripletDataset
 from .train import train
-from node2vecs.utils.node_sampler import ConfigModelNodeSampler
+from node2vec.node2vecs.utils.node_sampler import ConfigModelNodeSampler
 import torch
 from tqdm import tqdm
 from torch.optim import AdamW, Adam, SGD, SparseAdam

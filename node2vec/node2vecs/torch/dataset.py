@@ -9,7 +9,7 @@ import numpy as np
 from numba import njit
 from torch.utils.data import Dataset
 
-from node2vecs.utils.random_walks import RandomWalkSampler
+from node2vec.node2vecs.utils.random_walks import RandomWalkSampler
 
 
 class TripletDataset(Dataset):
