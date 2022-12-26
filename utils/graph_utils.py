@@ -124,3 +124,45 @@ def get_edges_fastknn_faiss(emb, k=10, batch_size=2000):
     })
 
 
+def generate_embedding_with_word2vec(A, dim, noise_sampler, device):
+    from node2vec import node2vecs
+    n_nodes = A.shape[0]
+    model = node2vecs.Word2Vec(
+        vocab_size=n_nodes + 1,
+        embedding_size=dim,
+        padding_idx=n_nodes,
+        learn_outvec=False, # Set True to learn out vector. Otherwise, the out-vector is copied from in-vector.
+    )
+    model = model.to(device)
+    noise_sampler.fit(A) # Train the noise sampler
+    
+    # We sample triplet of nodes containing one negative sample per positive sample.
+    loss_func = node2vecs.Node2VecTripletLoss(n_neg=1)
+    dataset = node2vecs.TripletDataset(
+        adjmat=A,
+        window_length=1,
+        noise_sampler=noise_sampler,
+        padding_id=n_nodes,
+        buffer_size=256,
+        context_window_type="double",
+        epochs=1,
+        negative=1,
+        p = 1,
+        q = 1, 
+        num_walks = 20,
+        walk_length = 80,
+    )
+    # Generate embedding 
+    node2vecs.train(
+        model=model,
+        dataset=dataset,
+        loss_func=loss_func,
+        batch_size=256,
+        device=device,
+        learning_rate=1e-3,
+        num_workers=20,
+    )
+    model.eval()
+    
+    # Retrieve the embedding vector. We use the in-vector. 
+    return model.ivectors.weight.data.cpu().numpy()[:n_nodes, :]
