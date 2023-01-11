@@ -122,7 +122,7 @@ rule train_gnn:
             # create adj matrix
             adj_mat = snakemake_utils.get_adj_mat_from_path(input.weighted_adj)
             # first create noise sampler
-            from residual2vec.node_samplers import SBMNodeSampler
+            from residual2vec.node_samplers import SBMNodeSampler, ConfigModelNodeSampler
             from torch.utils.data import DataLoader
             from residual2vec.word2vec import Word2Vec
             if R2V:
@@ -133,10 +133,7 @@ rule train_gnn:
                     dcsbm=True
                 )
             else:
-                noise_sampler = SBMNodeSampler(
-                    window_length=1,
-                    dcsbm=True
-                )
+                noise_sampler = ConfigModelNodeSampler()
             model = rv.residual2vec_sgd(
                 noise_sampler=noise_sampler,
                 window_length=1,
@@ -393,7 +390,7 @@ rule generate_node_embeddings:
             # create adj matrix
             adj_mat = snakemake_utils.get_adj_mat_from_path(input.weighted_adj)
             # first create noise sampler
-            from residual2vec.node_samplers import SBMNodeSampler
+            from residual2vec.node_samplers import SBMNodeSampler, ConfigModelNodeSampler
             from torch.utils.data import DataLoader
             from residual2vec.word2vec import Word2Vec
             if R2V:
@@ -404,10 +401,7 @@ rule generate_node_embeddings:
                     dcsbm=True
                 )
             else:
-                noise_sampler = SBMNodeSampler(
-                    window_length=1,
-                    dcsbm=True
-                )
+                noise_sampler = ConfigModelNodeSampler()
             model = rv.residual2vec_sgd(
                 noise_sampler=noise_sampler,
                 window_length=1,
