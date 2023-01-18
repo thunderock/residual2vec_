@@ -1,5 +1,5 @@
 import os
-from utils.snakemake_utils import get_string_boolean, FileResources
+from utils.snakemake_utils import get_string_boolean, FileResources, get_dataset
 import wandb
 from utils.config import R2V_TRAINING_EPOCHS, NUM_NEGATIVE_SAMPLING, NUM_THREADS
 # os.environ["CUDA_VISIBLE_DEVICES"]=""
@@ -46,6 +46,7 @@ file_resources = FileResources(root=DATA_ROOT, crosswalk=CROSSWALK, fairwalk=FAI
     node2vec=NODE2VEC, r2v=R2V, dataset=DATASET, model_name=GNN_MODEL)
 print(config)
 
+NUM_NODES_ = get_dataset(DATASET).get_grouped_col().shape[0]
 
 rule train_gnn:
     input:
@@ -56,7 +57,7 @@ rule train_gnn:
     threads: NUM_THREADS[DATASET]
     params:
         BATCH_SIZE = 256 * 3,
-        NODE_TO_VEC_DIM= 32,
+        NODE_TO_VEC_DIM= NUM_NODES_,
         NUM_WORKERS = NUM_THREADS[DATASET],
         SET_DEVICE = SET_DEVICE,
         RV_NUM_WALKS= 100
@@ -107,7 +108,7 @@ rule train_gnn:
             batch_size=params.BATCH_SIZE,
         ).fit()
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index, sampler=sampler, num_neg_sampling=NUM_NEGATIVE_SAMPLING[DATASET])
-        wandb.init(project=DATASET + "_32_dim",name="DATA_ROOT={}_MODEL={}_CROSSWALK={}_FAIRWALK={}_NODE2VEC={}_R2V={}".format(DATA_ROOT, GNN_MODEL, CROSSWALK, FAIRWALK, NODE2VEC, R2V))
+        wandb.init(project=DATASET + "_one_HOT",name="DATA_ROOT={}_MODEL={}_CROSSWALK={}_FAIRWALK={}_NODE2VEC={}_R2V={}".format(DATA_ROOT, GNN_MODEL, CROSSWALK, FAIRWALK, NODE2VEC, R2V))
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=True, num_workers=params.NUM_WORKERS, pin_memory=True)
         if GNN_MODEL in ['gat', 'gcn']:
             m = snakemake_utils.get_gnn_model(
@@ -195,7 +196,7 @@ rule generate_crosswalk_weights:
 
     params:
         BATCH_SIZE=256 * 3,
-        NODE_TO_VEC_DIM=32,
+        NODE_TO_VEC_DIM=NUM_NODES_,
         NUM_WORKERS=NUM_THREADS[DATASET],
         SET_DEVICE=SET_DEVICE,
         RV_NUM_WALKS=100
@@ -268,7 +269,7 @@ rule train_features_2_vec:
     threads: NUM_THREADS[DATASET]
     params:
         BATCH_SIZE = 256 * 3,
-        NODE_TO_VEC_DIM= 32,
+        NODE_TO_VEC_DIM= NUM_NODES_,
         NUM_WORKERS = NUM_THREADS[DATASET],
         SET_DEVICE = SET_DEVICE,
         RV_NUM_WALKS= 100
@@ -283,32 +284,10 @@ rule train_features_2_vec:
         edge_index = snakemake_utils.get_edge_index_from_sparse_path(input.weighted_adj)
         num_nodes = snakemake_utils.get_num_nodes_from_adj(input.weighted_adj)
 
-        feature_dim = 128 if (CROSSWALK or FAIRWALK) else params.NODE_TO_VEC_DIM
+        feature_dim = NUM_NODES_
         labels = snakemake_utils.get_dataset(DATASET).get_grouped_col()
-        if NODE2VEC:
-            snakemake_utils.train_node2vec_get_embs(
-                edge_index=edge_index,
-                file_path=output.features,
-                crosswalk=CROSSWALK,
-                fairwalk=FAIRWALK,
-                embedding_dim=feature_dim,
-                num_nodes=num_nodes,
-                weighted_adj_path=input.weighted_adj,
-                group_membership=labels
-            )
-        else:
-            snakemake_utils.train_deepwalk_get_embs(
-                edge_index=edge_index,
-                file_path=output.features,
-                crosswalk=CROSSWALK,
-                fairwalk=FAIRWALK,
-                embedding_dim=feature_dim,
-                num_nodes=num_nodes,
-                weighted_adj_path=input.weighted_adj,
-                group_membership=labels
-            )
-
-
+        features = np.diag(np.ones(num_nodes))
+        np.save(output.features, features)
 
 rule generate_node_embeddings:
     input:
@@ -319,7 +298,7 @@ rule generate_node_embeddings:
         embs_file = file_resources.embs_file
     params:
         BATCH_SIZE = 256 * 3,
-        NODE_TO_VEC_DIM= 32,
+        NODE_TO_VEC_DIM= NUM_NODES_,
         NUM_WORKERS = NUM_THREADS[DATASET],
         SET_DEVICE = SET_DEVICE,
         RV_NUM_WALKS= 100
