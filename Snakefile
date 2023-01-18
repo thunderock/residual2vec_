@@ -278,6 +278,7 @@ rule train_features_2_vec:
         import gc
         import warnings
         from utils import snakemake_utils
+        import numpy as np
         warnings.filterwarnings("ignore")
         gc.enable()
 
