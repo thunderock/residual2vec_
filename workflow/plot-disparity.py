@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-17 08:52:11
 # @Last Modified by:   Sadamori Kojaku
-# @Last Modified time: 2023-01-18 09:17:45
+# @Last Modified time: 2023-01-18 09:29:10
 # %%
 import numpy as np
 import pandas as pd
@@ -17,7 +17,7 @@ if "snakemake" in sys.modules:
     output_file = snakemake.output["output_file"]
     focal_model_list = snakemake.params["focal_model_list"]
 else:
-    input_file = "../data/derived/results/result_auc_roc.csv"
+    input_file = "../data/derived/results/result_disparity.csv"
     focal_model_list = [
         "fairwalk+deepwalk",
         "crosswalk+deepwalk",
@@ -51,15 +51,16 @@ plot_data = data_table.copy()
 
 # Filtering
 plot_data = plot_data[plot_data["model"].isin(focal_model_list)]
-plot_data = plot_data[plot_data["edgeSampling"].isin(["degree-group-biased"])]
 
 # Append new columns
 plot_data["modelType"] = plot_data["model"].map(model2type)
 plot_data["Model"] = plot_data["model"].map(model2group)
 plot_data["model"] = plot_data["model"].map(model_names)
-plot_data = plot_data.rename(columns={"score": "AUC-ROC"})
+plot_data = plot_data.rename(columns={"relativeEntropy": "Disparity"})
+plot_data = plot_data[plot_data["k"] == 10]
 
-#
+
+# %%
 # ========================
 # Plot
 # ========================
@@ -69,7 +70,7 @@ sns.set_style("ticks")
 
 g = sns.catplot(
     data=plot_data,
-    y="AUC-ROC",
+    y="Disparity",
     x="modelType",
     col="data",
     col_order=data_order,
@@ -85,10 +86,7 @@ g = sns.catplot(
     aspect=0.7,
     sharey=False
 )
-g.set(ylim=(None, 1))
 
-for ax in g.axes.flat:
-    ax.axhline(0.5, ls=":", color="k")
 g.set_xlabels("")
 
 g.fig.savefig(output_file, bbox_inches='tight', dpi=300)

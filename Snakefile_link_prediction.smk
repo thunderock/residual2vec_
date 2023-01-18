@@ -10,7 +10,7 @@ include: "./utils/workflow_utils.smk" # not able to merge this with snakemake_ut
 # ====================
 
 # network file
-SRC_DATA_ROOT = j("data", "shared") # File path to the "FairnessAI/residual2vec_/final_crosswalk"
+SRC_DATA_ROOT = j("data", "derived", "preprocessed") # File path to the "FairnessAI/residual2vec_/final_crosswalk"
 DERIVED_DIR = j("data", "derived")
 
 DATA_LIST = ["airport", "polbook", "polblog", "pokec"]
@@ -66,12 +66,18 @@ NODE_TABLE_FILE = j(SRC_DATA_ROOT, "{data}/node_table.csv") # ndoe table
 # ====================
 # Output files
 # ====================
+RESULT_DIR = j(DERIVED_DIR, "results")
+
 LP_DATASET_DIR = j(DERIVED_DIR, "link-prediction-dataset")
 LP_DATASET_FILE = j(LP_DATASET_DIR, "data~{data}_edgeSampling~{edgeSampling}_sampleId~{sampleId}_iteration~{iteration}.csv")
 
-LP_RESULT_DIR = j(DERIVED_DIR, "results")
-LP_SCORE_FILE = j(LP_RESULT_DIR, "parts", "result_data~{data}_edgeSampling~{edgeSampling}_sampleId~{sampleId}_model~{model}_iteration~{iteration}.csv")
-LP_ALL_SCORE_FILE = j(LP_RESULT_DIR, "result_data_all.csv")
+# AUC-ROC
+LP_SCORE_FILE = j(RESULT_DIR, "auc_roc", "result_data~{data}_edgeSampling~{edgeSampling}_sampleId~{sampleId}_model~{model}_iteration~{iteration}.csv")
+LP_ALL_SCORE_FILE = j(RESULT_DIR, "result_auc_roc.csv")
+
+# Disparity score
+DISPARITY_SCORE_FILE = j(RESULT_DIR, "disparity", "result_data~{data}_sampleId~{sampleId}_model~{model}.csv")
+DISPARITY_ALL_SCORE_FILE = j(RESULT_DIR, "result_disparity.csv")
 
 #
 # Figures
@@ -89,12 +95,23 @@ lp_benchmark_params = {
     "iteration":list(range(N_ITERATION))
 }
 
+disparity_benchmark_params = {
+    "model":MODEL_LIST,
+    "sampleId":["one", "two", "three", "four", "five"],
+}
+
 rule all:
     input:
-        #expand(LP_DATASET_FILE, **lp_benchmark_params),
-        expand(LP_SCORE_FILE, **lp_benchmark_params, data = DATA_LIST),
-        expand(LP_ALL_SCORE_FILE, data = DATA_LIST)
+        expand(LP_ALL_SCORE_FILE, data = DATA_LIST),
+        expand(DISPARITY_ALL_SCORE_FILE, data = DATA_LIST),
 
+rule figs:
+    input:
+        FIG_LP_SCORE
+
+# =====================
+# Network generation
+# =====================
 rule generate_link_prediction_dataset:
     input:
         train_net_file = TRAIN_NET_FILE,
@@ -108,6 +125,9 @@ rule generate_link_prediction_dataset:
         "workflow/generate-link-prediction-dataset.py"
 
 
+# =====================
+# Evaluation
+# =====================
 rule eval_link_prediction:
     input:
         input_file = LP_DATASET_FILE,
@@ -118,6 +138,16 @@ rule eval_link_prediction:
     script:
         "workflow/evaluate-lp-performance.py"
 
+rule eval_disparity:
+    input:
+        node_table_file = NODE_TABLE_FILE,
+    params:
+        emb_file = lambda wildcards: "{root}/{data}/{data}_{sampleId}/{data}".format(root=SRC_DATA_ROOT, data=wildcards.data, sampleId=wildcards.sampleId)+MODEL2EMBFILE_POSTFIX[wildcards.model] # not ideal but since the file names are different, I generate the file name in the script and load the corresponding file.
+    output:
+        output_file = DISPARITY_SCORE_FILE
+    script:
+        "workflow/evaluate-disparity.py"
+
 
 rule concatenate_results:
     input:
@@ -127,9 +157,31 @@ rule concatenate_results:
     script:
         "workflow/concat-results.py"
 
+rule concatenate_disparity_results:
+    input:
+        input_file_list = expand(DISPARITY_SCORE_FILE, **disparity_benchmark_params, data = DATA_LIST),
+    output:
+        output_file = DISPARITY_ALL_SCORE_FILE
+    script:
+        "workflow/concat-results.py"
+
+# =====================
+# Plot
+# =====================
 rule plot_auc_roc_score:
     input:
         input_file = LP_ALL_SCORE_FILE
+    params:
+        focal_model_list = [
+            "fairwalk+deepwalk",
+            "crosswalk+deepwalk",
+            "deepwalk",
+            "word2vec",
+            "GCN+deepwalk+random",
+            "GCN+deepwalk+r2v",
+            "GAT+deepwalk+random",
+            "GAT+deepwalk+r2v",
+        ]
     output:
         output_file = FIG_LP_SCORE
     script:
