@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+# @Author: Sadamori Kojaku
+# @Date:   2023-01-18 00:55:24
+# @Last Modified by:   Sadamori Kojaku
+# @Last Modified time: 2023-01-18 01:39:07
 from os.path import join as j
 
 import numpy as np
@@ -5,6 +10,9 @@ import torch
 from models import weighted_node2vec
 from utils.config import R2V_TRAINING_EPOCHS, NUM_GNN_LAYERS, NUM_WORKERS
 from scipy import sparse
+import pandas as pd
+from snakemake.utils import Paramspace
+import itertools
 
 def get_string_boolean(string):
     if string in ['True', 'true', 'TRUE', 'T', 't', '1']:
@@ -35,7 +43,7 @@ class FileResources(object):
             return str(j(self.root, f'{self.dataset}_adj.npz'))
 
     @property
-    def test_adj_path(self): 
+    def test_adj_path(self):
         return str(j(self.root, "{}_test_adj.npz".format(self.dataset)))
 
     @property
@@ -314,4 +322,3 @@ def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2ve
 
     assert model_name in ['gcn', 'gat']
     return train_model_and_get_embs(adj=adj, model_name=model_name, X=X, sampler=sampler, gnn_layers=NUM_GNN_LAYERS[dataset_name], epochs=R2V_TRAINING_EPOCHS[dataset_name], learn_outvec=learn_outvec, model_dim=model_dim)
-

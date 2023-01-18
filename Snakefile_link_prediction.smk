@@ -3,14 +3,15 @@ from os.path import join as j
 import itertools
 import pandas as pd
 from snakemake.utils import Paramspace
-include: "./workflow_utils.smk"
+include: "./utils/workflow_utils.smk" # not able to merge this with snakemake_utils.py due to some path breakage issues
 
 # ====================
 # Root folder path setting
 # ====================
 
 # network file
-DATA_ROOT = "data" # File path to the "FairnessAI/residual2vec_/final_crosswalk"
+SRC_DATA_ROOT = j("data", "shared") # File path to the "FairnessAI/residual2vec_/final_crosswalk"
+DERIVED_DIR = j("data", "derived")
 
 DATA_LIST = ["airport", "polbook", "polblog", "pokec"]
 SAMPLE_ID_LIST = ["one", "two", "three", "four", "five"] # why not arabic numbers?
@@ -58,17 +59,17 @@ MODEL2EMBFILE_POSTFIX= {
 # Input files
 # ====================
 
-TRAIN_NET_FILE = j(DATA_ROOT, "{data}/{data}_{sampleId}/{data}_adj.npz") # train
-TEST_NET_FILE = j(DATA_ROOT, "{data}/{data}_{sampleId}/{data}_test_adj.npz") # test
-NODE_TABLE_FILE = j(DATA_ROOT, "{data}/node_table.csv") # ndoe table
+TRAIN_NET_FILE = j(SRC_DATA_ROOT, "{data}/{data}_{sampleId}/{data}_adj.npz") # train
+TEST_NET_FILE = j(SRC_DATA_ROOT, "{data}/{data}_{sampleId}/{data}_test_adj.npz") # test
+NODE_TABLE_FILE = j(SRC_DATA_ROOT, "{data}/node_table.csv") # ndoe table
 
 # ====================
 # Output files
 # ====================
-LP_DATASET_DIR = j("derived", "link-prediction-dataset")
+LP_DATASET_DIR = j(DERIVED_DIR, "link-prediction-dataset")
 LP_DATASET_FILE = j(LP_DATASET_DIR, "data~{data}_edgeSampling~{edgeSampling}_sampleId~{sampleId}_iteration~{iteration}.csv")
 
-LP_RESULT_DIR = j("derived", "results")
+LP_RESULT_DIR = j(DERIVED_DIR, "results")
 LP_SCORE_FILE = j(LP_RESULT_DIR, "parts", "result_data~{data}_edgeSampling~{edgeSampling}_sampleId~{sampleId}_model~{model}_iteration~{iteration}.csv")
 LP_ALL_SCORE_FILE = j(LP_RESULT_DIR, "result_data_all.csv")
 
@@ -111,7 +112,7 @@ rule eval_link_prediction:
     input:
         input_file = LP_DATASET_FILE,
     params:
-        emb_file = lambda wildcards: "{root}/{data}/{data}_{sampleId}/{data}".format(root=DATA_ROOT, data=wildcards.data, sampleId=wildcards.sampleId)+MODEL2EMBFILE_POSTFIX[wildcards.model] # not ideal but since the file names are different, I generate the file name in the script and load the corresponding file.
+        emb_file = lambda wildcards: "{root}/{data}/{data}_{sampleId}/{data}".format(root=SRC_DATA_ROOT, data=wildcards.data, sampleId=wildcards.sampleId)+MODEL2EMBFILE_POSTFIX[wildcards.model] # not ideal but since the file names are different, I generate the file name in the script and load the corresponding file.
     output:
         output_file = LP_SCORE_FILE
     script:
