@@ -56,7 +56,7 @@ rule train_gnn:
     threads: NUM_THREADS[DATASET]
     params:
         BATCH_SIZE = 256 * 3,
-        NODE_TO_VEC_DIM= 32,
+        NODE_TO_VEC_DIM= 128,
         NUM_WORKERS = NUM_THREADS[DATASET],
         SET_DEVICE = SET_DEVICE,
         RV_NUM_WALKS= 100
@@ -107,7 +107,7 @@ rule train_gnn:
             batch_size=params.BATCH_SIZE,
         ).fit()
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index, sampler=sampler, num_neg_sampling=NUM_NEGATIVE_SAMPLING[DATASET])
-        wandb.init(project=DATASET + "_32_dim",name="DATA_ROOT={}_MODEL={}_CROSSWALK={}_FAIRWALK={}_NODE2VEC={}_R2V={}".format(DATA_ROOT, GNN_MODEL, CROSSWALK, FAIRWALK, NODE2VEC, R2V))
+        wandb.init(project=DATASET + "_128_dim",name="DATA_ROOT={}_MODEL={}_CROSSWALK={}_FAIRWALK={}_NODE2VEC={}_R2V={}".format(DATA_ROOT, GNN_MODEL, CROSSWALK, FAIRWALK, NODE2VEC, R2V))
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=True, num_workers=params.NUM_WORKERS, pin_memory=True)
         if GNN_MODEL in ['gat', 'gcn']:
             m = snakemake_utils.get_gnn_model(
@@ -195,7 +195,7 @@ rule generate_crosswalk_weights:
 
     params:
         BATCH_SIZE=256 * 3,
-        NODE_TO_VEC_DIM=32,
+        NODE_TO_VEC_DIM=128,
         NUM_WORKERS=NUM_THREADS[DATASET],
         SET_DEVICE=SET_DEVICE,
         RV_NUM_WALKS=100
@@ -268,7 +268,7 @@ rule train_features_2_vec:
     threads: NUM_THREADS[DATASET]
     params:
         BATCH_SIZE = 256 * 3,
-        NODE_TO_VEC_DIM= 32,
+        NODE_TO_VEC_DIM= 128,
         NUM_WORKERS = NUM_THREADS[DATASET],
         SET_DEVICE = SET_DEVICE,
         RV_NUM_WALKS= 100
@@ -319,7 +319,7 @@ rule generate_node_embeddings:
         embs_file = file_resources.embs_file
     params:
         BATCH_SIZE = 256 * 3,
-        NODE_TO_VEC_DIM= 32,
+        NODE_TO_VEC_DIM= 128,
         NUM_WORKERS = NUM_THREADS[DATASET],
         SET_DEVICE = SET_DEVICE,
         RV_NUM_WALKS= 100
