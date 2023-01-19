@@ -15,7 +15,7 @@ DERIVED_DIR = j("data", "derived")
 
 DATA_LIST = ["airport", "polbook", "polblog", "pokec"]
 SAMPLE_ID_LIST = ["one", "two", "three", "four", "five"] # why not arabic numbers?
-N_ITERATION = 10
+N_ITERATION = 1
 
 MODEL_LIST = [
     "fairwalk+deepwalk",
@@ -84,7 +84,7 @@ DISPARITY_ALL_SCORE_FILE = j(RESULT_DIR, "result_disparity.csv")
 #
 FIG_LP_SCORE = j("figs", "aucroc.pdf")
 FIG_DISPARITY_SCORE = j("figs", "disparity.pdf")
-
+FIG_DISPARITY_CURVE = j("figs", "disparity-curve.pdf")
 # ===================
 # Configurations
 # ===================
@@ -112,7 +112,8 @@ rule link_prediction_all:
 rule link_prediction_figs:
     input:
         FIG_LP_SCORE,
-        FIG_DISPARITY_SCORE
+        FIG_DISPARITY_SCORE,
+        FIG_DISPARITY_CURVE
 
 
 # =====================
@@ -211,3 +212,22 @@ rule plot_disparity:
         output_file = FIG_DISPARITY_SCORE
     script:
         "workflow/plot-disparity.py"
+
+rule plot_disparity_curve:
+    input:
+        input_file = DISPARITY_ALL_SCORE_FILE
+    params:
+        focal_model_list = [
+            "fairwalk+deepwalk",
+            "crosswalk+deepwalk",
+            "deepwalk",
+            "word2vec",
+            "GCN+deepwalk+random",
+            "GCN+deepwalk+r2v",
+            "GAT+deepwalk+random",
+            "GAT+deepwalk+r2v",
+        ]
+    output:
+        output_file = FIG_DISPARITY_CURVE
+    script:
+        "workflow/plot-disparity-curve.py"
