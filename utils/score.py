@@ -73,3 +73,45 @@ def statistical_parity(edges, y, metric="std"):
     elif metric == "gini":
         parity = gini(probs)
     return parity
+
+
+def get_node_parity(embs, y, metric="std"):
+    """
+    embs: node embeddings
+    y: original labels
+    """
+
+    n_nodes = len(y) # number of nodes
+    uy, y = np.unique(y, return_inverse=True) # to ensure that the labels are continuous integers starting from zero
+    K = len(uy) # number of classes
+
+    # calculate centroid for each class
+    centroids = np.zeros((K, embs.shape[1]))
+    
+    for k in range(K):
+        centroids[k] = embs[y == k].mean(axis = 0)
+    
+    # calculate cosine distances of each node to each centroid
+    distances = np.zeros((n_nodes, K))
+    
+    for node in range(n_nodes):
+        for k in range(K):
+            distances[node, k] = np.dot(embs[node], centroids[k]) / (np.linalg.norm(embs[node]) * np.linalg.norm(centroids[k]))
+    
+    # return metric for each node
+    if metric == "std":
+        return np.std(distances, axis = 1)
+    elif metric == "gini":
+        return gini(distances, axis = 1)
+    elif metric == "max":
+        return np.max(distances, axis = 1)
+    elif metric == "min":
+        return np.min(distances, axis = 1)
+    elif metric == "mean":
+        return np.mean(distances, axis = 1)
+    elif metric == "median":
+        return np.median(distances, axis = 1)
+    elif metric == "var":
+        return np.var(distances, axis = 1)
+    else:
+        raise ValueError("Invalid metric")
