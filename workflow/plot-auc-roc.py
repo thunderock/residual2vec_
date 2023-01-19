@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-17 08:52:11
 # @Last Modified by:   Sadamori Kojaku
-# @Last Modified time: 2023-01-18 09:17:45
+# @Last Modified time: 2023-01-19 03:49:17
 # %%
 import numpy as np
 import pandas as pd
@@ -64,7 +64,7 @@ plot_data = plot_data.rename(columns={"score": "AUC-ROC"})
 # Plot
 # ========================
 sns.set_style("white")
-sns.set(font_scale=1.2)
+sns.set(font_scale=1.1)
 sns.set_style("ticks")
 
 g = sns.catplot(
@@ -81,8 +81,8 @@ g = sns.catplot(
     linestyles=linestyles,
     color="k",
     kind="point",
-    height=4,
-    aspect=0.7,
+    height=3,
+    aspect=0.8,
     sharey=False
 )
 g.set(ylim=(None, 1))

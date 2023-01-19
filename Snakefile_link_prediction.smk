@@ -83,6 +83,7 @@ DISPARITY_ALL_SCORE_FILE = j(RESULT_DIR, "result_disparity.csv")
 # Figures
 #
 FIG_LP_SCORE = j("figs", "aucroc.pdf")
+FIG_DISPARITY_SCORE = j("figs", "disparity.pdf")
 
 # ===================
 # Configurations
@@ -107,7 +108,9 @@ rule all:
 
 rule figs:
     input:
-        FIG_LP_SCORE
+        FIG_LP_SCORE,
+        FIG_DISPARITY_SCORE
+
 
 # =====================
 # Network generation
@@ -186,3 +189,22 @@ rule plot_auc_roc_score:
         output_file = FIG_LP_SCORE
     script:
         "workflow/plot-auc-roc.py"
+
+rule plot_disparity:
+    input:
+        input_file = DISPARITY_ALL_SCORE_FILE
+    params:
+        focal_model_list = [
+            "fairwalk+deepwalk",
+            "crosswalk+deepwalk",
+            "deepwalk",
+            "word2vec",
+            "GCN+deepwalk+random",
+            "GCN+deepwalk+r2v",
+            "GAT+deepwalk+random",
+            "GAT+deepwalk+r2v",
+        ]
+    output:
+        output_file = FIG_DISPARITY_SCORE
+    script:
+        "workflow/plot-disparity.py"
