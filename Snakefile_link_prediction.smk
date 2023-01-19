@@ -101,12 +101,15 @@ disparity_benchmark_params = {
     "sampleId":["one", "two", "three", "four", "five"],
 }
 
-rule all:
+# =====================
+# Main output
+# =====================
+rule link_prediction_all:
     input:
         expand(LP_ALL_SCORE_FILE, data = DATA_LIST),
         expand(DISPARITY_ALL_SCORE_FILE, data = DATA_LIST),
 
-rule figs:
+rule link_prediction_figs:
     input:
         FIG_LP_SCORE,
         FIG_DISPARITY_SCORE
