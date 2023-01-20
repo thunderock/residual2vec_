@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-17 04:25:23
 # @Last Modified by:   Sadamori Kojaku
-# @Last Modified time: 2023-01-18 09:56:20
+# @Last Modified time: 2023-01-19 02:49:31
 # %%
 import faiss
 import numpy as np
@@ -138,3 +138,4 @@ for k in tqdm(klist):
     ent = np.mean(np.array(entropy(D, qk = Dref, axis = 1)).reshape(-1))
     results.append({"k":k, "relativeEntropy":ent})
 pd.DataFrame(results).to_csv(output_file, index=False)
+# %%
