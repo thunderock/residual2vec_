@@ -465,3 +465,7 @@ rule generate_node_embeddings:
                     else:
                         embs[idx * batch_size:(idx + 1) * batch_size, :] = a
         np.save(output.embs_file,embs.numpy())
+
+
+# Snakefile for the link prediction benchmark
+include: "Snakefile_link_prediction.smk"
