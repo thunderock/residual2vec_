@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-17 08:52:11
-# @Last Modified by:   Sadamori Kojaku
-# @Last Modified time: 2023-01-19 03:50:50
+# @Last Modified by:   Ashutosh Tiwari
+# @Last Modified time: 2023-01-22 15:48:16
 # %%
 import numpy as np
 import pandas as pd
@@ -22,7 +22,7 @@ else:
         "fairwalk+deepwalk",
         "crosswalk+deepwalk",
         "deepwalk",
-        "word2vec",
+        "residual2vec",
         "GCN+deepwalk+random",
         "GCN+deepwalk+r2v",
         "GAT+deepwalk+random",

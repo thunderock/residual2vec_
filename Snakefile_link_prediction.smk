@@ -3,14 +3,14 @@ from os.path import join as j
 import itertools
 import pandas as pd
 from snakemake.utils import Paramspace
-include: "./utils/workflow_utils.smk" # not able to merge this with snakemake_utils.py due to some path breakage issues
+# include: "./utils/workflow_utils.smk" # not able to merge this with snakemake_utils.py due to some path breakage issues
 
 # ====================
 # Root folder path setting
 # ====================
 
 # network file
-SRC_DATA_ROOT = j("data", "derived", "preprocessed") # File path to the "FairnessAI/residual2vec_/final_crosswalk"
+SRC_DATA_ROOT = j("..", "final_128")
 DERIVED_DIR = j("data", "derived")
 
 DATA_LIST = ["airport", "polbook", "polblog", "pokec"]
@@ -32,8 +32,7 @@ MODEL_LIST = [
     "GAT+node2vec+r2v",
     "deepwalk",
     "node2vec",
-    "word2vec",
-    "word2vec+deepwalk+random"
+    "residual2vec"
 ]
 
 MODEL2EMBFILE_POSTFIX= {
@@ -51,8 +50,7 @@ MODEL2EMBFILE_POSTFIX= {
     "GAT+node2vec+r2v": "_gat_None_node2vec_r2v_embs.npy",
     "deepwalk": "_deepwalk_128_embs.npy",
     "node2vec": "_node2vec_128_embs.npy",
-    "word2vec": "_word2vec_128_embs.npy",
-    "word2vec+deepwalk+random": "_word2vec_None_deepwalk_deepwalk_embs.npy",
+    "residual2vec": "_residual2vec_128_embs.npy"
 }
 
 # ====================
@@ -183,7 +181,7 @@ rule plot_auc_roc_score:
             "fairwalk+deepwalk",
             "crosswalk+deepwalk",
             "deepwalk",
-            "word2vec",
+            "residual2vec",
             "GCN+deepwalk+random",
             "GCN+deepwalk+r2v",
             "GAT+deepwalk+random",
@@ -202,7 +200,7 @@ rule plot_disparity:
             "fairwalk+deepwalk",
             "crosswalk+deepwalk",
             "deepwalk",
-            "word2vec",
+            "residual2vec",
             "GCN+deepwalk+random",
             "GCN+deepwalk+r2v",
             "GAT+deepwalk+random",
@@ -221,7 +219,7 @@ rule plot_disparity_curve:
             "fairwalk+deepwalk",
             "crosswalk+deepwalk",
             "deepwalk",
-            "word2vec",
+            "residual2vec",
             "GCN+deepwalk+random",
             "GCN+deepwalk+r2v",
             "GAT+deepwalk+random",

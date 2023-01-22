@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-17 08:52:11
-# @Last Modified by:   Sadamori Kojaku
-# @Last Modified time: 2023-01-19 03:49:17
+# @Last Modified by:   Ashutosh Tiwari
+# @Last Modified time: 2023-01-22 15:48:10
 # %%
 import numpy as np
 import pandas as pd
@@ -15,6 +15,7 @@ from tqdm import tqdm
 if "snakemake" in sys.modules:
     input_file = snakemake.input["input_file"]
     output_file = snakemake.output["output_file"]
+    print("output_file: ", output_file)
     focal_model_list = snakemake.params["focal_model_list"]
 else:
     input_file = "../data/derived/results/result_auc_roc.csv"
@@ -22,7 +23,7 @@ else:
         "fairwalk+deepwalk",
         "crosswalk+deepwalk",
         "deepwalk",
-        "word2vec",
+        "residual2vec",
         "GCN+deepwalk+random",
         "GCN+deepwalk+r2v",
         "GAT+deepwalk+random",

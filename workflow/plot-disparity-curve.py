@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-17 08:52:11
-# @Last Modified by:   Sadamori Kojaku
-# @Last Modified time: 2023-01-19 16:03:03
+# @Last Modified by:   Ashutosh Tiwari
+# @Last Modified time: 2023-01-22 15:48:13
 # %%
 import numpy as np
 import pandas as pd
@@ -22,13 +22,13 @@ else:
         "fairwalk+deepwalk",
         "crosswalk+deepwalk",
         "deepwalk",
-        "word2vec",
+        "residual2vec",
         "GCN+deepwalk+random",
         "GCN+deepwalk+r2v",
         "GAT+deepwalk+random",
         "GAT+deepwalk+r2v",
     ]
-    output_file = "../data/"
+    output_file = "../data/rank.png"
 # ========================
 # Load
 # ========================
@@ -147,7 +147,7 @@ new_handles = []
 new_labels = []
 
 model_group = {model_names[k]: v for k, v in model2type.items()}
-prev_group = model_group[current_labels[0]]
+prev_group = current_labels[0]
 for i, l in enumerate(current_labels):
     if l not in model_group:
         continue
@@ -172,5 +172,7 @@ lgd = ax.legend(
 sns.despine()
 
 ax.set_xscale("log")
+
+print(output_file)
 g.fig.savefig(output_file, bbox_inches="tight", dpi=300)
 # %%
