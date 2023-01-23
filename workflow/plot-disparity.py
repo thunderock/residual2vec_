@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-17 08:52:11
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-01-22 21:42:11
+# @Last Modified time: 2023-01-23 15:35:53
 # %%
 import numpy as np
 import pandas as pd
@@ -89,5 +89,6 @@ g = sns.catplot(
 )
 
 g.set_xlabels("")
-
+sns.move_legend(g, "lower center", bbox_to_anchor=(.45, -0.005), ncol=len(MODEL_ORDER), fontsize=8)
+g.legend.set_title(None)
 g.fig.savefig(output_file, bbox_inches='tight', dpi=300)
