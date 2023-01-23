@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-17 08:52:11
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-01-22 15:48:16
+# @Last Modified time: 2023-01-22 21:42:11
 # %%
 import numpy as np
 import pandas as pd
@@ -38,12 +38,13 @@ data_table = pd.read_csv(input_file)
 # %%
 # ========================
 # Preprocess
-# ========================
+# =======================
 
 from model_styles import model_names, model2group, model2type, model2markers, model2linestyle, model_order, model2colors
 
-markers = [model2markers[k] for k in model_order]
-linestyles = [model2linestyle[k] for k in model_order]
+MODEL_ORDER = model_order if len(focal_model_list) != 6 else model_order[1:]
+markers = [model2markers[k] for k in MODEL_ORDER]
+linestyles = [model2linestyle[k] for k in MODEL_ORDER]
 
 data_order = ["polbook", "polblog", "airport", "pokec"]
 
@@ -77,7 +78,7 @@ g = sns.catplot(
     hue="Model",
     order=["Vanilla", "Debiased"],
     palette=model2colors,
-    hue_order=model_order,
+    hue_order=MODEL_ORDER,
     markers=markers,
     linestyles=linestyles,
     color="k",

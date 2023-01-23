@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-17 08:52:11
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-01-22 21:42:28
+# @Last Modified time: 2023-01-22 21:42:24
 # %%
 import numpy as np
 import pandas as pd
@@ -61,23 +61,23 @@ com_color = mcmap[5]
 neural_emb_color_2 = mcmap[2]
 model2color = {
     "DeepWalk (debiased)": neural_emb_color,
-    "GCN (debiased)": sns.desaturate(neural_emb_color, 0.8),
-    "GAT (debiased)": sns.desaturate(neural_emb_color, 0.4),
-    "DeepWalk": spec_emb_color,
-    "GCN": sns.desaturate(spec_emb_color, 0.4),
-    "GAT": sns.desaturate(spec_emb_color, 0.1),
-    "Fairwalk": "#2d2d2d",
-    "CrossWalk": "#8d8d8d",
+    "GCN-node2vec (debiased)": sns.desaturate(neural_emb_color, 0.8),
+    "GAT-node2vec (debiased)": sns.desaturate(neural_emb_color, 0.4),
+    "node2vec": spec_emb_color,
+    "GCN-node2vec": sns.desaturate(spec_emb_color, 0.4),
+    "GAT-node2vec": sns.desaturate(spec_emb_color, 0.1),
+    "Fairwalk (node2vec)": "#2d2d2d",
+    "CrossWalk (node2vec)": "#8d8d8d",
 }
 model2marker = {
     "DeepWalk (debiased)": "o",
-    "GCN (debiased)": "s",
-    "GAT (debiased)": "D",
-    "DeepWalk": "o",
-    "GCN": "s",
-    "GAT": "D",
-    "Fairwalk": "v",
-    "CrossWalk": "^",
+    "GCN-node2vec (debiased)": "s",
+    "GAT-node2vec (debiased)": "D",
+    "node2vec": "o",
+    "GCN-node2vec": "s",
+    "GAT-node2vec": "D",
+    "Fairwalk (node2vec)": "v",
+    "CrossWalk (node2vec)": "^",
 }
 
 data_order = ["polbook", "polblog", "airport", "pokec"]
@@ -117,13 +117,13 @@ for i, ax in enumerate(g.axes.flat):
         markers=model2marker,
         hue_order=[
             "DeepWalk (debiased)",
-            "GCN (debiased)",
-            "GAT (debiased)",
-            "DeepWalk",
-            "GCN",
-            "GAT",
-            "Fairwalk",
-            "CrossWalk",
+            "GCN-node2vec (debiased)",
+            "GAT-node2vec (debiased)",
+            "node2vec",
+            "GCN-node2vec",
+            "GAT-node2vec",
+            "Fairwalk (node2vec)",
+            "CrossWalk (node2vec)",
         ][::-1],
         ax=ax,
     )
