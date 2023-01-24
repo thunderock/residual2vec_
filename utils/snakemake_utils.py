@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 00:55:24
-# @Last Modified by:   Sadamori Kojaku
-# @Last Modified time: 2023-01-18 01:39:07
+# @Last Modified by:   Ashutosh Tiwari
+# @Last Modified time: 2023-01-24 14:03:52
 from os.path import join as j
 
 import numpy as np
@@ -289,7 +289,7 @@ def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2ve
     group_membership = dataset.get_grouped_col()
     edge_index, num_nodes = dataset.edge_index, dataset.X.shape[0]
     edge_index = torch.unique(torch.cat([edge_index, edge_index.flip(0)], dim=1), dim=1)
-    return_features = crosswalk or fairwalk
+    return_features = (crosswalk or fairwalk) or model_name in ['deepwalk', 'node2vec']
     num_features = model_dim if return_features else 16
     # create data to train
     if node2vec:
@@ -306,9 +306,9 @@ def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2ve
     if return_features:
         return X
     assert not (crosswalk and fairwalk)
-
+    assert model_name in ['gcn', 'gat']
     X = torch.from_numpy(X)
-
+    
     # use weights in case of crosswalk or fairwalk
     use_weights = True if (crosswalk or fairwalk) else False
     # select sampler
@@ -319,6 +319,7 @@ def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2ve
     else:
         from torch_geometric.utils import negative_sampling
         sampler = negative_sampling
-
-    assert model_name in ['gcn', 'gat']
+    
+    
+        
     return train_model_and_get_embs(adj=adj, model_name=model_name, X=X, sampler=sampler, gnn_layers=NUM_GNN_LAYERS[dataset_name], epochs=R2V_TRAINING_EPOCHS[dataset_name], learn_outvec=learn_outvec, model_dim=model_dim)
