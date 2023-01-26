@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 09:05:36
-# @Last Modified by:   Sadamori Kojaku
-# @Last Modified time: 2023-01-18 09:17:41
+# @Last Modified by:   Ashutosh Tiwari
+# @Last Modified time: 2023-01-22 21:20:30
 import seaborn as sns
 
 model_names = {
@@ -20,27 +20,25 @@ model_names = {
     "GAT+node2vec+r2v": "GAT-node2vec (debiased)",
     "deepwalk": "DeepWalk",
     "node2vec": "node2vec",
-    "word2vec": "DeepWalk (debiased)",  # What's this? residual2vec?
-    "word2vec+deepwalk+random": "word2vec-deepwalk???",  # What's this?
+    "residual2vec": "DeepWalk (debiased)"
 }
 
 model2group = {
     "fairwalk+deepwalk": "Fairwalk",
-    "fairwalk+node2vec": "Fairwalk-node2vec",
+    "fairwalk+node2vec": "Fairwalk",
     "crosswalk+deepwalk": "CrossWalk",
-    "crosswalk+node2vec": "CrossWalk-node2vec",
+    "crosswalk+node2vec": "CrossWalk",
     "GCN+deepwalk+random": "GCN",
     "GCN+deepwalk+r2v": "GCN",
-    "GCN+node2vec+random": "GCN-node2vec",
-    "GCN+node2vec+r2v": "GCN-node2vec",
+    "GCN+node2vec+random": "GCN",
+    "GCN+node2vec+r2v": "GCN",
     "GAT+deepwalk+random": "GAT",
     "GAT+deepwalk+r2v": "GAT",
-    "GAT+node2vec+random": "GAT-node2vec",
-    "GAT+node2vec+r2v": "GAT-node2vec",
+    "GAT+node2vec+random": "GAT",
+    "GAT+node2vec+r2v": "GAT",
     "deepwalk": "DeepWalk",
-    "node2vec": "node2vec",
-    "word2vec": "DeepWalk",  # What's this? residual2vec?
-    "word2vec+deepwalk+random": "word2vec-deepwalk???",  # What's this?
+    "node2vec": "DeepWalk",
+    "residual2vec": "DeepWalk"
 }
 model2type = {
     "fairwalk+deepwalk": "Debiased",
@@ -57,8 +55,7 @@ model2type = {
     "GAT+node2vec+r2v": "Debiased",
     "deepwalk": "Vanilla",
     "node2vec": "Vanilla",
-    "word2vec": "Debiased",  # What's this? residual2vec?
-    "word2vec+deepwalk+random": "Uniform??",  # What's this?
+    "residual2vec": "Debiased"
 }
 
 model2markers = {
@@ -95,4 +92,5 @@ model2colors = {
     "DeepWalk": cmap[3],
     "Fairwalk": "#2d2d2d",
     "CrossWalk": "#8d8d8d",
+    
 }

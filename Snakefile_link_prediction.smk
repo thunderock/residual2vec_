@@ -3,14 +3,14 @@ from os.path import join as j
 import itertools
 import pandas as pd
 from snakemake.utils import Paramspace
-include: "./utils/workflow_utils.smk" # not able to merge this with snakemake_utils.py due to some path breakage issues
+# include: "./utils/workflow_utils.smk" # not able to merge this with snakemake_utils.py due to some path breakage issues
 
 # ====================
 # Root folder path setting
 # ====================
 
 # network file
-SRC_DATA_ROOT = j("data", "derived", "preprocessed") # File path to the "FairnessAI/residual2vec_/final_crosswalk"
+SRC_DATA_ROOT = j("..", "final_128")
 DERIVED_DIR = j("data", "derived")
 
 DATA_LIST = ["airport", "polbook", "polblog", "pokec"]
@@ -32,8 +32,7 @@ MODEL_LIST = [
     "GAT+node2vec+r2v",
     "deepwalk",
     "node2vec",
-    "word2vec",
-    "word2vec+deepwalk+random"
+    "residual2vec"
 ]
 
 MODEL2EMBFILE_POSTFIX= {
@@ -51,8 +50,7 @@ MODEL2EMBFILE_POSTFIX= {
     "GAT+node2vec+r2v": "_gat_None_node2vec_r2v_embs.npy",
     "deepwalk": "_deepwalk_128_embs.npy",
     "node2vec": "_node2vec_128_embs.npy",
-    "word2vec": "_word2vec_128_embs.npy",
-    "word2vec+deepwalk+random": "_word2vec_None_deepwalk_deepwalk_embs.npy",
+    "residual2vec": "_residual2vec_128_embs.npy"
 }
 
 # ====================
@@ -82,9 +80,13 @@ DISPARITY_ALL_SCORE_FILE = j(RESULT_DIR, "result_disparity.csv")
 #
 # Figures
 #
-FIG_LP_SCORE = j("figs", "aucroc.pdf")
-FIG_DISPARITY_SCORE = j("figs", "disparity.pdf")
-FIG_DISPARITY_CURVE = j("figs", "disparity-curve.pdf")
+FIG_LP_SCORE_DEEPWALK = j("figs", "aucroc_deepwalk.pdf")
+FIG_DISPARITY_SCORE_DEEPWALK= j("figs", "disparity_deepwalk.pdf")
+FIG_DISPARITY_CURVE_DEEPWALK = j("figs", "disparity-curve_deepwalk.pdf")
+
+FIG_LP_SCORE_NODE2VEC = j("figs", "aucroc_node2vec.pdf")
+FIG_DISPARITY_SCORE_NODE2VEC= j("figs", "disparity_node2vec.pdf")
+FIG_DISPARITY_CURVE_NODE2VEC = j("figs", "disparity-curve_node2vec.pdf")
 # ===================
 # Configurations
 # ===================
@@ -111,9 +113,12 @@ rule link_prediction_all:
 
 rule link_prediction_figs:
     input:
-        FIG_LP_SCORE,
-        FIG_DISPARITY_SCORE,
-        FIG_DISPARITY_CURVE
+        FIG_LP_SCORE_DEEPWALK,
+        FIG_DISPARITY_SCORE_DEEPWALK,
+        FIG_DISPARITY_SCORE_NODE2VEC,
+        FIG_LP_SCORE_NODE2VEC,
+        FIG_DISPARITY_CURVE_DEEPWALK,
+        FIG_DISPARITY_CURVE_NODE2VEC
 
 
 # =====================
@@ -175,7 +180,7 @@ rule concatenate_disparity_results:
 # =====================
 # Plot
 # =====================
-rule plot_auc_roc_score:
+rule plot_auc_roc_score_deepwalk:
     input:
         input_file = LP_ALL_SCORE_FILE
     params:
@@ -183,14 +188,31 @@ rule plot_auc_roc_score:
             "fairwalk+deepwalk",
             "crosswalk+deepwalk",
             "deepwalk",
-            "word2vec",
+            "residual2vec",
             "GCN+deepwalk+random",
             "GCN+deepwalk+r2v",
             "GAT+deepwalk+random",
             "GAT+deepwalk+r2v",
         ]
     output:
-        output_file = FIG_LP_SCORE
+        output_file = FIG_LP_SCORE_DEEPWALK
+    script:
+        "workflow/plot-auc-roc.py"
+
+rule plot_auc_roc_score_node2vec:
+    input:
+        input_file = LP_ALL_SCORE_FILE
+    params:
+        focal_model_list = [
+            "fairwalk+node2vec",
+            "crosswalk+node2vec",
+            "GCN+node2vec+random",
+            "GCN+node2vec+r2v",
+            "GAT+node2vec+random",
+            "GAT+node2vec+r2v",
+        ]
+    output:
+        output_file = FIG_LP_SCORE_NODE2VEC
     script:
         "workflow/plot-auc-roc.py"
 
@@ -202,18 +224,35 @@ rule plot_disparity:
             "fairwalk+deepwalk",
             "crosswalk+deepwalk",
             "deepwalk",
-            "word2vec",
+            "residual2vec",
             "GCN+deepwalk+random",
             "GCN+deepwalk+r2v",
             "GAT+deepwalk+random",
             "GAT+deepwalk+r2v",
         ]
     output:
-        output_file = FIG_DISPARITY_SCORE
+        output_file = FIG_DISPARITY_SCORE_DEEPWALK
     script:
         "workflow/plot-disparity.py"
 
-rule plot_disparity_curve:
+rule plot_disparity_node2vec:
+    input:
+        input_file = DISPARITY_ALL_SCORE_FILE
+    params:
+        focal_model_list = [
+            "fairwalk+node2vec",
+            "crosswalk+node2vec",
+            "GCN+node2vec+random",
+            "GCN+node2vec+r2v",
+            "GAT+node2vec+random",
+            "GAT+node2vec+r2v",
+        ]
+    output:
+        output_file = FIG_DISPARITY_SCORE_NODE2VEC
+    script:
+        "workflow/plot-disparity.py"
+
+rule plot_disparity_curve_deepwalk:
     input:
         input_file = DISPARITY_ALL_SCORE_FILE
     params:
@@ -221,13 +260,30 @@ rule plot_disparity_curve:
             "fairwalk+deepwalk",
             "crosswalk+deepwalk",
             "deepwalk",
-            "word2vec",
+            "residual2vec",
             "GCN+deepwalk+random",
             "GCN+deepwalk+r2v",
             "GAT+deepwalk+random",
             "GAT+deepwalk+r2v",
         ]
     output:
-        output_file = FIG_DISPARITY_CURVE
+        output_file = FIG_DISPARITY_CURVE_DEEPWALK
     script:
         "workflow/plot-disparity-curve.py"
+
+rule plot_disparity_curve_node2vec:
+    input:
+        input_file = DISPARITY_ALL_SCORE_FILE
+    params:
+        focal_model_list = [
+            "fairwalk+node2vec",
+            "crosswalk+node2vec",
+            "GCN+node2vec+random",
+            "GCN+node2vec+r2v",
+            "GAT+node2vec+random",
+            "GAT+node2vec+r2v",
+        ]
+    output:
+        output_file = FIG_DISPARITY_CURVE_NODE2VEC
+    script:
+        "workflow/plot-disparity-curve-node2vec.py"
