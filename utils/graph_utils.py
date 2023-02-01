@@ -11,6 +11,43 @@ import networkx as nx
 from tqdm import tqdm
 import torch
 
+def get_farthest_pairs(embs, y, metric="cosine", same_class=True, per_class_count=1):
+    """returns the nearest pairs of nodes in the graph
+    Returns:
+        np.array: nearest pairs of nodes
+    """
+    n = len(y)
+    uy, y = np.unique(y, return_inverse=True)
+    K = len(uy)
+    pairs = np.zeros((n_nearest, 2), dtype=np.int64)
+    
+
+def get_n_nearest_neighbors_for_nodes(nodes, embs, k=1, metric="cosine"):
+    assert nodes.shape[1] == embs.shape[1]
+    n_nodes, emb_dim = embs.shape
+    from scipy.spatial.distance import cdist
+    x = cdist(nodes, embs, metric=metric)
+    targets = np.zeros((len(nodes), k), dtype=np.int64)
+    for i in range(len(nodes)):
+        targets[i, :] = np.argsort(x[i, :])[:k]
+    return targets
+
+def get_centroid_per_group(emb: np.array, y: np.array):
+    """returns K * D matrix where K is the number of classes and D is the dimension of the embedding
+
+    Args:
+        emb (np.array): embedding matrix (N * D)
+        y (np.array): labels
+    """
+    n = len(y)
+    uy, y = np.unique(y, return_inverse=True)
+    K = len(uy)
+    centroids = np.zeros((K, emb.shape[1]))
+    for k in range(K):
+        centroids[k] = emb[y == k].mean(axis=0)
+    return centroids
+
+
 
 def _negative_sampling_sparse(edge_index, n_nodes, n_neg_samples=None, iter_limit=1000, return_pos_samples=False):
     # removing duplicated edges (because of symmetry
@@ -166,3 +203,4 @@ def generate_embedding_with_word2vec(A, dim, noise_sampler, device):
     
     # Retrieve the embedding vector. We use the in-vector. 
     return model.ivectors.weight.data.cpu().numpy()[:n_nodes, :]
+
