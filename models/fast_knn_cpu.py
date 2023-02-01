@@ -10,7 +10,7 @@ import faiss
 
 class FastKnnCpu(object):
     
-    def __init__(self, k=1, metric="euclidean", exact=False, nprobe=50, min_cluster_size=10000) -> None:
+    def __init__(self, k=1, metric="cosine", exact=None, nprobe=50, min_cluster_size=10000) -> None:
         
         # exact can be True or False. If None, then it is automatically set to True if n_samples < 1000
         self.k = k
@@ -19,6 +19,7 @@ class FastKnnCpu(object):
         self.exact = exact
         self.nprobe = nprobe
         self.min_cluster_size = min_cluster_size
+        assert self.metric in ["cosine"], "Only cosine distance is supported, because farthest is also supported"
     
     def fit(self, X):
         n_samples, n_features = X.shape[0], X.shape[1]
@@ -54,8 +55,13 @@ class FastKnnCpu(object):
         self.index = index
         return self
     
-    def predict(self, X):
+    def predict(self, X, farthest=False, return_distance=False):
         X = X.astype("float32")
+        if farthest:
+            X = -X
         D, I = self.index.search(X, k=self.k)
+        if return_distance:
+            return I, D
         return I
     
+

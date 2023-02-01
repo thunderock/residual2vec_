@@ -8,18 +8,41 @@ from scipy import sparse
 from utils.snakemake_utils import get_torch_sparse_from_edge_index
 from utils.config import GPU_ID, DISABLE_TQDM
 import networkx as nx
-from tqdm import tqdm
+from tqdm import tqdm, trange
 import torch
+from heapq import heappush, heappop, heapify
 
 def get_farthest_pairs(embs, y, metric="cosine", same_class=True, per_class_count=1):
-    """returns the nearest pairs of nodes in the graph
+    """returns the farthest pairs of nodes in the graph
     Returns:
-        np.array: nearest pairs of nodes
+        np.array: farthest pairs of nodes
     """
+    assert metric in ["cosine"], "only cosine distance is supported"
     n = len(y)
     uy, y = np.unique(y, return_inverse=True)
     K = len(uy)
-    pairs = np.zeros((n_nearest, 2), dtype=np.int64)
+    ret = np.zeros((K * per_class_count, 2), dtype=np.int64)
+
+    from models.fast_knn_cpu import FastKnnCpu
+
+    for k in trange(K):
+        reverse_mapping = np.zeros(n, dtype=np.int64)
+        idx = np.where(y == k)[0]
+        train_idx = idx if same_class else np.where(y != k)[0]
+        reverse_mapping[np.arange(len(train_idx))] = train_idx
+        knn = FastKnnCpu(k=per_class_count,).fit(embs[train_idx])
+        # select k farthest points
+        X = knn.predict(X=embs[idx], farthest=True, return_distance=True)
+        ids, dist = X[0].flatten(), X[1].flatten()
+        ids = reverse_mapping[ids]
+        pairs = np.stack([np.repeat(idx, per_class_count), ids], axis=1)
+        # select the farthest distance
+        most_distant = np.argsort(dist)[:per_class_count]
+        ret[k * per_class_count: (k + 1) * per_class_count] = pairs[most_distant]
+
+    return ret
+            
+
     
 
 def get_n_nearest_neighbors_for_nodes(nodes, embs, k=1, metric="cosine"):
@@ -203,4 +226,5 @@ def generate_embedding_with_word2vec(A, dim, noise_sampler, device):
     
     # Retrieve the embedding vector. We use the in-vector. 
     return model.ivectors.weight.data.cpu().numpy()[:n_nodes, :]
+
 
