@@ -14,7 +14,6 @@ class FastKnnCpu(object):
         
         # exact can be True or False. If None, then it is automatically set to True if n_samples < 1000
         self.k = k
-        auto = "AUTO"
         self.metric = metric
         self.exact = exact
         self.nprobe = nprobe
@@ -29,16 +28,10 @@ class FastKnnCpu(object):
                 self.exact = True
             else:
                 self.exact = False
-        index = (
-        faiss.IndexFlatL2(n_features)
-        if self.metric == "euclidean"
-        else faiss.IndexFlatIP(n_features)
-        )
+        index = faiss.IndexFlatIP(n_features)
         if not self.exact:
             nlist = np.maximum(int(n_samples / self.min_cluster_size), 2)
-            faiss_metric = (
-                faiss.METRIC_L2 if self.metric == "euclidean" else faiss.METRIC_INNER_PRODUCT
-            )
+            faiss_metric = faiss.METRIC_INNER_PRODUCT
             index = faiss.IndexIVFFlat(index, n_features, int(nlist), faiss_metric)
         if not index.is_trained:
             Xtrain = X[
