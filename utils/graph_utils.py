@@ -25,7 +25,7 @@ def get_farthest_pairs(embs, y, metric="cosine", same_class=True, per_class_coun
 
     from models.fast_knn_cpu import FastKnnCpu
 
-    for k in trange(K):
+    for k in range(K):
         reverse_mapping = np.zeros(n, dtype=np.int64)
         idx = np.where(y == k)[0]
         train_idx = idx if same_class else np.where(y != k)[0]
