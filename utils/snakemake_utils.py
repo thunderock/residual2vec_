@@ -13,6 +13,8 @@ from scipy import sparse
 import pandas as pd
 from snakemake.utils import Paramspace
 import itertools
+from tqdm import tqdm, trange
+import networkx as nx
 
 def get_string_boolean(string):
     if string in ['True', 'true', 'TRUE', 'T', 't', '1']:
@@ -105,6 +107,29 @@ def get_dataset(name):
         dataset = PolBlogDataFrame()
     # add other datasets here
     return dataset
+
+
+def get_networkx_graph(dataset):
+    from torch_geometric.utils import to_networkx
+    from torch_geometric.data import Data
+    data = Data(edge_index=dataset.edge_index, 
+            y=dataset.get_grouped_col())
+    data.num_nodes = len(dataset.get_grouped_col())
+
+    return to_networkx(data=data, to_undirected=True, node_attrs=['y'])
+
+
+def get_graph_tool_graph(dataset):
+    import graph_tool.all as gt
+    g = gt.Graph(directed=False)
+    edge_index = dataset.edge_index
+    # sort and remove duplicates
+    edge_index = edge_index[:, edge_index[0, :] <= edge_index[1, :]]
+    g.add_edge_list(edge_index.numpy().T)
+    y = g.new_vertex_property("int32_t")
+    y.a = dataset.get_grouped_col().numpy()
+    g.vertex_properties["y"] = y
+    return g
 
 
 def _get_deepwalk_model(embedding_dim, num_nodes, edge_index, weighted_adj_path=None, group_membership=None, crosswalk=True, fairwalk=False):
@@ -238,7 +263,6 @@ def train_model_and_get_embs(adj, model_name, X, sampler, gnn_layers, epochs, le
     embs = torch.zeros((num_nodes, model_dim))
     batch_size = 256 * 3
     model.eval()
-    from tqdm import tqdm
     dataloader = NeighborEdgeSampler(dataset, batch_size=batch_size, shuffle=False, num_workers=NUM_WORKERS, pin_memory=True, transforming=True)
     with torch.no_grad():
         for idx, batch in enumerate(tqdm(dataloader, desc="Generating node embeddings")):
