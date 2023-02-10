@@ -58,7 +58,7 @@ model2type = {
     "deepwalk": "Vanilla",
     "node2vec": "Vanilla",
     "residual2vec": "Debiased",
-    "baseline": "Vanilla",
+    "baseline": "Debiased",
 }
 
 model2markers = {
