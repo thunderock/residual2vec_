@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-17 08:52:11
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-01-22 21:42:24
+# @Last Modified time: 2023-02-10 14:37:54
 # %%
 import numpy as np
 import pandas as pd
@@ -27,6 +27,7 @@ else:
         "GCN+deepwalk+r2v",
         "GAT+deepwalk+random",
         "GAT+deepwalk+r2v",
+        # "baseline"
     ]
     output_file = "../data/rank.png"
 # ========================
@@ -68,6 +69,7 @@ model2color = {
     "GAT-node2vec": sns.desaturate(spec_emb_color, 0.1),
     "Fairwalk (node2vec)": "#2d2d2d",
     "CrossWalk (node2vec)": "#8d8d8d",
+    "Baseline": "red"
 }
 model2marker = {
     "DeepWalk (debiased)": "o",
@@ -78,6 +80,7 @@ model2marker = {
     "GAT-node2vec": "D",
     "Fairwalk (node2vec)": "v",
     "CrossWalk (node2vec)": "^",
+    "Baseline": "p",
 }
 
 data_order = ["polbook", "polblog", "airport", "pokec"]
@@ -124,6 +127,7 @@ for i, ax in enumerate(g.axes.flat):
             "GAT-node2vec",
             "Fairwalk (node2vec)",
             "CrossWalk (node2vec)",
+            # "Baseline"
         ][::-1],
         ax=ax,
     )

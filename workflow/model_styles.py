@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 09:05:36
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-01-22 21:20:30
+# @Last Modified time: 2023-02-10 14:06:57
 import seaborn as sns
 
 model_names = {
@@ -20,7 +20,8 @@ model_names = {
     "GAT+node2vec+r2v": "GAT-node2vec (debiased)",
     "deepwalk": "DeepWalk",
     "node2vec": "node2vec",
-    "residual2vec": "DeepWalk (debiased)"
+    "residual2vec": "DeepWalk (debiased)",
+    "baseline": "Baseline",
 }
 
 model2group = {
@@ -38,7 +39,8 @@ model2group = {
     "GAT+node2vec+r2v": "GAT",
     "deepwalk": "DeepWalk",
     "node2vec": "DeepWalk",
-    "residual2vec": "DeepWalk"
+    "residual2vec": "DeepWalk",
+    "baseline": "Baseline",
 }
 model2type = {
     "fairwalk+deepwalk": "Debiased",
@@ -55,7 +57,8 @@ model2type = {
     "GAT+node2vec+r2v": "Debiased",
     "deepwalk": "Vanilla",
     "node2vec": "Vanilla",
-    "residual2vec": "Debiased"
+    "residual2vec": "Debiased",
+    "baseline": "Vanilla",
 }
 
 model2markers = {
@@ -64,6 +67,7 @@ model2markers = {
     "GAT": "d",
     "Fairwalk": "v",
     "CrossWalk": "^",
+    "Baseline": "p",
 }
 
 model2linestyle = {
@@ -71,11 +75,12 @@ model2linestyle = {
     "GCN": "--",
     "GAT": ":",
     "Fairwalk": "-.",
-    "CrossWalk": "-"
+    "CrossWalk": "-",
+    "Baseline": "-",
 }
 
 
-model_order = ["DeepWalk", "GCN", "GAT", "Fairwalk", "CrossWalk"]
+model_order = ["DeepWalk", "GCN", "GAT", "Fairwalk", "CrossWalk", "Baseline"]
 
 
 # ========================
@@ -92,5 +97,6 @@ model2colors = {
     "DeepWalk": cmap[3],
     "Fairwalk": "#2d2d2d",
     "CrossWalk": "#8d8d8d",
+    "Baseline": "red",
     
 }
