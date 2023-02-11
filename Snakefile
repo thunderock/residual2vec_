@@ -33,7 +33,7 @@ DATA_ROOT = config.get("root", "data")
 
 # variables sanity check
 assert GNN_MODEL in ('gat', 'gcn', 'word2vec')
-assert DATASET in ('pokec', 'small_pokec', 'airport', 'polblog', 'polbook')
+assert DATASET in ('pokec', 'small_pokec', 'airport', 'polblog', 'polbook', 'facebook')
 assert CROSSWALK in (True, False)
 assert R2V in (True, False)
 assert SET_DEVICE in ('cuda:0', 'cpu', 'cuda:1',)
@@ -206,6 +206,7 @@ rule generate_crosswalk_weights:
         from utils.network_splitter import NetworkTrainTestSplitterWithMST
         import warnings
         from utils import snakemake_utils
+        from utils.config import TEST_SPLIT_FRAC
 
         warnings.filterwarnings("ignore")
         gc.enable()
@@ -217,7 +218,7 @@ rule generate_crosswalk_weights:
         # this is super hack here
         d = snakemake_utils.get_dataset(DATASET)
         edge_index, num_nodes = d.edge_index, d.X.shape[0]
-        n = NetworkTrainTestSplitterWithMST(num_nodes=num_nodes, edge_list=edge_index)
+        n = NetworkTrainTestSplitterWithMST(num_nodes=num_nodes, edge_list=edge_index, fraction=TEST_SPLIT_FRAC[DATASET])
         # nodes are not made symmetric here
         n.train_test_split()
         # nodes are made symmetric here

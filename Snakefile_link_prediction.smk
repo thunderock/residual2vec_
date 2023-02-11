@@ -14,6 +14,7 @@ SRC_DATA_ROOT = j("..", "final_128")
 DERIVED_DIR = j("data", "derived")
 
 DATA_LIST = ["airport", "polbook", "polblog", "pokec"]
+
 SAMPLE_ID_LIST = ["one", "two", "three", "four", "five"] # why not arabic numbers?
 N_ITERATION = 1
 
@@ -32,7 +33,8 @@ MODEL_LIST = [
     "GAT+node2vec+r2v",
     "deepwalk",
     "node2vec",
-    "residual2vec"
+    "residual2vec",
+    "baseline"
 ]
 
 MODEL2EMBFILE_POSTFIX= {
@@ -50,7 +52,8 @@ MODEL2EMBFILE_POSTFIX= {
     "GAT+node2vec+r2v": "_gat_None_node2vec_r2v_embs.npy",
     "deepwalk": "_deepwalk_128_embs.npy",
     "node2vec": "_node2vec_128_embs.npy",
-    "residual2vec": "_residual2vec_128_embs.npy"
+    "residual2vec": "_residual2vec_128_embs.npy",
+    "baseline": "_baseline_man_woman.npy"
 }
 
 # ====================
@@ -193,6 +196,7 @@ rule plot_auc_roc_score_deepwalk:
             "GCN+deepwalk+r2v",
             "GAT+deepwalk+random",
             "GAT+deepwalk+r2v",
+            "baseline"
         ]
     output:
         output_file = FIG_LP_SCORE_DEEPWALK
@@ -210,6 +214,7 @@ rule plot_auc_roc_score_node2vec:
             "GCN+node2vec+r2v",
             "GAT+node2vec+random",
             "GAT+node2vec+r2v",
+            "baseline" # replace this with baseline + node2vec
         ]
     output:
         output_file = FIG_LP_SCORE_NODE2VEC
@@ -229,6 +234,7 @@ rule plot_disparity:
             "GCN+deepwalk+r2v",
             "GAT+deepwalk+random",
             "GAT+deepwalk+r2v",
+            "baseline"
         ]
     output:
         output_file = FIG_DISPARITY_SCORE_DEEPWALK
@@ -246,6 +252,7 @@ rule plot_disparity_node2vec:
             "GCN+node2vec+r2v",
             "GAT+node2vec+random",
             "GAT+node2vec+r2v",
+            # "baseline" # replace this with baseline + node2vec
         ]
     output:
         output_file = FIG_DISPARITY_SCORE_NODE2VEC
@@ -265,6 +272,7 @@ rule plot_disparity_curve_deepwalk:
             "GCN+deepwalk+r2v",
             "GAT+deepwalk+random",
             "GAT+deepwalk+r2v",
+            "baseline"
         ]
     output:
         output_file = FIG_DISPARITY_CURVE_DEEPWALK
@@ -282,6 +290,7 @@ rule plot_disparity_curve_node2vec:
             "GCN+node2vec+r2v",
             "GAT+node2vec+random",
             "GAT+node2vec+r2v",
+            # "baseline" # replace this with baseline + node2vec
         ]
     output:
         output_file = FIG_DISPARITY_CURVE_NODE2VEC

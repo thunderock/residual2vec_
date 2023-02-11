@@ -25,7 +25,6 @@ except AttributeError:
     except AttributeError:
         pass
 CUDA = torch.cuda.is_available()
-TRAIN_TEST_SPLIT = .2
 RANDOM_SEED = 2022
 DROPOUT = .2
 # torch.manual_seed(RANDOM_SEED)
@@ -54,11 +53,13 @@ R2V_TRAINING_EPOCHS = {
     'small_pokec': 4,
     'airport': 100,
     'polbook': 200,
-    'polblog': 200
+    'polblog': 200,
+    'facebook': 2
 }
 NUM_GNN_LAYERS = {
     'pokec': 5,
     'small_pokec': 5,
+    'facebook': 5,
     'airport': 4,
     'polbook': 4,
     'polblog': 4
@@ -69,7 +70,8 @@ NUM_NEGATIVE_SAMPLING = {
     'small_pokec': 1,
     'airport': 4,
     'polbook': 10,
-    'polblog': 10
+    'polblog': 10,
+    'facebook': 1
 }
 
 NUM_THREADS = {
@@ -77,7 +79,17 @@ NUM_THREADS = {
     'small_pokec': 20,
     'airport': 20,
     'polbook': 20,
-    'polblog': 20
+    'polblog': 20,
+    'facebook': 20
+}
+
+TEST_SPLIT_FRAC = {
+    'pokec': .5,
+    'small_pokec': .5,
+    'airport': .5,
+    'polbook': .5,
+    'polblog': .5,
+    'facebook': .45
 }
 
 NUM_WORKERS = 20

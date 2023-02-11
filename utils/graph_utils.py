@@ -8,8 +8,68 @@ from scipy import sparse
 from utils.snakemake_utils import get_torch_sparse_from_edge_index
 from utils.config import GPU_ID, DISABLE_TQDM
 import networkx as nx
-from tqdm import tqdm
+from tqdm import tqdm, trange
 import torch
+from heapq import heappush, heappop, heapify
+
+def get_farthest_pairs(embs, y, metric="cosine", same_class=True, per_class_count=1):
+    """returns the farthest pairs of nodes in the graph
+    Returns:
+        np.array: farthest pairs of nodes
+    """
+    assert metric in ["cosine"], "only cosine distance is supported"
+    n = len(y)
+    uy, y = np.unique(y, return_inverse=True)
+    K = len(uy)
+    ret = np.zeros((K * per_class_count, 2), dtype=np.int64)
+
+    from models.fast_knn_cpu import FastKnnCpu
+
+    for k in range(K):
+        reverse_mapping = np.zeros(n, dtype=np.int64)
+        idx = np.where(y == k)[0]
+        train_idx = idx if same_class else np.where(y != k)[0]
+        reverse_mapping[np.arange(len(train_idx))] = train_idx
+        knn = FastKnnCpu(k=per_class_count,).fit(embs[train_idx])
+        # select k farthest points
+        X = knn.predict(X=embs[idx], farthest=True, return_distance=True)
+        ids, dist = X[0].flatten(), X[1].flatten()
+        ids = reverse_mapping[ids]
+        pairs = np.stack([np.repeat(idx, per_class_count), ids], axis=1)
+        # select the farthest distance
+        most_distant = np.argsort(dist)[:per_class_count]
+        ret[k * per_class_count: (k + 1) * per_class_count] = pairs[most_distant]
+
+    return ret
+            
+
+    
+
+def get_n_nearest_neighbors_for_nodes(nodes, embs, k=1, metric="cosine"):
+    assert nodes.shape[1] == embs.shape[1]
+    n_nodes, emb_dim = embs.shape
+    from scipy.spatial.distance import cdist
+    x = cdist(nodes, embs, metric=metric)
+    targets = np.zeros((len(nodes), k), dtype=np.int64)
+    for i in range(len(nodes)):
+        targets[i, :] = np.argsort(x[i, :])[:k]
+    return targets
+
+def get_centroid_per_group(emb: np.array, y: np.array):
+    """returns K * D matrix where K is the number of classes and D is the dimension of the embedding
+
+    Args:
+        emb (np.array): embedding matrix (N * D)
+        y (np.array): labels
+    """
+    n = len(y)
+    uy, y = np.unique(y, return_inverse=True)
+    K = len(uy)
+    centroids = np.zeros((K, emb.shape[1]))
+    for k in range(K):
+        centroids[k] = emb[y == k].mean(axis=0)
+    return centroids
+
 
 
 def _negative_sampling_sparse(edge_index, n_nodes, n_neg_samples=None, iter_limit=1000, return_pos_samples=False):
@@ -166,3 +226,5 @@ def generate_embedding_with_word2vec(A, dim, noise_sampler, device):
     
     # Retrieve the embedding vector. We use the in-vector. 
     return model.ivectors.weight.data.cpu().numpy()[:n_nodes, :]
+
+

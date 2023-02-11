@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-17 08:52:11
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-01-23 15:35:53
+# @Last Modified time: 2023-02-10 14:38:11
 # %%
 import numpy as np
 import pandas as pd
@@ -27,6 +27,7 @@ else:
         "GCN+deepwalk+r2v",
         "GAT+deepwalk+random",
         "GAT+deepwalk+r2v",
+        "baseline"
     ]
     output_file = "../data/"
 
@@ -47,6 +48,8 @@ markers = [model2markers[k] for k in MODEL_ORDER]
 linestyles = [model2linestyle[k] for k in MODEL_ORDER]
 
 data_order = ["polbook", "polblog", "airport", "pokec"]
+
+
 
 plot_data = data_table.copy()
 
