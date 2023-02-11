@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 00:55:24
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-01-24 14:03:52
+# @Last Modified time: 2023-02-10 20:20:00
 from os.path import join as j
 
 import numpy as np
@@ -105,6 +105,9 @@ def get_dataset(name):
     elif name == 'polblog':
         from dataset.polblog_data import PolBlogDataFrame
         dataset = PolBlogDataFrame()
+    elif name == "facebook":
+        from dataset.facebook_data import FacebookData
+        dataset = FacebookData()
     # add other datasets here
     return dataset
 
@@ -131,6 +134,15 @@ def get_graph_tool_graph(dataset):
     g.vertex_properties["y"] = y
     return g
 
+def get_inf_modularity(dataset):
+    dataset = get_dataset(dataset)
+    g = get_graph_tool_graph(dataset)
+    N = dataset.get_grouped_col().shape[0]
+    y = g.vertex_properties['y']
+    import graph_tool.all as gt
+    en_ = gt.BlockState(g, b=y).entropy()
+    m = gt.BlockState(g, b=np.zeros(N, dtype=np.int32)).entropy()
+    return 1 - (en_ / m)
 
 def _get_deepwalk_model(embedding_dim, num_nodes, edge_index, weighted_adj_path=None, group_membership=None, crosswalk=True, fairwalk=False):
     assert not (crosswalk and fairwalk), "Both crosswalk and fairwalk cannot be true"
