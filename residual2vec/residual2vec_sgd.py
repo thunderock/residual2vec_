@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+# @Author: Ashutosh Tiwari
+# @Email: checkashu@gmail.com
+# @Date:   2023-02-02 11:59:32
+# @Filepath: residual2vec/residual2vec_sgd.py
 """A python implementation of residual2vec based on the stochastic gradient
 descent algorithm. Suitable for large networks.
 
