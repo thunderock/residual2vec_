@@ -40,6 +40,16 @@ snakemake   generate_node_embeddings  -call --config root=polblog_one gnn_model=
 
 snakemake   generate_node_embeddings  -call --config root=polblog_one gnn_model=residual2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
 
+
+
+
+# baseline
+snakemake   generate_baseline_embs  -call --config root=polblog_one gnn_model=residual2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+
+
+snakemake   generate_baseline_embs  -call --config root=polblog_one gnn_model=residual2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+
+
 which python;
 # fairwalk + dw
 snakemake   train_features_2_vec      -call --config root=polblog_two gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
@@ -72,6 +82,14 @@ snakemake   generate_node_embeddings  -call --config root=polblog_two gnn_model=
 
 
 snakemake   generate_node_embeddings  -call --config root=polblog_two gnn_model=residual2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+
+
+# baseline
+snakemake   generate_baseline_embs  -call --config root=polblog_two gnn_model=residual2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+
+
+snakemake   generate_baseline_embs  -call --config root=polblog_two gnn_model=residual2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+
 
 which python;
 # fairwalk + dw
@@ -106,6 +124,15 @@ snakemake   generate_node_embeddings  -call --config root=polblog_three gnn_mode
 
 snakemake   generate_node_embeddings  -call --config root=polblog_three gnn_model=residual2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
 
+
+
+# baseline
+snakemake   generate_baseline_embs  -call --config root=polblog_three gnn_model=residual2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+
+
+snakemake   generate_baseline_embs  -call --config root=polblog_three gnn_model=residual2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+
+
 which python;
 # fairwalk + dw
 snakemake   train_features_2_vec      -call --config root=polblog_four gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
@@ -138,6 +165,15 @@ snakemake   generate_node_embeddings  -call --config root=polblog_four gnn_model
 
 
 snakemake   generate_node_embeddings  -call --config root=polblog_four gnn_model=residual2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+
+# baseline
+snakemake   generate_baseline_embs  -call --config root=polblog_four gnn_model=residual2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+
+
+snakemake   generate_baseline_embs  -call --config root=polblog_four gnn_model=residual2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
+
+
+
 which python;
 # fairwalk + dw
 snakemake   train_features_2_vec      -call --config root=polblog_five gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=polblog  --nolock --ignore-incomplete;
@@ -169,3 +205,10 @@ snakemake   generate_node_embeddings  -call --config root=polblog_five gnn_model
 snakemake   generate_node_embeddings  -call --config root=polblog_five gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;
 
 snakemake   generate_node_embeddings  -call --config root=polblog_five gnn_model=residual2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+
+
+# baseline
+snakemake   generate_baseline_embs  -call --config root=polblog_five gnn_model=residual2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=polblog  --nolock --ignore-incomplete;
+
+
+snakemake   generate_baseline_embs  -call --config root=polblog_five gnn_model=residual2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=polblog  --nolock --ignore-incomplete;

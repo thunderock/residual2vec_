@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 00:55:24
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-02-11 23:57:33
+# @Last Modified time: 2023-02-13 13:13:46
 from os.path import join as j
 
 import numpy as np
@@ -17,7 +17,10 @@ from tqdm import tqdm, trange
 import networkx as nx
 
 def get_string_boolean(string):
-    if string in ['True', 'true', 'TRUE', 'T', 't', '1']:
+    # print(string, type(string))
+    if isinstance(string, bool):
+        return string
+    elif string in ['True', 'true', 'TRUE', 'T', 't', '1']:
         return True
     elif string in ['False', 'false', 'FALSE', 'F', 'f', '0']:
         return False
@@ -48,6 +51,10 @@ class FileResources(object):
     def test_adj_path(self):
         return str(j(self.root, "{}_test_adj.npz".format(self.dataset)))
 
+    @property
+    def baseline_embs_path(self):
+        return str(j(self.root, "{}_baseline_man_woman+deepwalk_embs.npy".format(self.dataset)))
+    
     @property
     def feature_embs(self):
         if self.crosswalk:

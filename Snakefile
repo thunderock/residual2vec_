@@ -369,6 +369,15 @@ rule generate_node_embeddings:
             embs = embs.numpy()
         np.save(output.embs_file,embs)
 
-
+rule generate_baseline_embs:
+    input:
+        features = file_resources.feature_embs
+    output:
+        baseline_embs = file_resources.baseline_embs_path
+    params:
+        DATASET = DATASET,
+        NODE2VEC = NODE2VEC,
+        DATA_ROOT = DATA_ROOT,
+    script: "baseline_1.py"
 # Snakefile for the link prediction benchmark
 include: "Snakefile_link_prediction.smk"
