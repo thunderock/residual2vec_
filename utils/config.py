@@ -54,7 +54,7 @@ R2V_TRAINING_EPOCHS = {
     'airport': 100,
     'polbook': 200,
     'polblog': 200,
-    'facebook': 2
+    'facebook': 25
 }
 NUM_GNN_LAYERS = {
     'pokec': 5,

@@ -1,16 +1,17 @@
 import os
-from utils.snakemake_utils import get_string_boolean, FileResources
 import wandb
-from utils.config import R2V_TRAINING_EPOCHS, NUM_NEGATIVE_SAMPLING, NUM_THREADS
 # os.environ["CUDA_VISIBLE_DEVICES"]=""
 # config = {'gnn_model': 'gat', 'crosswalk': 'true',
 #           'r2v': 'true', 'dataset': 'pokec', 'device': 'cuda:0'}
 
 
+SET_DEVICE = config.get('device', 'cuda:0')
+os.environ["SET_GPU"] = SET_DEVICE
 # ENV = config.get('env', 'remote')
 # Variables in snakefile
 GNN_MODEL = config.get('gnn_model', "gat")
 
+from utils.snakemake_utils import get_string_boolean, FileResources
 # not in use right now
 DATASET = config.get('dataset', 'pokec')
 
@@ -26,7 +27,6 @@ NODE2VEC = get_string_boolean(NODE2VEC)
 R2V = config.get('r2v', 'false')
 R2V = get_string_boolean(R2V)
 
-SET_DEVICE = config.get('device', 'cuda:0')
 # DATA_ROOT = "/data/sg/ashutiwa/residual2vec_"
 # if ENV in ('local', 'carbonate'):
 DATA_ROOT = config.get("root", "data")
@@ -47,6 +47,7 @@ file_resources = FileResources(root=DATA_ROOT, crosswalk=CROSSWALK, fairwalk=FAI
 print(config)
 
 
+from utils.config import R2V_TRAINING_EPOCHS, NUM_NEGATIVE_SAMPLING, NUM_THREADS
 rule train_gnn:
     input:
         feature_weights=file_resources.feature_embs,
