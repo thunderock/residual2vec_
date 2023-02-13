@@ -56,7 +56,7 @@ rule train_gnn:
         model_weights = file_resources.model_weights
     threads: NUM_THREADS[DATASET]
     params:
-        BATCH_SIZE = 256 * 3,
+        BATCH_SIZE = 256,
         NODE_TO_VEC_DIM= 128,
         NUM_WORKERS = NUM_THREADS[DATASET],
         SET_DEVICE = SET_DEVICE,
@@ -149,7 +149,7 @@ rule generate_crosswalk_weights:
             node2vec="doesnt_matter", dataset=DATASET).test_adj_path
 
     params:
-        BATCH_SIZE=256 * 3,
+        BATCH_SIZE=256,
         NUM_WORKERS=NUM_THREADS[DATASET],
         SET_DEVICE=SET_DEVICE,
         RV_NUM_WALKS=100
@@ -219,7 +219,7 @@ rule train_features_2_vec:
         features = file_resources.feature_embs
     threads: NUM_THREADS[DATASET]
     params:
-        BATCH_SIZE = 256 * 3,
+        BATCH_SIZE = 256,
         NODE_TO_VEC_DIM= 128,
         NUM_WORKERS = NUM_THREADS[DATASET],
         SET_DEVICE = SET_DEVICE,
@@ -268,7 +268,7 @@ rule generate_node_embeddings:
     output:
         embs_file = file_resources.embs_file
     params:
-        BATCH_SIZE = 256 * 3,
+        BATCH_SIZE = 256,
         NODE_TO_VEC_DIM= 128,
         NUM_WORKERS = NUM_THREADS[DATASET],
         SET_DEVICE = SET_DEVICE,

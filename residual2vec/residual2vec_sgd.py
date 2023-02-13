@@ -136,7 +136,7 @@ class residual2vec_sgd:
         neg_sampling = NegativeSampling(embedding=model)
         model.to(self.cuda)
         # Training
-        optim = Adam(model.parameters(), lr=0.003)
+        optim = Adam(model.parameters(), lr=0.001)
 
         # number of batches
         n_batches = len(dataloader)
@@ -348,4 +348,5 @@ def _get_center_single_context_window(
                     break
                 contexts[start:end, i] = walks[:, t_walk + 1 + i]
     return centers, contexts
+
 

@@ -1,13 +1,12 @@
 #!/bin/bash
-#SBATCH --partition=dl
 #SBATCH --time=48:00:00
-#SBATCH --job-name=polbook
+#SBATCH --job-name=polblog
+#SBATCH --cpus-per-task=60
+#SBATCH --partition=gpu
 #SBATCH --mail-type=ALL
-#SBATCH --mem=100G
-#SBATCH --mail-user=ashutiwa@iu.edu
-#SBATCH --gpus-per-node p100:1
-#SBATCH --cpus-per-task=20
-#SBATCH --account r00052
+#SBATCH --mem=240G
+#SBATCH --gpus-per-node 1
+
 
 which python;
 # fairwalk + dw
