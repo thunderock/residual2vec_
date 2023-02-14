@@ -13,7 +13,8 @@ from snakemake.utils import Paramspace
 SRC_DATA_ROOT = j("..", "final_")
 DERIVED_DIR = j("data", "derived")
 
-DATA_LIST = ["airport", "polbook", "polblog", "facebook"]
+DATA_LIST = [ "polbook", "polblog", "airport","facebook"]
+
 
 SAMPLE_ID_LIST = ["one", "two", "three", "four", "five"] # why not arabic numbers?
 N_ITERATION = 1
@@ -197,7 +198,7 @@ rule plot_auc_roc_score_deepwalk:
             "GCN+deepwalk+r2v",
             "GAT+deepwalk+random",
             "GAT+deepwalk+r2v",
-            "baseline"
+            "baseline+deepwalk"
         ]
     output:
         output_file = FIG_LP_SCORE_DEEPWALK
@@ -215,7 +216,7 @@ rule plot_auc_roc_score_node2vec:
             "GCN+node2vec+r2v",
             "GAT+node2vec+random",
             "GAT+node2vec+r2v",
-            "baseline" # replace this with baseline + node2vec
+            "baseline+node2vec" # replace this with baseline + node2vec
         ]
     output:
         output_file = FIG_LP_SCORE_NODE2VEC
@@ -235,7 +236,7 @@ rule plot_disparity:
             "GCN+deepwalk+r2v",
             "GAT+deepwalk+random",
             "GAT+deepwalk+r2v",
-            "baseline"
+            "baseline+deepwalk"
         ]
     output:
         output_file = FIG_DISPARITY_SCORE_DEEPWALK
@@ -253,7 +254,7 @@ rule plot_disparity_node2vec:
             "GCN+node2vec+r2v",
             "GAT+node2vec+random",
             "GAT+node2vec+r2v",
-            # "baseline" # replace this with baseline + node2vec
+            "baseline+node2vec"
         ]
     output:
         output_file = FIG_DISPARITY_SCORE_NODE2VEC
@@ -273,7 +274,7 @@ rule plot_disparity_curve_deepwalk:
             "GCN+deepwalk+r2v",
             "GAT+deepwalk+random",
             "GAT+deepwalk+r2v",
-            "baseline"
+            "baseline+deepwalk"
         ]
     output:
         output_file = FIG_DISPARITY_CURVE_DEEPWALK
@@ -291,7 +292,7 @@ rule plot_disparity_curve_node2vec:
             "GCN+node2vec+r2v",
             "GAT+node2vec+random",
             "GAT+node2vec+r2v",
-            # "baseline" # replace this with baseline + node2vec
+            "baseline+node2vec"
         ]
     output:
         output_file = FIG_DISPARITY_CURVE_NODE2VEC
