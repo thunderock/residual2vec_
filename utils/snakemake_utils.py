@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 00:55:24
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-02-13 13:13:46
+# @Last Modified time: 2023-02-14 13:54:51
 from os.path import join as j
 
 import numpy as np
@@ -276,13 +276,13 @@ def train_model_and_get_embs(adj, model_name, X, sampler, gnn_layers, epochs, le
         edge_index=edge_index,
         sampler=sampler
     )
-    dataloader = NeighborEdgeSampler(dataset, batch_size=256 * 3, shuffle=True, num_workers=NUM_WORKERS, pin_memory=True)
+    dataloader = NeighborEdgeSampler(dataset, batch_size=256, shuffle=True, num_workers=NUM_WORKERS, pin_memory=True)
     model = get_gnn_model(model_name=model_name, emb_dim=model_dim, num_layers=gnn_layers, num_features=X.shape[1], learn_outvec=learn_outvec)
     from residual2vec.residual2vec_sgd import residual2vec_sgd as rv
     frame = rv(noise_sampler=False, window_length=5, num_walks=10, walk_length=80, batch_size=256 * 3).fit()
     frame.transform(model=model, dataloader=dataloader, epochs=epochs)
     embs = torch.zeros((num_nodes, model_dim))
-    batch_size = 256 * 3
+    batch_size = 256
     model.eval()
     dataloader = NeighborEdgeSampler(dataset, batch_size=batch_size, shuffle=False, num_workers=NUM_WORKERS, pin_memory=True, transforming=True)
     with torch.no_grad():
@@ -328,7 +328,7 @@ def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2ve
     model_name: name of model to use, can be ['gcn', 'gat']
     """
     assert not (crosswalk and fairwalk)
-    assert dataset_name in ['airport', 'polbook', 'polblog', 'small_pokec', 'pokec']
+    assert dataset_name in ['airport', 'polbook', 'polblog', 'small_pokec', 'pokec', 'facebook']
     
     dataset = get_dataset(dataset_name)
     group_membership = dataset.get_grouped_col()

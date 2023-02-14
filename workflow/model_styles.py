@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 09:05:36
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-02-13 13:57:48
+# @Last Modified time: 2023-02-14 14:01:29
 import seaborn as sns
 
 model_names = {
@@ -41,8 +41,8 @@ model2group = {
     "deepwalk": "DeepWalk",
     "node2vec": "DeepWalk",
     "residual2vec": "DeepWalk",
-    "baseline+deepwalk": "Baseline",
-    "baseline+node2vec": "Baseline",
+    "baseline+deepwalk": "Manipulation of embedding",
+    "baseline+node2vec": "Manipulation of embedding",
 }
 model2type = {
     "fairwalk+deepwalk": "Debiased",
@@ -70,7 +70,7 @@ model2markers = {
     "GAT": "d",
     "Fairwalk": "v",
     "CrossWalk": "^",
-    "Baseline": "p",
+    "Manipulation of embedding": "p",
 }
 
 model2linestyle = {
@@ -79,11 +79,11 @@ model2linestyle = {
     "GAT": ":",
     "Fairwalk": "-.",
     "CrossWalk": "-",
-    "Baseline": "-",
+    "Manipulation of embedding": "-",
 }
 
 
-model_order = ["DeepWalk", "GCN", "GAT", "Fairwalk", "CrossWalk", "Baseline"]
+model_order = ["DeepWalk", "GCN", "GAT", "Fairwalk", "CrossWalk", "Manipulation of embedding"]
 
 
 # ========================
@@ -100,6 +100,6 @@ model2colors = {
     "DeepWalk": cmap[3],
     "Fairwalk": "#2d2d2d",
     "CrossWalk": "#8d8d8d",
-    "Baseline": "red",
+    "Manipulation of embedding": "red",
     
 }
