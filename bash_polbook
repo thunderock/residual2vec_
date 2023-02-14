@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --time=48:00:00
-#SBATCH --job-name=polblog
+#SBATCH --job-name=polbook
 #SBATCH --cpus-per-task=60
 #SBATCH --partition=gpu
 #SBATCH --mail-type=ALL

@@ -24,11 +24,12 @@ else:
     NODE2VEC = False
     DATASET = "polbook"
 
+METHOD_NAME = 'node2vec' if NODE2VEC else 'deepwalk'
 print("BASE: ", BASE, "NODE2VEC: ", NODE2VEC, "DATASET: ", DATASET)
 
 def get_embs(dataset, node2vec=NODE2VEC):
     y = snakemake_utils.get_dataset(dataset).get_grouped_col().numpy()
-    deepwalk = np.load(j(BASE, "{}_{}.npy".format(dataset, "node2vec" if node2vec else "deepwalk")))
+    deepwalk = np.load(j(BASE, "{}_{}.npy".format(dataset, METHOD_NAME)))
     
     
     centroids = graph_utils.get_centroid_per_group(deepwalk, y)
@@ -62,5 +63,5 @@ def get_embs(dataset, node2vec=NODE2VEC):
             
 
 embs = get_embs(dataset=DATASET, node2vec=NODE2VEC)
-np.save(j(BASE, "{}_baseline_man_woman+deepwalk_embs.npy".format(DATASET)), embs)
+np.save(j(BASE, "{}_baseline_man_woman+{}_embs.npy".format(DATASET, METHOD_NAME)), embs)
 
