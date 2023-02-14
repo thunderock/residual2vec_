@@ -53,6 +53,9 @@ class FileResources(object):
 
     @property
     def baseline_embs_path(self):
+        if self.node2vec:
+            return str(j(self.root, "{}_baseline_man_woman+node2vec_embs.npy".format(self.dataset)))
+
         return str(j(self.root, "{}_baseline_man_woman+deepwalk_embs.npy".format(self.dataset)))
     
     @property
