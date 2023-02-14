@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 09:05:36
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-02-10 14:06:57
+# @Last Modified time: 2023-02-13 13:57:48
 import seaborn as sns
 
 model_names = {
@@ -21,7 +21,8 @@ model_names = {
     "deepwalk": "DeepWalk",
     "node2vec": "node2vec",
     "residual2vec": "DeepWalk (debiased)",
-    "baseline": "Baseline",
+    "baseline+deepwalk": "Baseline (debiased)",
+    "baseline+node2vec": "Baseline-node2vec (debiased)",
 }
 
 model2group = {
@@ -40,7 +41,8 @@ model2group = {
     "deepwalk": "DeepWalk",
     "node2vec": "DeepWalk",
     "residual2vec": "DeepWalk",
-    "baseline": "Baseline",
+    "baseline+deepwalk": "Baseline",
+    "baseline+node2vec": "Baseline",
 }
 model2type = {
     "fairwalk+deepwalk": "Debiased",
@@ -58,7 +60,8 @@ model2type = {
     "deepwalk": "Vanilla",
     "node2vec": "Vanilla",
     "residual2vec": "Debiased",
-    "baseline": "Debiased",
+    "baseline+deepwalk": "Debiased",
+    "baseline+node2vec": "Debiased",
 }
 
 model2markers = {

@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 00:55:24
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-02-10 20:20:00
+# @Last Modified time: 2023-02-13 13:13:46
 from os.path import join as j
 
 import numpy as np
@@ -17,7 +17,10 @@ from tqdm import tqdm, trange
 import networkx as nx
 
 def get_string_boolean(string):
-    if string in ['True', 'true', 'TRUE', 'T', 't', '1']:
+    # print(string, type(string))
+    if isinstance(string, bool):
+        return string
+    elif string in ['True', 'true', 'TRUE', 'T', 't', '1']:
         return True
     elif string in ['False', 'false', 'FALSE', 'F', 'f', '0']:
         return False
@@ -49,6 +52,10 @@ class FileResources(object):
         return str(j(self.root, "{}_test_adj.npz".format(self.dataset)))
 
     @property
+    def baseline_embs_path(self):
+        return str(j(self.root, "{}_baseline_man_woman+deepwalk_embs.npy".format(self.dataset)))
+    
+    @property
     def feature_embs(self):
         if self.crosswalk:
             if self.node2vec:
@@ -71,22 +78,20 @@ class FileResources(object):
     @property
     def model_weights(self):
         feature_method = "node2vec" if self.node2vec else "deepwalk"
-        weight_generation = None
-        if self.crosswalk: weight_generation = "crosswalk"
-        if self.fairwalk: weight_generation = "fairwalk"
         negative_sampling = "deepwalk"
         if self.r2v: negative_sampling = "r2v"
-        return str(j(self.root, f"{self.dataset}_{self.model_name}_{weight_generation}_{feature_method}_{negative_sampling}.h5"))
+        if self.model_name == "residual2vec":
+            return str(j(self.root, f"{self.dataset}_{self.model_name}.h5"))
+        return str(j(self.root, f"{self.dataset}_{self.model_name}_{feature_method}_{negative_sampling}.h5"))
 
     @property
     def embs_file(self):
         feature_method = "node2vec" if self.node2vec else "deepwalk"
-        weight_generation = None
-        if self.crosswalk: weight_generation = "crosswalk"
-        if self.fairwalk: weight_generation = "fairwalk"
         negative_sampling = "deepwalk"
         if self.r2v: negative_sampling = "r2v"
-        return str(j(self.root, f"{self.dataset}_{self.model_name}_{weight_generation}_{feature_method}_{negative_sampling}_embs.npy"))
+        if self.model_name == "residual2vec":
+            return str(j(self.root, f"{self.dataset}_{self.model_name}_embs.npy"))
+        return str(j(self.root, f"{self.dataset}_{self.model_name}_{feature_method}_{negative_sampling}_embs.npy"))
 
 def get_dataset(name):
     dataset = None
@@ -144,7 +149,7 @@ def get_inf_modularity(dataset):
     m = gt.BlockState(g, b=np.zeros(N, dtype=np.int32)).entropy()
     return 1 - (en_ / m)
 
-def _get_deepwalk_model(embedding_dim, num_nodes, edge_index, weighted_adj_path=None, group_membership=None, crosswalk=True, fairwalk=False):
+def _get_deepwalk_model(embedding_dim, num_nodes, weighted_adj_path=None, group_membership=None, crosswalk=True, fairwalk=False):
     assert not (crosswalk and fairwalk), "Both crosswalk and fairwalk cannot be true"
     from models import weighted_deepwalk
     if crosswalk:
@@ -153,7 +158,6 @@ def _get_deepwalk_model(embedding_dim, num_nodes, edge_index, weighted_adj_path=
             num_nodes=num_nodes,
             group_membership=group_membership,
             weighted_adj=weighted_adj_path,
-            edge_index=edge_index,
             embedding_dim=embedding_dim,
         )
     elif fairwalk:
@@ -161,18 +165,16 @@ def _get_deepwalk_model(embedding_dim, num_nodes, edge_index, weighted_adj_path=
             num_nodes=num_nodes,
             group_membership=group_membership,
             embedding_dim=embedding_dim,
-            edge_index=edge_index,
             weighted_adj=weighted_adj_path
         )
     return weighted_deepwalk.UnWeightedDeepWalk(
             num_nodes=num_nodes,
             embedding_dim=embedding_dim,
             weighted_adj=weighted_adj_path,
-            edge_index=edge_index
         )
 
 
-def _get_node2vec_model(embedding_dim, num_nodes, edge_index, weighted_adj_path=None, group_membership=None, crosswalk=True, fairwalk=False):
+def _get_node2vec_model(embedding_dim, num_nodes, weighted_adj_path=None, group_membership=None, crosswalk=True, fairwalk=False):
     assert not (crosswalk and fairwalk), "Both crosswalk and fairwalk cannot be true"
     if crosswalk:
         # assert weighted_adj_path is not None and group_membership is not None
@@ -180,7 +182,6 @@ def _get_node2vec_model(embedding_dim, num_nodes, edge_index, weighted_adj_path=
             num_nodes=num_nodes,
             group_membership=group_membership,
             weighted_adj=weighted_adj_path,
-            edge_index=edge_index,
             embedding_dim=embedding_dim,
         )
     elif fairwalk:
@@ -189,15 +190,13 @@ def _get_node2vec_model(embedding_dim, num_nodes, edge_index, weighted_adj_path=
             num_nodes=num_nodes,
             group_membership=group_membership,
             embedding_dim=embedding_dim,
-            edge_index=edge_index,
             weighted_adj=weighted_adj_path
         )
 
     return weighted_node2vec.UnWeightedNode2Vec(
             num_nodes=num_nodes,
             embedding_dim=embedding_dim,
-            weighted_adj=weighted_adj_path,
-            edge_index=edge_index
+            weighted_adj=weighted_adj_path
         )
 
 
@@ -213,11 +212,18 @@ def train_deepwalk_get_embs(file_path, **kwargs):
     model = _get_deepwalk_model(**kwargs)
     return model.train_and_get_embs(file_path)
 
-def store_weighted_adj(file_path, edge_index, **kwargs):
+def store_weighted_adj(file_path, edge_index, num_nodes, crosswalk, fairwalk, group_membership,):
+    
     # make this edge index symmetric
     edge_index = torch.cat([edge_index, edge_index.flip(0)], dim=1)
-    model = _get_node2vec_model(edge_index=edge_index, **kwargs)
-    sparse.save_npz(file_path, model.adj)
+    row, col = edge_index
+    from torch_sparse import SparseTensor
+    adj = SparseTensor(row=row, col=col, sparse_sizes=(num_nodes, num_nodes))
+    row, col, _ = adj.coo()
+    ones = np.ones(row.shape[0], dtype=np.int32)
+    A = sparse.csr_matrix((ones, (row.numpy(), col.numpy())), shape=(num_nodes, num_nodes))
+    adj = get_reweighted_graph(A, crosswalk=crosswalk, fairwalk=fairwalk, group_membership=group_membership)
+    sparse.save_npz(file_path, adj)
 
 def get_num_nodes_from_adj(adj_path):
     return sparse.load_npz(adj_path).shape[0]
@@ -308,7 +314,7 @@ def get_reweighted_graph(adj, crosswalk, fairwalk, group_membership=None):
 
 
 
-def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2vec: bool, fairwalk: bool, model_name: str=None, learn_outvec:bool=True, model_dim=128, adj=None):
+def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2vec: bool, fairwalk: bool, model_name: str=None, learn_outvec:bool=False, model_dim=128, adj=None):
     """
     returns embs given dataset name
     dataset: name of dataset
@@ -320,7 +326,7 @@ def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2ve
     """
     assert not (crosswalk and fairwalk)
     assert dataset_name in ['airport', 'polbook', 'polblog', 'small_pokec', 'pokec']
-    IS_ADJ = sparse.issparse(adj)
+    
     dataset = get_dataset(dataset_name)
     group_membership = dataset.get_grouped_col()
     edge_index, num_nodes = dataset.edge_index, dataset.X.shape[0]
@@ -330,13 +336,13 @@ def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2ve
     # create data to train
     if node2vec:
         # using node2vec node features
-        feature_model = _get_node2vec_model(embedding_dim=num_features, num_nodes=num_nodes, edge_index=edge_index, crosswalk=crosswalk, fairwalk=fairwalk, group_membership=group_membership, weighted_adj_path=adj if IS_ADJ else None)
+        feature_model = _get_node2vec_model(embedding_dim=num_features, num_nodes=num_nodes, crosswalk=crosswalk, fairwalk=fairwalk, group_membership=group_membership, weighted_adj_path=adj)
     else:
         # use deepwalk node features
-        feature_model = _get_deepwalk_model(embedding_dim=num_features, num_nodes=num_nodes, edge_index=edge_index, crosswalk=crosswalk, fairwalk=fairwalk, group_membership=group_membership, weighted_adj_path=adj if IS_ADJ else None)
+        feature_model = _get_deepwalk_model(embedding_dim=num_features, num_nodes=num_nodes, crosswalk=crosswalk, fairwalk=fairwalk, group_membership=group_membership, weighted_adj_path=adj)
 
     # weighted adj matrix
-    adj = get_reweighted_graph(adj=adj, crosswalk=crosswalk, fairwalk=fairwalk, group_membership=group_membership) if IS_ADJ else feature_model.adj
+    adj = get_reweighted_graph(adj=adj, crosswalk=crosswalk, fairwalk=fairwalk, group_membership=group_membership)
     # train and get embs
     X = feature_model.train_and_get_embs(save=None).astype(np.float32)
     if return_features:

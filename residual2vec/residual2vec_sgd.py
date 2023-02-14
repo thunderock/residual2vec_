@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+# @Author: Ashutosh Tiwari
+# @Email: checkashu@gmail.com
+# @Date:   2023-02-02 11:59:32
+# @Filepath: residual2vec/residual2vec_sgd.py
 """A python implementation of residual2vec based on the stochastic gradient
 descent algorithm. Suitable for large networks.
 
@@ -131,7 +136,7 @@ class residual2vec_sgd:
         neg_sampling = NegativeSampling(embedding=model)
         model.to(self.cuda)
         # Training
-        optim = Adam(model.parameters(), lr=0.003)
+        optim = Adam(model.parameters(), lr=0.001)
 
         # number of batches
         n_batches = len(dataloader)
@@ -343,4 +348,5 @@ def _get_center_single_context_window(
                     break
                 contexts[start:end, i] = walks[:, t_walk + 1 + i]
     return centers, contexts
+
 
