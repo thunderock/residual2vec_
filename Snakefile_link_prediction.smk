@@ -10,10 +10,11 @@ from snakemake.utils import Paramspace
 # ====================
 
 # network file
-SRC_DATA_ROOT = j("..", "final_128")
+SRC_DATA_ROOT = j("..", "final_")
 DERIVED_DIR = j("data", "derived")
 
-DATA_LIST = ["airport", "polbook", "polblog", "pokec"]
+DATA_LIST = [ "polbook", "polblog", "airport","facebook"]
+
 
 SAMPLE_ID_LIST = ["one", "two", "three", "four", "five"] # why not arabic numbers?
 N_ITERATION = 1
@@ -34,7 +35,8 @@ MODEL_LIST = [
     "deepwalk",
     "node2vec",
     "residual2vec",
-    "baseline"
+    "baseline+deepwalk",
+    "baseline+node2vec",
 ]
 
 MODEL2EMBFILE_POSTFIX= {
@@ -42,19 +44,19 @@ MODEL2EMBFILE_POSTFIX= {
     "fairwalk+node2vec": "_fairwalk_node2vec.npy",
     "crosswalk+deepwalk": "_crosswalk_deepwalk.npy",
     "crosswalk+node2vec": "_crosswalk_node2vec.npy",
-    "GCN+deepwalk+random": "_gcn_None_deepwalk_deepwalk_embs.npy",
-    "GCN+deepwalk+r2v": "_gcn_None_deepwalk_r2v_embs.npy",
-    "GCN+node2vec+random": "_gcn_None_node2vec_deepwalk_embs.npy",
-    "GCN+node2vec+r2v": "_gcn_None_node2vec_r2v_embs.npy",
-    "GAT+deepwalk+random": "_gat_None_deepwalk_deepwalk_embs.npy",
-    "GAT+deepwalk+r2v": "_gat_None_deepwalk_r2v_embs.npy",
-    "GAT+node2vec+random": "_gat_None_node2vec_deepwalk_embs.npy",
-    "GAT+node2vec+r2v": "_gat_None_node2vec_r2v_embs.npy",
-    "deepwalk": "_deepwalk_128_embs.npy",
-    "node2vec": "_node2vec_128_embs.npy",
-    "residual2vec": "_residual2vec_128_embs.npy",
-    "baseline": "_baseline_man_woman.npy"
-}
+    "GCN+deepwalk+random": "_gcn_deepwalk_deepwalk_embs.npy",
+    "GCN+deepwalk+r2v": "_gcn_deepwalk_r2v_embs.npy",
+    "GCN+node2vec+random": "_gcn_node2vec_deepwalk_embs.npy",
+    "GCN+node2vec+r2v": "_gcn_node2vec_r2v_embs.npy",
+    "GAT+deepwalk+random": "_gat_deepwalk_deepwalk_embs.npy",
+    "GAT+deepwalk+r2v": "_gat_deepwalk_r2v_embs.npy",
+    "GAT+node2vec+random": "_gat_node2vec_deepwalk_embs.npy",
+    "GAT+node2vec+r2v": "_gat_node2vec_r2v_embs.npy",
+    "deepwalk": "_deepwalk.npy",
+    "node2vec": "_node2vec.npy",
+    "residual2vec": "_residual2vec_embs.npy",
+    "baseline+deepwalk": "_baseline_man_woman+deepwalk_embs.npy",
+    "baseline+node2vec": "_baseline_man_woman+node2vec_embs.npy",}
 
 # ====================
 # Input files
@@ -196,7 +198,7 @@ rule plot_auc_roc_score_deepwalk:
             "GCN+deepwalk+r2v",
             "GAT+deepwalk+random",
             "GAT+deepwalk+r2v",
-            "baseline"
+            "baseline+deepwalk"
         ]
     output:
         output_file = FIG_LP_SCORE_DEEPWALK
@@ -214,7 +216,7 @@ rule plot_auc_roc_score_node2vec:
             "GCN+node2vec+r2v",
             "GAT+node2vec+random",
             "GAT+node2vec+r2v",
-            "baseline" # replace this with baseline + node2vec
+            "baseline+node2vec" # replace this with baseline + node2vec
         ]
     output:
         output_file = FIG_LP_SCORE_NODE2VEC
@@ -234,7 +236,7 @@ rule plot_disparity:
             "GCN+deepwalk+r2v",
             "GAT+deepwalk+random",
             "GAT+deepwalk+r2v",
-            "baseline"
+            "baseline+deepwalk"
         ]
     output:
         output_file = FIG_DISPARITY_SCORE_DEEPWALK
@@ -252,7 +254,7 @@ rule plot_disparity_node2vec:
             "GCN+node2vec+r2v",
             "GAT+node2vec+random",
             "GAT+node2vec+r2v",
-            # "baseline" # replace this with baseline + node2vec
+            "baseline+node2vec"
         ]
     output:
         output_file = FIG_DISPARITY_SCORE_NODE2VEC
@@ -272,7 +274,7 @@ rule plot_disparity_curve_deepwalk:
             "GCN+deepwalk+r2v",
             "GAT+deepwalk+random",
             "GAT+deepwalk+r2v",
-            "baseline"
+            "baseline+deepwalk"
         ]
     output:
         output_file = FIG_DISPARITY_CURVE_DEEPWALK
@@ -290,7 +292,7 @@ rule plot_disparity_curve_node2vec:
             "GCN+node2vec+r2v",
             "GAT+node2vec+random",
             "GAT+node2vec+r2v",
-            # "baseline" # replace this with baseline + node2vec
+            "baseline+node2vec"
         ]
     output:
         output_file = FIG_DISPARITY_CURVE_NODE2VEC

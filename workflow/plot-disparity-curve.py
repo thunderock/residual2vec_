@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-17 08:52:11
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-02-10 14:38:06
+# @Last Modified time: 2023-02-13 20:15:49
 # %%
 import numpy as np
 import pandas as pd
@@ -27,7 +27,7 @@ else:
         "GCN+deepwalk+r2v",
         "GAT+deepwalk+random",
         "GAT+deepwalk+r2v",
-        "baseline"
+        "baseline+deepwalk",
     ]
     output_file = "../data/rank.png"
 # ========================
@@ -69,7 +69,7 @@ model2color = {
     "GAT": sns.desaturate(spec_emb_color, 0.1),
     "Fairwalk": "#2d2d2d",
     "CrossWalk": "#8d8d8d",
-    "Baseline": "#d9d9d9",
+    "Baseline (debiased)": "#d9d9d9",
 }
 model2marker = {
     "DeepWalk (debiased)": "o",
@@ -80,10 +80,10 @@ model2marker = {
     "GAT": "D",
     "Fairwalk": "v",
     "CrossWalk": "^",
-    "Baseline": "p",
+    "Baseline (debiased)": "p",
 }
 
-data_order = ["polbook", "polblog", "airport", "pokec"]
+data_order = ["polbook", "polblog", "airport", "facebook"]
 
 plot_data = data_table.copy()
 
@@ -127,7 +127,7 @@ for i, ax in enumerate(g.axes.flat):
             "GAT",
             "Fairwalk",
             "CrossWalk",
-            "Baseline"
+            "Baseline (debiased)"
         ][::-1],
         ax=ax,
     )

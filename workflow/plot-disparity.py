@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-17 08:52:11
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-02-10 14:38:11
+# @Last Modified time: 2023-02-14 12:13:13
 # %%
 import numpy as np
 import pandas as pd
@@ -19,17 +19,15 @@ if "snakemake" in sys.modules:
 else:
     input_file = "../data/derived/results/result_disparity.csv"
     focal_model_list = [
-        "fairwalk+deepwalk",
-        "crosswalk+deepwalk",
-        "deepwalk",
-        "residual2vec",
-        "GCN+deepwalk+random",
-        "GCN+deepwalk+r2v",
-        "GAT+deepwalk+random",
-        "GAT+deepwalk+r2v",
-        "baseline"
-    ]
-    output_file = "../data/"
+            "fairwalk+node2vec",
+            "crosswalk+node2vec",
+            "GCN+node2vec+random",
+            "GCN+node2vec+r2v",
+            "GAT+node2vec+random",
+            "GAT+node2vec+r2v",
+            "baseline+node2vec"
+        ]
+    output_file = "../data/some.pdf"
 
 # ========================
 # Load
@@ -43,12 +41,11 @@ data_table = pd.read_csv(input_file)
 
 from model_styles import model_names, model2group, model2type, model2markers, model2linestyle, model_order, model2colors
 
-MODEL_ORDER = model_order if len(focal_model_list) != 6 else model_order[1:]
+MODEL_ORDER = model_order if 'deepwalk' in focal_model_list else model_order[1:]
 markers = [model2markers[k] for k in MODEL_ORDER]
 linestyles = [model2linestyle[k] for k in MODEL_ORDER]
 
-data_order = ["polbook", "polblog", "airport", "pokec"]
-
+data_order = ["polbook", "polblog", "airport", "facebook"]
 
 
 plot_data = data_table.copy()

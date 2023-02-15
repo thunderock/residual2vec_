@@ -184,7 +184,7 @@ def get_edges_fastknn_faiss(emb, k=10, batch_size=2000):
     })
 
 
-def generate_embedding_with_word2vec(A, dim, noise_sampler, device):
+def generate_embedding_with_word2vec(A, dim, noise_sampler, device, outfile=None):
     from node2vec import node2vecs
     n_nodes = A.shape[0]
     model = node2vecs.Word2Vec(
@@ -221,10 +221,12 @@ def generate_embedding_with_word2vec(A, dim, noise_sampler, device):
         device=device,
         learning_rate=1e-3,
         num_workers=20,
+        outputfile=outfile
     )
     model.eval()
     
     # Retrieve the embedding vector. We use the in-vector. 
     return model.ivectors.weight.data.cpu().numpy()[:n_nodes, :]
+
 
 

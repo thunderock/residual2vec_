@@ -32,8 +32,8 @@ R2V = get_string_boolean(R2V)
 DATA_ROOT = config.get("root", "data")
 
 # variables sanity check
-assert GNN_MODEL in ('gat', 'gcn', 'word2vec')
-assert DATASET in ('pokec', 'small_pokec', 'airport', 'polblog', 'polbook', 'facebook')
+assert GNN_MODEL in ('gat', 'gcn', 'residual2vec')
+assert DATASET in ('pokec', 'small_pokec', 'airport', 'polblog', 'polbook', 'facebook', 'copenhagen')
 assert CROSSWALK in (True, False)
 assert R2V in (True, False)
 assert SET_DEVICE in ('cuda:0', 'cpu', 'cuda:1',)
@@ -56,7 +56,7 @@ rule train_gnn:
         model_weights = file_resources.model_weights
     threads: NUM_THREADS[DATASET]
     params:
-        BATCH_SIZE = 256 * 3,
+        BATCH_SIZE = 256,
         NODE_TO_VEC_DIM= 128,
         NUM_WORKERS = NUM_THREADS[DATASET],
         SET_DEVICE = SET_DEVICE,
@@ -71,7 +71,10 @@ rule train_gnn:
         import residual2vec as rv
         import numpy as np
         import warnings
-        from utils import snakemake_utils
+        from utils import snakemake_utils, graph_utils, config
+        from node2vec import node2vecs
+        from utils.config import DISABLE_WANDB
+
         warnings.filterwarnings("ignore")
         gc.enable()
         window_length = 5
@@ -108,7 +111,8 @@ rule train_gnn:
             batch_size=params.BATCH_SIZE,
         ).fit()
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index, sampler=sampler, num_neg_sampling=NUM_NEGATIVE_SAMPLING[DATASET])
-        wandb.init(project=DATASET,name="DATA_ROOT={}_MODEL={}_CROSSWALK={}_FAIRWALK={}_NODE2VEC={}_R2V={}".format(DATA_ROOT, GNN_MODEL, CROSSWALK, FAIRWALK, NODE2VEC, R2V))
+        if not DISABLE_WANDB:
+            wandb.init(project=DATASET,name="DATA_ROOT={}_MODEL={}_CROSSWALK={}_FAIRWALK={}_NODE2VEC={}_R2V={}".format(DATA_ROOT, GNN_MODEL, CROSSWALK, FAIRWALK, NODE2VEC, R2V))
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=True, num_workers=params.NUM_WORKERS, pin_memory=True)
         if GNN_MODEL in ['gat', 'gcn']:
             m = snakemake_utils.get_gnn_model(
@@ -119,68 +123,21 @@ rule train_gnn:
                 num_layers=None,
                 learn_outvec=False
             )
-        elif GNN_MODEL == 'word2vec':
+        elif GNN_MODEL == 'residual2vec':
             # create adj matrix
-            adj_mat = snakemake_utils.get_adj_mat_from_path(input.weighted_adj)
-            # first create noise sampler
-            from residual2vec.node_samplers import SBMNodeSampler, ConfigModelNodeSampler
-            from torch.utils.data import DataLoader
-            from residual2vec.word2vec import Word2Vec
-            if R2V:
-                # pick sbm node sampler
-                noise_sampler = SBMNodeSampler(
-                    window_length=1,
-                    group_membership=labels,
-                    dcsbm=True
-                )
-            else:
-                noise_sampler = ConfigModelNodeSampler()
-            model = rv.residual2vec_sgd(
-                noise_sampler=noise_sampler,
-                window_length=1,
-                num_walks=num_walks,
-                walk_length=walk_length,
-                batch_size=params.BATCH_SIZE,
-            ).fit(adjmat=adj_mat)
-            adjusted_num_walks = np.ceil(
-                num_walks
-                * np.maximum(
-                    1,
-                    model.batch_size
-                    * model.miniters
-                    / (model.n_nodes * num_walks * walk_length),
-                )
-            ).astype(int)
-            d = rv.TripletSimpleDataset(
-                adjmat=model.adjmat,
-                num_walks=adjusted_num_walks,
-                window_length=model.window_length,
-                noise_sampler=model.sampler,
-                padding_id=model.n_nodes,
-                walk_length=model.walk_length,
-                p=model.p,
-                q=model.q,
-                buffer_size=model.buffer_size,
-                context_window_type=model.context_window_type,
-            )
-            dataloader = DataLoader(
-                d,
-                batch_size=model.batch_size,
-                shuffle=True,
-                num_workers=params.NUM_WORKERS,
-                pin_memory=True,
-            )
-            m = Word2Vec(
-                vocab_size=num_nodes + 1,
-                embedding_size=128,
-                padding_idx=num_nodes,
-                learn_outvec=False
-            )
+            adj_mat = snakemake_utils.get_adj_mat_from_path(input.weighted_adj).tocsr()
+            y = labels.numpy()
+            assert R2V
+            noise_sampler = node2vecs.utils.node_sampler.SBMNodeSampler(group_membership=y, window_length=1)
+            graph_utils.generate_embedding_with_word2vec(adj_mat, dim, noise_sampler, config.DEVICE, output.model_weights)
+            return
+            
         else:
             raise ValueError("GNN_MODEL must be either gat or gcn")
 
         model.transform(model=m, dataloader=dataloader, epochs=R2V_TRAINING_EPOCHS[DATASET])
-        wandb.finish(exit_code=0)
+        if not DISABLE_WANDB:
+            wandb.finish(exit_code=0)
         torch.save(m.state_dict(), output.model_weights)
 
 rule generate_crosswalk_weights:
@@ -195,8 +152,7 @@ rule generate_crosswalk_weights:
             node2vec="doesnt_matter", dataset=DATASET).test_adj_path
 
     params:
-        BATCH_SIZE=256 * 3,
-        NODE_TO_VEC_DIM=128,
+        BATCH_SIZE=256,
         NUM_WORKERS=NUM_THREADS[DATASET],
         SET_DEVICE=SET_DEVICE,
         RV_NUM_WALKS=100
@@ -218,7 +174,8 @@ rule generate_crosswalk_weights:
         walk_length = 80
         # this is super hack here
         d = snakemake_utils.get_dataset(DATASET)
-        edge_index, num_nodes = d.edge_index, d.X.shape[0]
+        y = d.get_grouped_col()
+        edge_index, num_nodes = d.edge_index, y.shape[0]
         n = NetworkTrainTestSplitterWithMST(num_nodes=num_nodes, edge_list=edge_index, fraction=TEST_SPLIT_FRAC[DATASET])
         # nodes are not made symmetric here
         n.train_test_split()
@@ -228,7 +185,6 @@ rule generate_crosswalk_weights:
             file_path=output.crosswalk_weighted_adj,
             crosswalk=True,
             fairwalk=False,
-            embedding_dim=params.NODE_TO_VEC_DIM,
             num_nodes=num_nodes,
             edge_index=n.train_edges,
             group_membership=d.get_grouped_col()
@@ -237,7 +193,7 @@ rule generate_crosswalk_weights:
             file_path=output.fairwalk_weighted_adj,
             crosswalk=False,
             fairwalk=True,
-            embedding_dim=params.NODE_TO_VEC_DIM,
+            
             num_nodes=num_nodes,
             edge_index=n.train_edges,
             group_membership=d.get_grouped_col()
@@ -246,7 +202,6 @@ rule generate_crosswalk_weights:
             file_path=output.unweighted_adj,
             crosswalk=False,
             fairwalk=False,
-            embedding_dim=params.NODE_TO_VEC_DIM,
             num_nodes=num_nodes,
             edge_index=n.train_edges,
             group_membership=d.get_grouped_col()
@@ -255,7 +210,6 @@ rule generate_crosswalk_weights:
             file_path=output.test_adj,
             crosswalk=False,
             fairwalk=False,
-            embedding_dim=params.NODE_TO_VEC_DIM,
             num_nodes=num_nodes,
             edge_index=n.train_edges,
             group_membership=d.get_grouped_col()
@@ -269,7 +223,7 @@ rule train_features_2_vec:
         features = file_resources.feature_embs
     threads: NUM_THREADS[DATASET]
     params:
-        BATCH_SIZE = 256 * 3,
+        BATCH_SIZE = 256,
         NODE_TO_VEC_DIM= 128,
         NUM_WORKERS = NUM_THREADS[DATASET],
         SET_DEVICE = SET_DEVICE,
@@ -289,7 +243,6 @@ rule train_features_2_vec:
         labels = snakemake_utils.get_dataset(DATASET).get_grouped_col()
         if NODE2VEC:
             snakemake_utils.train_node2vec_get_embs(
-                edge_index=edge_index,
                 file_path=output.features,
                 crosswalk=CROSSWALK,
                 fairwalk=FAIRWALK,
@@ -300,7 +253,6 @@ rule train_features_2_vec:
             )
         else:
             snakemake_utils.train_deepwalk_get_embs(
-                edge_index=edge_index,
                 file_path=output.features,
                 crosswalk=CROSSWALK,
                 fairwalk=FAIRWALK,
@@ -320,7 +272,7 @@ rule generate_node_embeddings:
     output:
         embs_file = file_resources.embs_file
     params:
-        BATCH_SIZE = 256 * 3,
+        BATCH_SIZE = 256,
         NODE_TO_VEC_DIM= 128,
         NUM_WORKERS = NUM_THREADS[DATASET],
         SET_DEVICE = SET_DEVICE,
@@ -337,7 +289,7 @@ rule generate_node_embeddings:
         from torch_geometric.utils import negative_sampling
         import residual2vec as rv
         import warnings
-        from utils import snakemake_utils
+        from utils import snakemake_utils, graph_utils
         from tqdm import tqdm
 
         warnings.filterwarnings("ignore")
@@ -388,62 +340,13 @@ rule generate_node_embeddings:
                 learn_outvec=False
             )
 
-        elif GNN_MODEL == 'word2vec':
-            # create adj matrix
-            adj_mat = snakemake_utils.get_adj_mat_from_path(input.weighted_adj)
-            # first create noise sampler
-            from residual2vec.node_samplers import SBMNodeSampler, ConfigModelNodeSampler
-            from torch.utils.data import DataLoader
-            from residual2vec.word2vec import Word2Vec
-            if R2V:
-                # pick sbm node sampler
-                noise_sampler = SBMNodeSampler(
-                    window_length=1,
-                    group_membership=labels,
-                    dcsbm=True
-                )
-            else:
-                noise_sampler = ConfigModelNodeSampler()
-            model = rv.residual2vec_sgd(
-                noise_sampler=noise_sampler,
-                window_length=1,
-                num_walks=num_walks,
-                walk_length=walk_length,
-                batch_size=params.BATCH_SIZE,
-            ).fit(adjmat=adj_mat)
-            adjusted_num_walks = np.ceil(
-                num_walks
-                * np.maximum(
-                    1,
-                    model.batch_size
-                    * model.miniters
-                    / (model.n_nodes * num_walks * walk_length),
-                )
-            ).astype(int)
-            d = rv.TripletSimpleDataset(
-                adjmat=model.adjmat,
-                num_walks=adjusted_num_walks,
-                window_length=model.window_length,
-                noise_sampler=model.sampler,
-                padding_id=model.n_nodes,
-                walk_length=model.walk_length,
-                p=model.p,
-                q=model.q,
-                buffer_size=model.buffer_size,
-                context_window_type=model.context_window_type,
-            )
-            dataloader = DataLoader(
-                d,
-                batch_size=model.batch_size,
-                shuffle=False,
-                num_workers=params.NUM_WORKERS,
-                pin_memory=True,
-            )
-            m = Word2Vec(
+        elif GNN_MODEL == 'residual2vec':
+            from node2vec import node2vecs
+            m = node2vecs.Word2Vec(
                 vocab_size=num_nodes + 1,
-                embedding_size=128,
+                embedding_size=dim,
                 padding_idx=num_nodes,
-                learn_outvec=False,
+                learn_outvec=False
             )
         else:
             raise ValueError("GNN_MODEL must be either gat or gcn")
@@ -451,11 +354,12 @@ rule generate_node_embeddings:
         m.load_state_dict(torch.load(input.model_weights))
 
         embs = torch.zeros((num_nodes, 128))
-        if GNN_MODEL == 'word2vec':
-            embs = torch.from_numpy(m.ivectors.weight.data.cpu().numpy()[:num_nodes, :])
-        batch_size = model.batch_size
         m.eval()
-        if GNN_MODEL != 'word2vec':
+        if GNN_MODEL == 'residual2vec':
+            embs = m.ivectors.weight.data.cpu().numpy()[:num_nodes, :]
+        batch_size = model.batch_size
+
+        if GNN_MODEL != 'residual2vec':
             with torch.no_grad():
                 for idx, batch in enumerate(tqdm(dataloader,desc="Generating node embeddings")):
                     a, _, _ = batch
@@ -466,8 +370,18 @@ rule generate_node_embeddings:
                         break
                     else:
                         embs[idx * batch_size:(idx + 1) * batch_size, :] = a
-        np.save(output.embs_file,embs.numpy())
+            embs = embs.numpy()
+        np.save(output.embs_file,embs)
 
-
+rule generate_baseline_embs:
+    input:
+        features = file_resources.feature_embs
+    output:
+        baseline_embs = file_resources.baseline_embs_path
+    params:
+        DATASET = DATASET,
+        NODE2VEC = NODE2VEC,
+        DATA_ROOT = DATA_ROOT,
+    script: "baseline_1.py"
 # Snakefile for the link prediction benchmark
 include: "Snakefile_link_prediction.smk"

@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+# @Author: Ashutosh Tiwari
+# @Email: checkashu@gmail.com
+# @Date:   2023-02-14 23:08:21
+# @Filepath: utils/graph.py
 from collections import defaultdict
 
 import numpy as np
@@ -146,6 +151,7 @@ def edge_weights_to_sparse(G, sp_mt, ):
     ret = sp_mt.copy()
     n = len(G)
     for i in trange(n, desc="assigning final weights"):
+        # fails on self loop
         ret.data[sp_mt.indptr[i]:sp_mt.indptr[i + 1]] = np.array(G[i])
     return ret
 
