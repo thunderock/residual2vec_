@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 00:55:24
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-02-14 13:54:51
+# @Last Modified time: 2023-02-14 20:48:08
 from os.path import join as j
 
 import numpy as np
@@ -218,7 +218,8 @@ def train_deepwalk_get_embs(file_path, **kwargs):
 def store_weighted_adj(file_path, edge_index, num_nodes, crosswalk, fairwalk, group_membership,):
     
     # make this edge index symmetric
-    edge_index = torch.cat([edge_index, edge_index.flip(0)], dim=1)
+    
+    edge_index = torch.unique(torch.cat([edge_index, edge_index.flip(0)], dim=1), dim=1)
     row, col = edge_index
     from torch_sparse import SparseTensor
     adj = SparseTensor(row=row, col=col, sparse_sizes=(num_nodes, num_nodes))
@@ -328,7 +329,7 @@ def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2ve
     model_name: name of model to use, can be ['gcn', 'gat']
     """
     assert not (crosswalk and fairwalk)
-    assert dataset_name in ['airport', 'polbook', 'polblog', 'small_pokec', 'pokec', 'facebook']
+    assert dataset_name in ['airport', 'polbook', 'polblog', 'small_pokec', 'pokec', 'facebook', 'copenhagen']
     
     dataset = get_dataset(dataset_name)
     group_membership = dataset.get_grouped_col()

@@ -54,7 +54,8 @@ R2V_TRAINING_EPOCHS = {
     'airport': 100 * 3,
     'polbook': 200 * 3,
     'polblog': 200 * 3, 
-    'facebook': 25 * 3
+    'facebook': 25 * 3,
+    'copenhagen': 200 * 3
 }
 NUM_GNN_LAYERS = {
     'pokec': 5,
@@ -62,7 +63,8 @@ NUM_GNN_LAYERS = {
     'facebook': 4,
     'airport': 3,
     'polbook': 3,
-    'polblog': 3
+    'polblog': 3,
+    'copenhagen': 3
 }
 
 NUM_NEGATIVE_SAMPLING = {
@@ -71,6 +73,7 @@ NUM_NEGATIVE_SAMPLING = {
     'airport': 4,
     'polbook': 10,
     'polblog': 10,
+    'copenhagen': 10,
     'facebook': 1
 }
 
@@ -80,7 +83,8 @@ NUM_THREADS = {
     'airport': 20,
     'polbook': 20,
     'polblog': 20,
-    'facebook': 20
+    'facebook': 20,
+    'copenhagen': 20
 }
 
 TEST_SPLIT_FRAC = {
@@ -89,7 +93,8 @@ TEST_SPLIT_FRAC = {
     'airport': .45,
     'polbook': .45,
     'polblog': .45,
-    'facebook': .45
+    'facebook': .45,
+    'copenhagen': .45
 }
 
 NUM_WORKERS = 20

@@ -33,7 +33,7 @@ DATA_ROOT = config.get("root", "data")
 
 # variables sanity check
 assert GNN_MODEL in ('gat', 'gcn', 'residual2vec')
-assert DATASET in ('pokec', 'small_pokec', 'airport', 'polblog', 'polbook', 'facebook')
+assert DATASET in ('pokec', 'small_pokec', 'airport', 'polblog', 'polbook', 'facebook', 'copenhagen')
 assert CROSSWALK in (True, False)
 assert R2V in (True, False)
 assert SET_DEVICE in ('cuda:0', 'cpu', 'cuda:1',)
