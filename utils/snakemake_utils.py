@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 00:55:24
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-02-14 20:48:08
+# @Last Modified time: 2023-02-14 22:40:59
 from os.path import join as j
 
 import numpy as np
@@ -116,6 +116,9 @@ def get_dataset(name):
     elif name == "facebook":
         from dataset.facebook_data import FacebookData
         dataset = FacebookData()
+    elif name == 'copenhagen':
+        from dataset import copenhagen_data
+        dataset = copenhagen_data.CopenhagenData()
     # add other datasets here
     return dataset
 

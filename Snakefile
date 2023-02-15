@@ -73,6 +73,7 @@ rule train_gnn:
         import warnings
         from utils import snakemake_utils, graph_utils, config
         from node2vec import node2vecs
+        from utils.config import DISABLE_WANDB
 
         warnings.filterwarnings("ignore")
         gc.enable()
@@ -110,7 +111,8 @@ rule train_gnn:
             batch_size=params.BATCH_SIZE,
         ).fit()
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index, sampler=sampler, num_neg_sampling=NUM_NEGATIVE_SAMPLING[DATASET])
-        wandb.init(project=DATASET,name="DATA_ROOT={}_MODEL={}_CROSSWALK={}_FAIRWALK={}_NODE2VEC={}_R2V={}".format(DATA_ROOT, GNN_MODEL, CROSSWALK, FAIRWALK, NODE2VEC, R2V))
+        if not DISABLE_WANDB:
+            wandb.init(project=DATASET,name="DATA_ROOT={}_MODEL={}_CROSSWALK={}_FAIRWALK={}_NODE2VEC={}_R2V={}".format(DATA_ROOT, GNN_MODEL, CROSSWALK, FAIRWALK, NODE2VEC, R2V))
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=True, num_workers=params.NUM_WORKERS, pin_memory=True)
         if GNN_MODEL in ['gat', 'gcn']:
             m = snakemake_utils.get_gnn_model(
@@ -134,7 +136,8 @@ rule train_gnn:
             raise ValueError("GNN_MODEL must be either gat or gcn")
 
         model.transform(model=m, dataloader=dataloader, epochs=R2V_TRAINING_EPOCHS[DATASET])
-        wandb.finish(exit_code=0)
+        if not DISABLE_WANDB:
+            wandb.finish(exit_code=0)
         torch.save(m.state_dict(), output.model_weights)
 
 rule generate_crosswalk_weights:
@@ -171,7 +174,8 @@ rule generate_crosswalk_weights:
         walk_length = 80
         # this is super hack here
         d = snakemake_utils.get_dataset(DATASET)
-        edge_index, num_nodes = d.edge_index, d.X.shape[0]
+        y = d.get_grouped_col()
+        edge_index, num_nodes = d.edge_index, y.shape[0]
         n = NetworkTrainTestSplitterWithMST(num_nodes=num_nodes, edge_list=edge_index, fraction=TEST_SPLIT_FRAC[DATASET])
         # nodes are not made symmetric here
         n.train_test_split()
