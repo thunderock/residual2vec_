@@ -11,7 +11,7 @@ import pandas as pd
 class FacebookData(object):
     def __init__(self, group_col:str = "gender", root:str = '/tmp/') -> None:
         dataset = LINKXDataset(root=root, name="Penn94")[0]
-        self.group_col = dataset.y
+        self.group_col = dataset.y + 1
         df = pd.DataFrame({"gender": dataset.y.numpy()})
         edge_index = dataset.edge_index
         # repeat the edges to make it undirected
