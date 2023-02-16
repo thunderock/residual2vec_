@@ -105,8 +105,10 @@ class PokecDataFrame(object):
         dfe = pd.concat([dfe, dfe.rename(columns={'source': 'target', 'target': 'source'})]).drop_duplicates(keep='first')
         # removing self loops
         dfe = dfe[dfe.source != dfe.target] - 1
-        self.edge_index = torch.cat([torch.from_numpy(dfe[col].values.reshape(-1, 1).astype(np.int32)) for col in ["source", "target"]],
+        edge_index = torch.cat([torch.from_numpy(dfe[col].values.reshape(-1, 1).astype(np.int32)) for col in ["source", "target"]],
                                     dim=1).T.long()
+        
+        self.edge_index = torch.unique(torch.cat([edge_index, edge_index.flip(0)], dim=1), dim=1)
         self.group_col = feature_cols.index(group_col)
 
     def get_grouped_col(self):
@@ -134,3 +136,4 @@ class SmallPokecDataFrame(PokecDataFrame):
         old_idx_to_new_idx[mask.nonzero().flatten()] = torch.arange(self.X.shape[0])
         # replace values in edge index with new index
         self.edge_index = old_idx_to_new_idx[edge_index.long()]
+        self.edge_index = torch.unique(torch.cat([self.edge_index, self.edge_index.flip(0)], dim=1), dim=1)

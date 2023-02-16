@@ -49,13 +49,14 @@ if CUDA:
     # GPU_ID = int(DEVICE.split(":")[1])
     print(f"Using GPU: {DEVICE}")
 R2V_TRAINING_EPOCHS = {
-    'pokec': 1,
-    'small_pokec': 4,
+    'pokec': 3,
+    
     'airport': 100 * 3,
     'polbook': 200 * 3,
     'polblog': 200 * 3, 
     'facebook': 25 * 3,
-    'copenhagen': 200 * 3
+    'copenhagen': 200 * 3,
+    "twitch": 25 * 3
 }
 NUM_GNN_LAYERS = {
     'pokec': 5,
@@ -64,7 +65,8 @@ NUM_GNN_LAYERS = {
     'airport': 3,
     'polbook': 3,
     'polblog': 3,
-    'copenhagen': 3
+    'copenhagen': 3,
+    'twitch': 4
 }
 
 NUM_NEGATIVE_SAMPLING = {
@@ -74,7 +76,8 @@ NUM_NEGATIVE_SAMPLING = {
     'polbook': 10,
     'polblog': 10,
     'copenhagen': 10,
-    'facebook': 1
+    'facebook': 1,
+    'twitch': 1
 }
 
 NUM_THREADS = {
@@ -84,7 +87,8 @@ NUM_THREADS = {
     'polbook': 20,
     'polblog': 20,
     'facebook': 20,
-    'copenhagen': 20
+    'copenhagen': 20,
+    'twitch': 20
 }
 
 TEST_SPLIT_FRAC = {
@@ -94,7 +98,8 @@ TEST_SPLIT_FRAC = {
     'polbook': .45,
     'polblog': .45,
     'facebook': .45,
-    'copenhagen': .45
+    'copenhagen': .45,
+    'twitch': .45
 }
 
 NUM_WORKERS = 20

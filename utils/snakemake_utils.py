@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 00:55:24
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-02-14 22:40:59
+# @Last Modified time: 2023-02-16 17:56:51
 from os.path import join as j
 
 import numpy as np
@@ -96,7 +96,7 @@ class FileResources(object):
             return str(j(self.root, f"{self.dataset}_{self.model_name}_embs.npy"))
         return str(j(self.root, f"{self.dataset}_{self.model_name}_{feature_method}_{negative_sampling}_embs.npy"))
 
-def get_dataset(name):
+def get_dataset(name, **kwargs):
     dataset = None
     if name == 'pokec':
         from dataset.pokec_data import PokecDataFrame
@@ -119,9 +119,21 @@ def get_dataset(name):
     elif name == 'copenhagen':
         from dataset import copenhagen_data
         dataset = copenhagen_data.CopenhagenData()
+    elif name == 'twitch':
+        from dataset import twitch_data
+        dataset = twitch_data.TwitchData(group_col='language', **kwargs)
     # add other datasets here
     return dataset
 
+def get_adj_from_edge_index(edge_index, num_nodes):
+    
+    row, col = edge_index
+    from torch_sparse import SparseTensor
+    adj = SparseTensor(row=row, col=col, sparse_sizes=(num_nodes, num_nodes))
+    row, col, _ = adj.coo()
+    ones = np.ones(row.shape[0], dtype=np.int32)
+    A = sparse.csr_matrix((ones, (row.numpy(), col.numpy())), shape=(num_nodes, num_nodes))
+    return A
 
 def get_networkx_graph(dataset):
     from torch_geometric.utils import to_networkx
@@ -145,8 +157,8 @@ def get_graph_tool_graph(dataset):
     g.vertex_properties["y"] = y
     return g
 
-def get_inf_modularity(dataset):
-    dataset = get_dataset(dataset)
+def get_inf_modularity(dataset, **kwargs):
+    dataset = get_dataset(dataset, **kwargs)
     g = get_graph_tool_graph(dataset)
     N = dataset.get_grouped_col().shape[0]
     y = g.vertex_properties['y']
@@ -332,14 +344,16 @@ def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2ve
     model_name: name of model to use, can be ['gcn', 'gat']
     """
     assert not (crosswalk and fairwalk)
-    assert dataset_name in ['airport', 'polbook', 'polblog', 'small_pokec', 'pokec', 'facebook', 'copenhagen']
+    assert dataset_name in ['airport', 'polbook', 'polblog', 'small_pokec', 'pokec', 'facebook', 'copenhagen', 'twitch']
     
     dataset = get_dataset(dataset_name)
     group_membership = dataset.get_grouped_col()
-    edge_index, num_nodes = dataset.edge_index, dataset.X.shape[0]
+    edge_index, num_nodes = dataset.edge_index, group_membership.shape[0]
+    # probably we don't need this, but better to be safe
     edge_index = torch.unique(torch.cat([edge_index, edge_index.flip(0)], dim=1), dim=1)
     return_features = (crosswalk or fairwalk) or model_name in ['deepwalk', 'node2vec']
-    num_features = model_dim if return_features else 16
+    num_features = model_dim
+    adj = get_adj_from_edge_index(edge_index, num_nodes)
     # create data to train
     if node2vec:
         # using node2vec node features
@@ -372,3 +386,14 @@ def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2ve
     
         
     return train_model_and_get_embs(adj=adj, model_name=model_name, X=X, sampler=sampler, gnn_layers=NUM_GNN_LAYERS[dataset_name], epochs=R2V_TRAINING_EPOCHS[dataset_name], learn_outvec=learn_outvec, model_dim=model_dim)
+
+
+def get_connected_components(dataset, get_labels=False):
+    from scipy.sparse.csgraph import connected_components
+    # get adj matrix from edge_index
+    group_membership = dataset.get_grouped_col()
+    adj = get_adj_from_edge_index(dataset.edge_index, group_membership.shape[0])
+    components, labels = connected_components(adj, directed=False, return_labels=True)
+    if get_labels:
+        return components, labels
+    return components
