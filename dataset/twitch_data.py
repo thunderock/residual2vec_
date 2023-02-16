@@ -11,12 +11,20 @@ import pandas as pd
 import torch
 from torch_geometric.data import download_url, extract_zip
 from sklearn.preprocessing import LabelEncoder
+import kaggle
 
 class TwitchData(object):
     
     def __init__(self, root='/tmp/', group_col='mature') -> None:
-        edges = 'files/large_twitch_edges.csv'
-        nodes = 'files/large_twitch_features.csv'
+        edges = j(root, 'large_twitch_edges.csv')
+        nodes = j(root, 'large_twitch_features.csv')
+        kaggle.api.dataset_download_file("wolfram77/graphs-social", "twitch_gamers/large_twitch_edges.csv", root)
+        kaggle.api.dataset_download_file("wolfram77/graphs-social", "twitch_gamers/large_twitch_features.csv", root)
+        extract_zip(j(root, 'large_twitch_edges.csv.zip'), root)
+        extract_zip(j(root, 'large_twitch_features.csv.zip'), root)
+        
+        
+
         features = pd.read_csv(nodes)
         features['language'] = LabelEncoder().fit_transform(features['language'])
         self.X = features[['mature', 'language']]
