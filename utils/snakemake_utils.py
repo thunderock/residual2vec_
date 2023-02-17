@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 00:55:24
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-02-16 17:56:51
+# @Last Modified time: 2023-02-16 20:53:19
 from os.path import join as j
 
 import numpy as np
@@ -324,7 +324,7 @@ def get_reweighted_graph(adj, crosswalk, fairwalk, group_membership=None):
         G = graph.from_numpy(adj, undirected=True)
         G.attr = group_membership
         n_groups = np.unique(group_membership).shape[0]
-        graph.set_weights(G, exp_=2, p_bndry=.7, l=n_groups)
+        graph.set_weights(adj.copy(), group_membership, G, exp_=2, p_bndry=.7, l=n_groups)
         A_ = graph.edge_weights_to_sparse(G, adj)
     if fairwalk:
         G = fw(group_membership=group_membership)
