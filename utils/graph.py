@@ -83,8 +83,9 @@ def _node_colorfulness(adj, gm, v, l=2):
 
 
 def _colorfulness(adj, gm, G, l):
-    with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
-        map_results = pool.starmap(_node_colorfulness, [(adj, gm, v, l) for v in G])
+    inputs = [(adj, gm, v, l) for v in G]
+    with multiprocessing.Pool(multiprocessing.cpu_count() - 2) as pool:
+        map_results = pool.starmap(_node_colorfulness, tqdm(inputs, total=len(inputs), desc='assigning colorfulness'))
     cfn = {k: v for k, v in map_results}
     return cfn
 
