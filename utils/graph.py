@@ -12,6 +12,7 @@ from six import iterkeys
 from six.moves import range, zip
 from tqdm import tqdm, trange
 from utils.utils import check_if_symmetric
+import multiprocessing
 
 
 class Graph(defaultdict):
@@ -74,34 +75,26 @@ def _ramdomwalk_colorfulness(G, v, l):
     return res / l
 
 
-def _node_colorfulness(G, v, l=2):
+def _node_colorfulness(adj, gm, v, l=2):
+    G = from_numpy(adj, undirected=True)
+    G.attr = gm
     res = 0.001 + np.mean([_ramdomwalk_colorfulness(G, v, l) for _ in range(1000)])
     return (v, res)
 
 
-def _colorfulness(G, l):
-    # cfn = dict()
-    # for i, v in enumerate(G):
-    #   print(i, ':')
-    #   cfn[v] = _node_colorfulness(G, v)
-    # return cfn
-
-    # pool = multiprocessing.Pool(multiprocessing.cpu_count())
-    # map_results = pool.starmap(_node_colorfulness, [(G, v) for v in G])
-    map_results = [_node_colorfulness(G, v, l) for v in tqdm(G, desc='assigning_color')]
-    # pool.close()
+def _colorfulness(adj, gm, G, l):
+    with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
+        map_results = pool.starmap(_node_colorfulness, [(adj, gm, v, l) for v in G])
     cfn = {k: v for k, v in map_results}
-    # print(cfn)
-    # asdfkjh
     return cfn
 
 
-def set_weights(G, exp_, p_bndry, l):
+def set_weights(adj, gm, G, exp_, p_bndry, l):
     """
     l = number of classes
     """
     # assert( (s_method[3] in ['bndry', 'revbndry']) and (s_method[5] == 'exp'))
-    cfn = _colorfulness(G, l)
+    cfn = _colorfulness(adj, gm, G, l)
     G.edge_weights = dict()
     for v in tqdm(G, desc='assigning_weights'):
         nei_colors = np.unique([G.attr[u] for u in G[v]])
