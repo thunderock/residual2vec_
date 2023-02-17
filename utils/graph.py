@@ -13,6 +13,7 @@ from six.moves import range, zip
 from tqdm import tqdm, trange
 from utils.utils import check_if_symmetric
 import multiprocessing
+from joblib import Parallel, delayed
 
 
 class Graph(defaultdict):
@@ -86,17 +87,24 @@ def _node_colorfulness(adj, gm, vs, l=2):
 
 
 def _colorfulness(adj, gm, G, l):
-    THREADS = multiprocessing.cpu_count() - 10
+    THREADS = multiprocessing.cpu_count() // 2
     vs = [v for v in G]
+    vs = np.array(vs)
+    
+    # shuffle the array
+    vs = np.random.permutation(vs)
+    
+    
     # divide the work into chunks
     vs = np.array_split(vs, THREADS)
     
     inputs = [(adj, gm, v, l) for v in vs]
     print("Starting {} threads for CW".format(THREADS))
-    with multiprocessing.Pool(THREADS) as pool:
-        map_results = pool.starmap(_node_colorfulness, inputs)
-        # map_results = pool.starmap(_node_colorfulness, tqdm(inputs, total=len(inputs), desc='assigning colorfulness'))
-        # map_results = pool.starmap(_node_colorfulness, tqdm(inputs, total=len(inputs), desc='assigning colorfulness'))
+    
+    map_results = Parallel(n_jobs=THREADS)(delayed(_node_colorfulness)(adj, gm, v, l) for v in vs)
+    # with multiprocessing.Pool(THREADS) as pool:
+    #     map_results = pool.starmap(_node_colorfulness, inputs)
+    # print(map_results, len(map_results))
     map_results = [item for sublist in tqdm(map_results, desc='merging results') for item in sublist]
     cfn = {k: v for k, v in map_results}
     return cfn
