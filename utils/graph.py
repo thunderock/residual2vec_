@@ -92,11 +92,12 @@ def _colorfulness(adj, gm, G, l):
     vs = np.array_split(vs, THREADS)
     
     inputs = [(adj, gm, v, l) for v in vs]
+    print("Starting {} threads for CW".format(THREADS))
     with multiprocessing.Pool(THREADS) as pool:
         map_results = pool.starmap(_node_colorfulness, inputs)
         # map_results = pool.starmap(_node_colorfulness, tqdm(inputs, total=len(inputs), desc='assigning colorfulness'))
         # map_results = pool.starmap(_node_colorfulness, tqdm(inputs, total=len(inputs), desc='assigning colorfulness'))
-    map_results = [item for sublist in map_results for item in sublist]
+    map_results = [item for sublist in tqdm(map_results, desc='merging results') for item in sublist]
     cfn = {k: v for k, v in map_results}
     return cfn
 
