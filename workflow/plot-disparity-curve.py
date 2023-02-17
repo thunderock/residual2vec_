@@ -83,7 +83,7 @@ model2marker = {
     "Baseline (debiased)": "p",
 }
 
-data_order = ["polbook", "polblog", "airport", "copenhagen"]
+data_order = ["polbook", "polblog", "airport", "twitch", "facebook"]
 
 plot_data = data_table.copy()
 

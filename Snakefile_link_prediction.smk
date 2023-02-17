@@ -13,7 +13,7 @@ from snakemake.utils import Paramspace
 SRC_DATA_ROOT = j("..", "final_")
 DERIVED_DIR = j("data", "derived")
 
-DATA_LIST = [ "polbook", "polblog", "airport","copenhagen"]
+DATA_LIST = [ "polbook", "polblog", "airport", "twitch", "facebook"]
 
 
 SAMPLE_ID_LIST = ["one", "two", "three", "four", "five"] # why not arabic numbers?
