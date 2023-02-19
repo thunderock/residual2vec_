@@ -1,6 +1,6 @@
 import os
 import wandb
-os.environ['PYTORCH_CUDA_ALLOC_CONF'] = "max_split_size: 512"
+os.environ['PYTORCH_CUDA_ALLOC_CONF'] = "max_split_size_mb: 512"
 # os.environ['DISABLE_WANDB'] = "true"
 # os.environ['DISABLE_TQDM'] = "true"
 # os.environ["CUDA_VISIBLE_DEVICES"]=""
