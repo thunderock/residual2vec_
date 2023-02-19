@@ -81,13 +81,13 @@ NUM_NEGATIVE_SAMPLING = {
 
 NUM_THREADS = {
     'pokec': 30,
-    'small_pokec': 20,
-    'airport': 20,
-    'polbook': 20,
-    'polblog': 20,
-    'facebook': 20,
-    'copenhagen': 20,
-    'twitch': 20
+    'small_pokec': 50,
+    'airport': 50,
+    'polbook': 50,
+    'polblog': 50,
+    'facebook': 50,
+    'copenhagen': 50,
+    'twitch': 50
 }
 
 TEST_SPLIT_FRAC = {
@@ -99,6 +99,22 @@ TEST_SPLIT_FRAC = {
     'facebook': .45,
     'copenhagen': .45,
     'twitch': .45
+}
+
+DATASET_BATCH_SIZE = {
+    "airport": 256,
+    "polbook": 256,
+    "polblog": 256,
+    "facebook": 256,
+    "twitch": 8,
+}
+
+DATASET_LEARNING_RATE = {
+    "airport": 0.001,
+    "polbook": 0.001,
+    "polblog": 0.001,
+    "facebook": 0.001,
+    "twitch": 0.001 / 32,
 }
 
 NUM_WORKERS = 20

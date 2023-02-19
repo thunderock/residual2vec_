@@ -122,7 +122,7 @@ class residual2vec_sgd:
         self.sampler.fit(adjmat)
         return self
 
-    def transform(self, model, dataloader: torch.utils.data.DataLoader, epochs=1):
+    def transform(self, model, dataloader: torch.utils.data.DataLoader, epochs=1, learning_rate=.001):
         """
         * model is the model to be used with the framework
         * x are the node features
@@ -136,7 +136,7 @@ class residual2vec_sgd:
         neg_sampling = NegativeSampling(embedding=model)
         model.to(self.cuda)
         # Training
-        optim = Adam(model.parameters(), lr=0.001)
+        optim = Adam(model.parameters(), lr=learning_rate)
 
         # number of batches
         n_batches = len(dataloader)
@@ -164,7 +164,7 @@ class residual2vec_sgd:
                         break
                 loss.backward()
                 optim.step()
-                if not DISABLE_WANDB:
+                if not DISABLE_WANDB and batch_num % 100 == 0:
                     wandb.log({"epoch": epoch, "loss": loss.item(), "batch_num": batch_num})
                 pbar.set_postfix(epoch=epoch, loss=loss.item())
                 batch_num += 1
