@@ -2,13 +2,13 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 00:55:24
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-02-16 20:53:19
+# @Last Modified time: 2023-02-20 11:25:19
 from os.path import join as j
 
 import numpy as np
 import torch
 from models import weighted_node2vec
-from utils.config import R2V_TRAINING_EPOCHS, NUM_GNN_LAYERS, NUM_WORKERS
+from utils.config import R2V_TRAINING_EPOCHS, NUM_GNN_LAYERS, DATASET_BATCH_SIZE, DATASET_LEARNING_RATE, NUM_THREADS
 from scipy import sparse
 import pandas as pd
 from snakemake.utils import Paramspace
@@ -282,7 +282,7 @@ def get_gnn_model(model_name, num_features, emb_dim, dataset=None, num_layers=No
     return model
 
 
-def train_model_and_get_embs(adj, model_name, X, sampler, gnn_layers, epochs, learn_outvec, model_dim=128):
+def train_model_and_get_embs(adj, model_name, X, sampler, gnn_layers, epochs, learn_outvec, num_workers, batch_size, learning_rate, model_dim=128):
     num_nodes = adj.shape[0]
     edge_index = get_edge_index_from_sparse_path(adj)
     print(edge_index.shape)
@@ -292,15 +292,14 @@ def train_model_and_get_embs(adj, model_name, X, sampler, gnn_layers, epochs, le
         edge_index=edge_index,
         sampler=sampler
     )
-    dataloader = NeighborEdgeSampler(dataset, batch_size=256, shuffle=True, num_workers=NUM_WORKERS, pin_memory=True)
+    dataloader = NeighborEdgeSampler(dataset, batch_size=256, shuffle=True, num_workers=num_workers, pin_memory=True)
     model = get_gnn_model(model_name=model_name, emb_dim=model_dim, num_layers=gnn_layers, num_features=X.shape[1], learn_outvec=learn_outvec)
     from residual2vec.residual2vec_sgd import residual2vec_sgd as rv
-    frame = rv(noise_sampler=False, window_length=5, num_walks=10, walk_length=80, batch_size=256 * 3).fit()
-    frame.transform(model=model, dataloader=dataloader, epochs=epochs)
+    frame = rv(noise_sampler=False, window_length=5, num_walks=10, walk_length=80, batch_size=batch_size).fit()
+    frame.transform(model=model, dataloader=dataloader, epochs=epochs, learning_rate=learning_rate)
     embs = torch.zeros((num_nodes, model_dim))
-    batch_size = 256
     model.eval()
-    dataloader = NeighborEdgeSampler(dataset, batch_size=batch_size, shuffle=False, num_workers=NUM_WORKERS, pin_memory=True, transforming=True)
+    dataloader = NeighborEdgeSampler(dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=True, transforming=True)
     with torch.no_grad():
         for idx, batch in enumerate(tqdm(dataloader, desc="Generating node embeddings")):
             a, _, _ = batch
@@ -385,7 +384,7 @@ def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2ve
     
     
         
-    return train_model_and_get_embs(adj=adj, model_name=model_name, X=X, sampler=sampler, gnn_layers=NUM_GNN_LAYERS[dataset_name], epochs=R2V_TRAINING_EPOCHS[dataset_name], learn_outvec=learn_outvec, model_dim=model_dim)
+    return train_model_and_get_embs(adj=adj, model_name=model_name, X=X, sampler=sampler, gnn_layers=NUM_GNN_LAYERS[dataset_name], epochs=R2V_TRAINING_EPOCHS[dataset_name], learn_outvec=learn_outvec, num_workers=NUM_THREADS[dataset_name], batch_size=DATASET_BATCH_SIZE[dataset_name], learning_rate=DATASET_LEARNING_RATE[dataset_name], model_dim=model_dim)
 
 
 def get_connected_components(dataset, get_labels=False):
