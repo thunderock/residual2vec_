@@ -60,7 +60,6 @@ import numpy as np
 from numba import njit
 from torch.optim import Adam
 from torch.utils.data import DataLoader, Dataset
-from torch.optim.lr_scheduler import L
 from tqdm import tqdm, trange
 from scipy import sparse
 from residual2vec import utils
@@ -138,7 +137,8 @@ class residual2vec_sgd:
         model.to(self.cuda)
         # Training
         optim = Adam(model.parameters(), lr=learning_rate)
-        scheduler = torch.optim.lr_scheduler.CyclicLR(optimizer=optim, base_lr=learning_rate, max_lr=learning_rate*10, step_size_up=epochs * len(dataloader) // 5, mode='exp_range', gamma=epochs * len(dataloader) // 5)
+        scheduler = torch.optim.lr_scheduler.CyclicLR(optimizer=optim, base_lr=learning_rate, max_lr=learning_rate*5, mode='exp_range', cycle_momentum=False, step_size_up=epochs // 10)
+
 
         # number of batches
         n_batches = len(dataloader)
@@ -170,6 +170,7 @@ class residual2vec_sgd:
                 
                 if not DISABLE_WANDB:
                     wandb.log({"epoch": epoch, "loss": loss.item(), "batch_num": batch_num, "lr": scheduler.get_lr()[0]})
+                pbar.set_postfix(epoch=epoch)
                 batch_num += 1
             if break_loop:
                 break

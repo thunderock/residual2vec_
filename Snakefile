@@ -134,7 +134,7 @@ rule train_gnn:
             y = labels.numpy()
             assert R2V
             noise_sampler = node2vecs.utils.node_sampler.SBMNodeSampler(group_membership=y, window_length=1)
-            graph_utils.generate_embedding_with_word2vec(adj_mat, dim, noise_sampler, config.DEVICE, output.model_weights, DATASET_LEARNING_RATE[DATASET])
+            graph_utils.generate_embedding_with_word2vec(adj_mat, dim, noise_sampler, config.DEVICE, output.model_weights) #  not using code configs here so that comparizon with deepwalk is fair DATASET_LEARNING_RATE[DATASET], batch_size=params.BATCH_SIZE)
             return
             
         else:
@@ -360,9 +360,10 @@ rule generate_node_embeddings:
         m.eval()
         if GNN_MODEL == 'residual2vec':
             embs = m.ivectors.weight.data.cpu().numpy()[:num_nodes, :]
-        batch_size = model.batch_size
 
-        if GNN_MODEL != 'residual2vec':
+        else:
+            batch_size = model.batch_size
+
             with torch.no_grad():
                 for idx, batch in enumerate(tqdm(dataloader,desc="Generating node embeddings")):
                     a, _, _ = batch
