@@ -55,7 +55,7 @@ R2V_TRAINING_EPOCHS = {
     'polblog': 200 * 3, 
     'facebook': 25 * 3,
     'copenhagen': 200 * 3,
-    "twitch": 10
+    "twitch": 15
 }
 NUM_GNN_LAYERS = {
     'pokec': 5,
@@ -65,7 +65,7 @@ NUM_GNN_LAYERS = {
     'polbook': 3,
     'polblog': 3,
     'copenhagen': 3,
-    'twitch': 4
+    'twitch': 5
 }
 
 NUM_NEGATIVE_SAMPLING = {
