@@ -21,8 +21,9 @@ class TripletGraphDataset(Dataset):
         self.n_nodes = self.X.shape[0]
         # sources which are common in both positive and negative edge index
         edge_idx_sources, neg_edge_idx_sources = self.edge_index[0, :], self.neg_edge_index[0, :]
-        self.common_sources = torch.unique(edge_idx_sources[torch.isin(edge_idx_sources, neg_edge_idx_sources)])
-        print("number of common sources", self.common_sources.shape[0])
+        common_sources = torch.unique(edge_idx_sources[torch.isin(edge_idx_sources, neg_edge_idx_sources)])
+        print("number of common sources", common_sources.shape[0])
+        assert common_sources.shape[0] == self.n_nodes, "all the nodes should be present in the both positive and negative edge index"
 
     def __len__(self):
         # assumes that all the nodes ids are present starting from 0 to the max number of nodes
@@ -38,13 +39,6 @@ class TripletGraphDataset(Dataset):
             ret = None
         return ret
 
-    # def _create_neighbor_cache(self, edge_idx, num_nodes):
-    #     max_neighbors_for_source = torch.max([self._get_node_edges_from_source(i, edge_idx).shape[0] for i in range(num_nodes)])
-    #     neighbor_cache = torch.full((num_nodes, max_neighbors_for_source), fill_value=-1,  dtype=torch.long)
-    #     for i in range(num_nodes):
-    #         neighbors = self._get_node_edges_from_source(i, edge_idx)
-    #         neighbor_cache[i, :neighbors.shape[0]] = neighbors
-
     def _select_random_neighbor(self, source, neg=False):
         edge_index = self.neg_edge_index if neg else self.edge_index
         nodes = self._get_node_edges_from_source(source, edge_index)
@@ -59,12 +53,12 @@ class TripletGraphDataset(Dataset):
         # select a node with positive edge
         p = self._select_random_neighbor(a)
         n = self._select_random_neighbor(a, neg=True)
-
-        if not (p and n):
-            # select a random node which is present in both positive and negative edge index
-            a = self.common_sources[torch.randint(self.common_sources.shape[0], (1,))]
-            p = self._select_random_neighbor(a)
-            n = self._select_random_neighbor(a, neg=True)
+        # # this should never happen
+        # if not (p and n):
+        #     # select a random node which is present in both positive and negative edge index
+        #     a = self.common_sources[torch.randint(self.common_sources.shape[0], (1,))]
+        #     p = self._select_random_neighbor(a)
+        #     n = self._select_random_neighbor(a, neg=True)
         # assert all([a, p, n]), "a: {}, p: {}, n: {} should not be None".format(a, p, n)
         return torch.tensor([a, p, n])
 
