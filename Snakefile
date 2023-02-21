@@ -117,7 +117,7 @@ rule train_gnn:
         ).fit()
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index, sampler=sampler, num_neg_sampling=NUM_NEGATIVE_SAMPLING[DATASET])
         if not DISABLE_WANDB:
-            wandb.init(project=DATASET,name="DATA_ROOT={}_MODEL={}_CROSSWALK={}_FAIRWALK={}_NODE2VEC={}_R2V={}".format(DATA_ROOT, GNN_MODEL, CROSSWALK, FAIRWALK, NODE2VEC, R2V))
+            wandb.init(project=DATASET + '_new_training',name="DATA_ROOT={}_MODEL={}_CROSSWALK={}_FAIRWALK={}_NODE2VEC={}_R2V={}".format(DATA_ROOT, GNN_MODEL, CROSSWALK, FAIRWALK, NODE2VEC, R2V))
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=True, num_workers=params.NUM_WORKERS, pin_memory=True)
         if GNN_MODEL in ['gat', 'gcn']:
             m = snakemake_utils.get_gnn_model(
