@@ -53,7 +53,7 @@ R2V_TRAINING_EPOCHS = {
     'airport': 100 * 3,
     'polbook': 200 * 3,
     'polblog': 200 * 3, 
-    'facebook': 25 * 3,
+    'facebook': 15,
     'copenhagen': 200 * 3,
     "twitch": 15
 }
