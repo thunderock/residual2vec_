@@ -15,7 +15,6 @@ class TripletGraphDataset(Dataset):
         self.edge_index = edge_index
         self.num_features = self.X.shape[1]
 
-        # self.neg_edge_index = sampler(edge_index=self.edge_index, num_nodes=self.X.shape[0], num_neg_samples=None, method='sparse', force_undirected=True)
         self.neg_edge_index = torch.unique(torch.cat([sampler(edge_index=self.edge_index, num_nodes=self.X.shape[0],num_neg_samples=None, method='sparse', force_undirected=True) for _ in range(num_neg_sampling)],dim=1), dim=1)
         print("size of edge_index", self.edge_index.shape, " and size of neg_edge_index", self.neg_edge_index.shape)
         self.n_nodes = self.X.shape[0]
@@ -65,13 +64,10 @@ class TripletGraphDataset(Dataset):
 
 class NeighborEdgeSampler(torch.utils.data.DataLoader):
     def __init__(self, dataset, edge_sample_size=None, transforming=False, **kwargs):
-        # investigate dual calling behaviour here, ideal case is calling this class with node_id range dataset
-        # node_idx = torch.arange(self.adj_t.sparse_size(0))
 
         super().__init__(dataset=dataset, collate_fn=self.sample, **kwargs)
         self.features = self.dataset.num_features
         edge_index = dataset.edge_index
-        # print(dataset.edge_index.dtype)
         num_nodes = self.dataset.X.shape[0]
         self.features = dataset.num_features
         self.adj_t = self._get_adj_t(edge_index, num_nodes)
@@ -129,9 +125,7 @@ class SbmSamplerWrapper(object):
         self.window_length = window_length
         self.padding_id = padding_id
         self.num_walks = num_walks
-        # indices = np.random.choice(len(centers), num_edges, replace=False)
-        # self.centers, contexts, random_contexts = centers[indices], contexts[indices], random_contexts[indices]
-        # be careful, cant call this again, contexts lost
+
 
     def _create_edge_index(self, source: np.ndarray, dist: np.ndarray):
         return torch.tensor([source, dist], dtype=torch.long)
