@@ -16,19 +16,10 @@ from residual2vec.random_walk_sampler import RandomWalkSampler
 from residual2vec.word2vec import NegativeSampling
 import wandb
 from utils.config import DEVICE, DISABLE_TQDM, DISABLE_WANDB
+import torch
 
 class residual2vec_sgd:
-    """Residual2Vec based on the stochastic gradient descent.
 
-    .. highlight:: python
-    .. code-block:: python
-        >>> from residual2vec.residual2vec_sgd import residual2vec_sgd
-        >>> net = nx.karate_club_graph()
-        >>> model = r2v.Residual2Vec(null_model="configuration", window_length=5, restart_prob=0, residual_type="individual")
-        >>> model.fit(net)
-        >>> in_vec = model.transform(net, dim = 30)
-        >>> out_vec = model.transform(net, dim = 30, return_out_vector=True)
-    """
 
     def __init__(
         self,
