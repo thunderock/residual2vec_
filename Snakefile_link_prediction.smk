@@ -92,6 +92,8 @@ FIG_DISPARITY_CURVE_DEEPWALK = j("figs", "disparity-curve_deepwalk.pdf")
 FIG_LP_SCORE_NODE2VEC = j("figs", "aucroc_node2vec.pdf")
 FIG_DISPARITY_SCORE_NODE2VEC= j("figs", "disparity_node2vec.pdf")
 FIG_DISPARITY_CURVE_NODE2VEC = j("figs", "disparity-curve_node2vec.pdf")
+
+FIG_FAIRNESS_PER_NODE = j("figs", "deepwalk_disparity_per_node.png")
 # ===================
 # Configurations
 # ===================
@@ -116,6 +118,7 @@ rule link_prediction_all:
         expand(LP_ALL_SCORE_FILE, data = DATA_LIST),
         expand(DISPARITY_ALL_SCORE_FILE, data = DATA_LIST),
 
+
 rule link_prediction_figs:
     input:
         FIG_LP_SCORE_DEEPWALK,
@@ -123,12 +126,24 @@ rule link_prediction_figs:
         FIG_DISPARITY_SCORE_NODE2VEC,
         FIG_LP_SCORE_NODE2VEC,
         FIG_DISPARITY_CURVE_DEEPWALK,
-        FIG_DISPARITY_CURVE_NODE2VEC
+        FIG_DISPARITY_CURVE_NODE2VEC,
+        FIG_FAIRNESS_PER_NODE,
 
-
+rule fairness_per_node:
+    params:
+        embs_mapping = MODEL2EMBFILE_POSTFIX,
+        datasets = DATA_LIST,
+        base_dir = SRC_DATA_ROOT,
+        sample_id = "one",
+    output:
+        FIG_FAIRNESS_PER_NODE
+    threads: 1
+    script:
+        "workflow/plot_fairness_per_node.py"
 # =====================
 # Network generation
 # =====================
+
 rule generate_link_prediction_dataset:
     input:
         train_net_file = TRAIN_NET_FILE,
