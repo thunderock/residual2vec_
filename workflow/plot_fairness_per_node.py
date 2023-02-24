@@ -6,10 +6,10 @@
 import sys, os
 
 
-DATASETS = ["polbook", "polblog", "airport", "twitch", "facebook"]
+DATASETS = ["polbook", "polblog", "airport", 'twitch', 'facebook']
 # print present working directory
-BASE_DIR = "../../final_"
-OUTPUT_FILE = "../figs/deepwalk_disparity_per_node.png"
+BASE_DIR = "../final_"
+OUTPUT_FILE = "figs/deepwalk_disparity_per_node.png"
 EMBS_MAPPING = {
     "fairwalk+deepwalk": "_fairwalk_deepwalk.npy",
     "fairwalk+node2vec": "_fairwalk_node2vec.npy",
@@ -43,7 +43,8 @@ if "snakemake" in sys.modules:
     print(OUTPUT_FILE)
     print(EMBS_MAPPING)
     print(SAMPLE_ID)
-    sys.path.insert(0, '../residual2vec_')    
+ 
+sys.path.insert(0, '../residual2vec_')    
 
 from os.path import join as j
 import numpy as np
@@ -58,12 +59,12 @@ def get_embs(dataset):
     folder = j(BASE_DIR, dataset, dataset + '_' + SAMPLE_ID)
     ret = {}
     for i in EMBS_MAPPING.keys():
-        ret[i] = np.load(j(folder, dataset + "_" + EMBS_MAPPING[i]))
+        ret[i] = np.load(j(folder, dataset + EMBS_MAPPING[i]))
     return ret
 
 ARCHS = ["GCN", "GAT", "word2vec"]
 
-arch_mapping = {
+ARCH_MAPPING = {
     "GCN": {
         "baseline": "GCN+deepwalk+random",
         "proposed": "GCN+deepwalk+r2v",
@@ -89,7 +90,40 @@ for dataset in tqdm(DATASETS,desc="loading embs"):
 
 df = []
 
-for arch in ARCHS:
+for arch in tqdm(ARCHS, desc="creating df"):
+    for i, dataset in enumerate(DATASETS):
+        for model in ["baseline", "proposed"]:
+            s = score.get_node_parity(embs[i][ARCH_MAPPING[arch][model]], y[i], 'std')
+            df.append(pd.DataFrame({
+                'dataset': dataset,
+                'disparity per node': s,
+                'model': model,
+                'architecture': arch,
+            }))
+df = pd.concat(df, axis=0, ignore_index=True)
+print(df.shape)
+
+mp = {
+    'dataset': [],
+    'architecture': [],
+    'score': []
+}
+for dataset in DATASETS:
+    for arch in ARCHS:
+        baseline_scores = df[(df.architecture == arch) & (df.model == 'baseline') & (df.dataset == dataset)]['disparity per node'].values
+        proposed_scores = df[(df.architecture == arch) & (df.model == 'proposed') & (df.dataset == dataset)]['disparity per node'].values
+        
+        s = ((baseline_scores - proposed_scores) > 0).sum() / baseline_scores.shape[0]
+        mp['dataset'].append(dataset)
+        mp['architecture'].append(arch)
+        mp['score'].append(s)
+
+fdf = pd.DataFrame(mp)
+ax = sns.pointplot(data=fdf, x='dataset', y='score', hue='architecture')
+ax.set(ylabel='ratio of nodes for which std dev of disparity decreased')
+
+# save figure
+plt.savefig(OUTPUT_FILE)
     
 
     
