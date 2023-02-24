@@ -3,83 +3,23 @@
 # @Email: checkashu@gmail.com
 # @Date:   2023-02-02 11:59:32
 # @Filepath: residual2vec/residual2vec_sgd.py
-"""A python implementation of residual2vec based on the stochastic gradient
-descent algorithm. Suitable for large networks.
-
-Usage:
-
-```python
-import residual2vec as rv
-
-# Node sampler for the noise distribution for negative sampling
-noise_sampler = rv.ConfigModelNodeSampler()
-
-model = rv.residual2vec_sgd(noise_sampler = noise_sampler, window_length = 10)
-model.fit(G)
-emb = model.transform(dim = 64)
-# or equivalently emb = model.fit(G).transform(dim = 64)
-```
-
-If want to remove the structural bias associated with node labels (i.e., gender):
-```python
-import residual2vec as rv
-
-group_membership = [0,0,0,0,1,1,1,1] # an array of group memberships of nodes.
-
-# SBMNodeSampler reflects the group membership in sampling
-noise_sampler = SBMNodeSampler(window_length = 10, group_membership = group_membership)
-
-model = rv.residual2vec_matrix_factorization(noise_sampler, window_length = 10)
-model.fit(G)
-emb = model.transform(dim = 64)
-```
-
-You can customize the noise_sampler by implementing the following class:
-
-```python
-import residual2vec as rv
-class CustomNodeSampler(rv.NodeSampler):
-    def fit(self, A):
-        #Fit the sampler
-        #:param A: adjacency matrix
-        #:type A: scipy.csr_matrix
-        pass
-
-    def sampling(self, center_node, n_samples):
-        #Sample context nodes from the graph for center nodes
-        #:param center_node: ID of center node
-        #:type center_node: int
-        #:param n_samples: number of samples per center node
-        #:type n_samples: int
-        pass
-```
-"""
 import random
 
 import numpy as np
 from numba import njit
 from torch.optim import Adam
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import Dataset
 from tqdm import tqdm, trange
 from scipy import sparse
 from residual2vec import utils
 from residual2vec.random_walk_sampler import RandomWalkSampler
 from residual2vec.word2vec import NegativeSampling
 import wandb
-from utils.config import *
+from utils.config import DEVICE, DISABLE_TQDM, DISABLE_WANDB
+import torch
 
 class residual2vec_sgd:
-    """Residual2Vec based on the stochastic gradient descent.
 
-    .. highlight:: python
-    .. code-block:: python
-        >>> from residual2vec.residual2vec_sgd import residual2vec_sgd
-        >>> net = nx.karate_club_graph()
-        >>> model = r2v.Residual2Vec(null_model="configuration", window_length=5, restart_prob=0, residual_type="individual")
-        >>> model.fit(net)
-        >>> in_vec = model.transform(net, dim = 30)
-        >>> out_vec = model.transform(net, dim = 30, return_out_vector=True)
-    """
 
     def __init__(
         self,
@@ -128,11 +68,6 @@ class residual2vec_sgd:
         * x are the node features
         """
 
-        # Set up the embedding model
-        PADDING_IDX = self.n_nodes if self.n_nodes else dataloader.dataset.n_nodes
-        # model = Word2Vec(
-        #     vocab_size=self.n_nodes + 1, embedding_size=dim, padding_idx=PADDING_IDX
-        # )
         neg_sampling = NegativeSampling(embedding=model)
         model.to(self.cuda)
         # Training
@@ -140,13 +75,14 @@ class residual2vec_sgd:
 
         # number of batches
         n_batches = len(dataloader)
-        patience_threshold = int(n_batches * .5) # 50% of the batches
+        patience_threshold = n_batches // 2 # 50% of the batches
         print(f"Patience threshold: {patience_threshold}")
         if DISABLE_TQDM:
             epoch_range = trange(epochs, desc="training FINAL MODEL")
         else:
             epoch_range = range(epochs)
         for epoch in epoch_range:
+            agg_loss = 0
             break_loop = False
             patience = 0
             pbar = tqdm(dataloader, miniters=500, disable=DISABLE_TQDM)
@@ -164,15 +100,14 @@ class residual2vec_sgd:
                         break
                 loss.backward()
                 optim.step()
-                if not DISABLE_WANDB and batch_num % 100 == 0:
-                    wandb.log({"epoch": epoch, "loss": loss.item(), "batch_num": batch_num})
-                pbar.set_postfix(epoch=epoch, loss=loss.item())
+                pbar.set_postfix(epoch=epoch)
                 batch_num += 1
+                agg_loss += loss.item()
+            if not DISABLE_WANDB:
+                wandb.log({"epoch": epoch, "loss": agg_loss / n_batches})
             if break_loop:
                 break
-        self.in_vec = model.ivectors.weight.data.cpu().numpy()[:PADDING_IDX, :]
-        self.out_vec = model.ovectors.weight.data.cpu().numpy()[:PADDING_IDX, :]
-        return self.in_vec
+        return self
 
 
 class TripletSimpleDataset(Dataset):
@@ -193,13 +128,9 @@ class TripletSimpleDataset(Dataset):
     ):
 
         self.adjmat = adjmat
-        # self.num_features = 1
-        # self.X = torch.from_numpy(group_ids).unsqueeze(-1).to(torch.float32)
+
         self.num_walks = num_walks
-        # rows, cols = self.adjmat.nonzero()
-        # self.edge_index = torch.from_numpy(np.stack([rows, cols], axis=0)).to(torch.int64)
-        # self.neg_edge_index = negative_sampling(edge_index=self.edge_index, num_nodes=self.X.shape[0],
-        #                                         num_neg_samples=None, method='sparse', force_undirected=True)
+
         self.window_length = window_length
         self.noise_sampler = noise_sampler
         self.walk_length = walk_length
@@ -225,7 +156,6 @@ class TripletSimpleDataset(Dataset):
         self.contexts = None
         self.centers = None
         self.random_contexts = None
-        # self.num_embeddings = len(np.unique(group_ids)) + 1
 
         # Initialize
         self._generate_samples()
@@ -348,5 +278,3 @@ def _get_center_single_context_window(
                     break
                 contexts[start:end, i] = walks[:, t_walk + 1 + i]
     return centers, contexts
-
-

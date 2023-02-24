@@ -39,12 +39,6 @@ class TripletGraphDataset(Dataset):
             ret = None
         return ret
 
-    # def _create_neighbor_cache(self, edge_idx, num_nodes):
-    #     max_neighbors_for_source = torch.max([self._get_node_edges_from_source(i, edge_idx).shape[0] for i in range(num_nodes)])
-    #     neighbor_cache = torch.full((num_nodes, max_neighbors_for_source), fill_value=-1,  dtype=torch.long)
-    #     for i in range(num_nodes):
-    #         neighbors = self._get_node_edges_from_source(i, edge_idx)
-    #         neighbor_cache[i, :neighbors.shape[0]] = neighbors
 
     def _select_random_neighbor(self, source, neg=False):
         edge_index = self.neg_edge_index if neg else self.edge_index
@@ -61,20 +55,12 @@ class TripletGraphDataset(Dataset):
         p = self._select_random_neighbor(a)
         n = self._select_random_neighbor(a, neg=True)
 
-        # # this should never happen
-        # if not (p and n):
-        #     # select a random node which is present in both positive and negative edge index
-        #     a = self.common_sources[torch.randint(self.common_sources.shape[0], (1,))]
-        #     p = self._select_random_neighbor(a)
-        #     n = self._select_random_neighbor(a, neg=True)
-        # assert all([a, p, n]), "a: {}, p: {}, n: {} should not be None".format(a, p, n)
         return torch.tensor([a, p, n])
 
 
 class NeighborEdgeSampler(torch.utils.data.DataLoader):
     def __init__(self, dataset, edge_sample_size=None, transforming=False, **kwargs):
-        # investigate dual calling behaviour here, ideal case is calling this class with node_id range dataset
-        # node_idx = torch.arange(self.adj_t.sparse_size(0))
+
 
         super().__init__(dataset=dataset, collate_fn=self.sample, **kwargs)
         self.features = self.dataset.num_features
@@ -137,9 +123,7 @@ class SbmSamplerWrapper(object):
         self.window_length = window_length
         self.padding_id = padding_id
         self.num_walks = num_walks
-        # indices = np.random.choice(len(centers), num_edges, replace=False)
-        # self.centers, contexts, random_contexts = centers[indices], contexts[indices], random_contexts[indices]
-        # be careful, cant call this again, contexts lost
+
 
     def _create_edge_index(self, source: np.ndarray, dist: np.ndarray):
         return torch.tensor([source, dist], dtype=torch.long)
