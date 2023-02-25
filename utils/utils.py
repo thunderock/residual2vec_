@@ -49,7 +49,7 @@ def check_if_symmetric(m):
         return check_if_sparse_symmetric(m)
     return np.allclose(m, m.T)
 
-def return_parallel_result(func: function, args: list, n_jobs: int=None):
+def return_parallel_result(func, args: list, n_jobs: int=None):
     """
     Returns the result of a parallel job
     """
