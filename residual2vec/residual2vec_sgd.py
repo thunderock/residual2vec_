@@ -4,7 +4,6 @@
 # @Date:   2023-02-02 11:59:32
 # @Filepath: residual2vec/residual2vec_sgd.py
 import random
-import gc
 import numpy as np
 from numba import njit
 from torch.optim import Adam
@@ -103,9 +102,6 @@ class residual2vec_sgd:
                 pbar.set_postfix(epoch=epoch)
                 batch_num += 1
                 agg_loss += loss.item()
-                # cleaning up
-                del loss, iword, owords, nwords
-                gc.collect()
             if not DISABLE_WANDB:
                 wandb.log({"epoch": epoch, "loss": agg_loss / n_batches})
             if break_loop:
