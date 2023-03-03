@@ -102,27 +102,32 @@ for arch in tqdm(ARCHS, desc="creating df"):
             }))
 df = pd.concat(df, axis=0, ignore_index=True)
 print(df.shape)
-
+sns.set(font_scale=1)
 mp = {
-    'dataset': [],
+    'Dataset': [],
     'architecture': [],
     'score': []
 }
-for dataset in DATASETS:
-    for arch in ARCHS:
+for dataset in ['polbook', 'polblog', 'airport', 'twitch', 'facebook']:
+    for arch in ['gat', 'gcn', 'word2vec']:
         baseline_scores = df[(df.architecture == arch) & (df.model == 'baseline') & (df.dataset == dataset)]['disparity per node'].values
         proposed_scores = df[(df.architecture == arch) & (df.model == 'proposed') & (df.dataset == dataset)]['disparity per node'].values
         
-        s = ((baseline_scores - proposed_scores) > 0).sum() / baseline_scores.shape[0]
-        mp['dataset'].append(dataset)
+        score = ((baseline_scores - proposed_scores) > 0).sum() / baseline_scores.shape[0]
+        mp['Dataset'].append(dataset)
         mp['architecture'].append(arch)
-        mp['score'].append(s)
+        mp['score'].append(score)
+        
+
 
 fdf = pd.DataFrame(mp)
-ax = sns.pointplot(data=fdf, x='dataset', y='score', hue='architecture')
-ax.set(ylabel='ratio of nodes for which std dev of disparity decreased')
 
-# save figure
+ax = sns.pointplot(data=fdf, x='Dataset', y='score', hue='architecture')
+ax.set(ylabel='ratio of nodes for which disparity decreased')
+ax.legend(loc="lower left")
+plt.axhline(y=.5, linestyle='--', c='red')
+
+#save figure
 plt.savefig(OUTPUT_FILE)
     
 
