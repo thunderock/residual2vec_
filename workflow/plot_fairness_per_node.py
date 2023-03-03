@@ -109,7 +109,7 @@ mp = {
     'score': []
 }
 for dataset in ['polbook', 'polblog', 'airport', 'twitch', 'facebook']:
-    for arch in ['gat', 'gcn', 'word2vec']:
+    for arch in ARCHS:
         baseline_scores = df[(df.architecture == arch) & (df.model == 'baseline') & (df.dataset == dataset)]['disparity per node'].values
         proposed_scores = df[(df.architecture == arch) & (df.model == 'proposed') & (df.dataset == dataset)]['disparity per node'].values
         
