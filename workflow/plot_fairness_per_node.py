@@ -102,7 +102,7 @@ for arch in tqdm(ARCHS, desc="creating df"):
             }))
 df = pd.concat(df, axis=0, ignore_index=True)
 print(df.shape)
-sns.set(font_scale=1)
+sns.set(font_scale=1.2)
 mp = {
     'Dataset': [],
     'architecture': [],
@@ -122,11 +122,12 @@ for dataset in ['polbook', 'polblog', 'airport', 'twitch', 'facebook']:
 
 fdf = pd.DataFrame(mp)
 
+
 ax = sns.pointplot(data=fdf, x='Dataset', y='score', hue='architecture')
 ax.set(ylabel='ratio of nodes for which disparity decreased')
 ax.legend(loc="lower left")
-plt.axhline(y=.5, linestyle='--', c='red')
-
+plt.axhline(y=.5, linestyle='--', c='red', )
+ax.annotate('50% baseline', xy=(0, .52))
 #save figure
 plt.savefig(OUTPUT_FILE)
     
