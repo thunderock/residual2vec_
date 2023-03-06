@@ -130,7 +130,7 @@ plt.xticks(fontsize=12)
 ax.annotate('50% baseline', xy=(0, .52))
 
 #save figure
-plt.savefig(OUTPUT_FILE)
+plt.savefig(OUTPUT_FILE, dpi='figure', bbox_inches='tight')
     
 
     
