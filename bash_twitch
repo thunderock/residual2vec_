@@ -1,0 +1,209 @@
+#!/bin/bash
+#SBATCH --time=48:00:00
+#SBATCH --job-name=twitch
+#SBATCH --cpus-per-task=60
+#SBATCH --partition=gpu
+#SBATCH --mail-type=ALL
+#SBATCH --mem=240G
+#SBATCH --gpus-per-node 1
+
+
+which python;
+# fairwalk + dw
+snakemake   train_features_2_vec      -call --config root=twitch_one gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+
+# fairwalk node2vec
+snakemake   train_features_2_vec      -call --config root=twitch_one gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+# crosswalk+ dw
+snakemake   train_features_2_vec      -call --config root=twitch_one gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+
+# crosswalk+ node2vec
+snakemake   train_features_2_vec      -call --config root=twitch_one gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+# r2v + node2vec
+snakemake   generate_node_embeddings  -call --config root=twitch_one gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+snakemake   generate_node_embeddings  -call --config root=twitch_one gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+# r2v + dw
+snakemake   generate_node_embeddings  -call --config root=twitch_one gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+snakemake   generate_node_embeddings  -call --config root=twitch_one gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+
+
+# random + node2vec
+snakemake   generate_node_embeddings  -call --config root=twitch_one gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+snakemake   generate_node_embeddings  -call --config root=twitch_one gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+# random + dw
+snakemake   generate_node_embeddings  -call --config root=twitch_one gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+snakemake   generate_node_embeddings  -call --config root=twitch_one gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+
+snakemake   generate_node_embeddings  -call --config root=twitch_one gnn_model=residual2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+
+
+# baseline
+snakemake   generate_baseline_embs  -call --config root=twitch_one gnn_model=residual2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+
+snakemake   generate_baseline_embs  -call --config root=twitch_one gnn_model=residual2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+
+which python;
+# fairwalk + dw
+snakemake   train_features_2_vec      -call --config root=twitch_two gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+
+# fairwalk node2vec
+snakemake   train_features_2_vec      -call --config root=twitch_two gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+# crosswalk+ dw
+snakemake   train_features_2_vec      -call --config root=twitch_two gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+
+# crosswalk+ node2vec
+snakemake   train_features_2_vec      -call --config root=twitch_two gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+# r2v + node2vec
+snakemake   generate_node_embeddings  -call --config root=twitch_two gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+snakemake   generate_node_embeddings  -call --config root=twitch_two gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+# r2v + dw
+snakemake   generate_node_embeddings  -call --config root=twitch_two gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+snakemake   generate_node_embeddings  -call --config root=twitch_two gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+
+
+# random + node2vec
+snakemake   generate_node_embeddings  -call --config root=twitch_two gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+snakemake   generate_node_embeddings  -call --config root=twitch_two gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+# random + dw
+snakemake   generate_node_embeddings  -call --config root=twitch_two gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+snakemake   generate_node_embeddings  -call --config root=twitch_two gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+
+snakemake   generate_node_embeddings  -call --config root=twitch_two gnn_model=residual2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+
+# baseline
+snakemake   generate_baseline_embs  -call --config root=twitch_two gnn_model=residual2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+
+snakemake   generate_baseline_embs  -call --config root=twitch_two gnn_model=residual2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+
+which python;
+# fairwalk + dw
+snakemake   train_features_2_vec      -call --config root=twitch_three gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+
+# fairwalk node2vec
+snakemake   train_features_2_vec      -call --config root=twitch_three gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+# crosswalk+ dw
+snakemake   train_features_2_vec      -call --config root=twitch_three gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+
+# crosswalk+ node2vec
+snakemake   train_features_2_vec      -call --config root=twitch_three gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+# r2v + node2vec
+snakemake   generate_node_embeddings  -call --config root=twitch_three gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+snakemake   generate_node_embeddings  -call --config root=twitch_three gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+# r2v + dw
+snakemake   generate_node_embeddings  -call --config root=twitch_three gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+snakemake   generate_node_embeddings  -call --config root=twitch_three gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+
+
+# random + node2vec
+snakemake   generate_node_embeddings  -call --config root=twitch_three gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+snakemake   generate_node_embeddings  -call --config root=twitch_three gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+# random + dw
+snakemake   generate_node_embeddings  -call --config root=twitch_three gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+snakemake   generate_node_embeddings  -call --config root=twitch_three gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+
+snakemake   generate_node_embeddings  -call --config root=twitch_three gnn_model=residual2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+
+
+# baseline
+snakemake   generate_baseline_embs  -call --config root=twitch_three gnn_model=residual2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+
+snakemake   generate_baseline_embs  -call --config root=twitch_three gnn_model=residual2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+
+
+which python;
+# fairwalk + dw
+snakemake   train_features_2_vec      -call --config root=twitch_four gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+
+# fairwalk node2vec
+snakemake   train_features_2_vec      -call --config root=twitch_four gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+# crosswalk+ dw
+snakemake   train_features_2_vec      -call --config root=twitch_four gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+
+# crosswalk+ node2vec
+snakemake   train_features_2_vec      -call --config root=twitch_four gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+# r2v + node2vec
+snakemake   generate_node_embeddings  -call --config root=twitch_four gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+snakemake   generate_node_embeddings  -call --config root=twitch_four gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+# r2v + dw
+snakemake   generate_node_embeddings  -call --config root=twitch_four gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+snakemake   generate_node_embeddings  -call --config root=twitch_four gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+
+
+# random + node2vec
+snakemake   generate_node_embeddings  -call --config root=twitch_four gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+snakemake   generate_node_embeddings  -call --config root=twitch_four gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+# random + dw
+snakemake   generate_node_embeddings  -call --config root=twitch_four gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+snakemake   generate_node_embeddings  -call --config root=twitch_four gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+
+snakemake   generate_node_embeddings  -call --config root=twitch_four gnn_model=residual2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+
+# baseline
+snakemake   generate_baseline_embs  -call --config root=twitch_four gnn_model=residual2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+
+snakemake   generate_baseline_embs  -call --config root=twitch_four gnn_model=residual2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+
+
+which python;
+# fairwalk + dw
+snakemake   train_features_2_vec      -call --config root=twitch_five gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+
+# fairwalk node2vec
+snakemake   train_features_2_vec      -call --config root=twitch_five gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=true node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+# crosswalk+ dw
+snakemake   train_features_2_vec      -call --config root=twitch_five gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+
+# crosswalk+ node2vec
+snakemake   train_features_2_vec      -call --config root=twitch_five gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=true fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+# r2v + node2vec
+snakemake   generate_node_embeddings  -call --config root=twitch_five gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+snakemake   generate_node_embeddings  -call --config root=twitch_five gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+# r2v + dw
+snakemake   generate_node_embeddings  -call --config root=twitch_five gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+snakemake   generate_node_embeddings  -call --config root=twitch_five gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+
+
+# random + node2vec
+snakemake   generate_node_embeddings  -call --config root=twitch_five gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+snakemake   generate_node_embeddings  -call --config root=twitch_five gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+# random + dw
+snakemake   generate_node_embeddings  -call --config root=twitch_five gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+snakemake   generate_node_embeddings  -call --config root=twitch_five gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;
+
+snakemake   generate_node_embeddings  -call --config root=twitch_five gnn_model=residual2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+
+
+# baseline
+snakemake   generate_baseline_embs  -call --config root=twitch_five gnn_model=residual2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=true dataset=twitch  --nolock --ignore-incomplete;
+
+
+snakemake   generate_baseline_embs  -call --config root=twitch_five gnn_model=residual2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=twitch  --nolock --ignore-incomplete;

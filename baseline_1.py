@@ -53,8 +53,9 @@ def get_embs(dataset, node2vec=NODE2VEC):
         metric='cosine'
     )
     equalize = graph_utils.get_farthest_pairs(deepwalk, y, same_class=False, 
-                                              per_class_count=1)
+                                              per_class_count=int((.2 * N) / K))
     
+    print("number of equalize pairs: ", equalize.shape)
     direction = get_direction(deepwalk, y, "PCA")
     
     return debias_wrapper(emb=deepwalk,gender_specific_words=gender_specific_nodes, 

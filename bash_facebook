@@ -1,13 +1,12 @@
 #!/bin/bash
-#SBATCH --partition=dl
 #SBATCH --time=48:00:00
 #SBATCH --job-name=facebook
+#SBATCH --cpus-per-task=60
+#SBATCH --partition=gpu
 #SBATCH --mail-type=ALL
-#SBATCH --mem=100G
-#SBATCH --mail-user=ashutiwa@iu.edu
-#SBATCH --gpus-per-node v100:1
-#SBATCH --cpus-per-task=20
-#SBATCH --account r00052
+#SBATCH --mem=240G
+#SBATCH --gpus-per-node 1
+
 
 which python;
 # fairwalk + dw
@@ -39,7 +38,7 @@ snakemake   generate_node_embeddings  -call --config root=facebook_one gnn_model
 snakemake   generate_node_embeddings  -call --config root=facebook_one gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=facebook  --nolock --ignore-incomplete;
 snakemake   generate_node_embeddings  -call --config root=facebook_one gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=facebook  --nolock --ignore-incomplete;
 
-snakemake   generate_node_embeddings  -call --config root=facebook_one gnn_model=residual2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=facebook --nolock --ignore-incomplete;
+snakemake   generate_node_embeddings  -call --config root=facebook_one gnn_model=residual2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=facebook  --nolock --ignore-incomplete;
 
 
 
@@ -48,7 +47,6 @@ snakemake   generate_baseline_embs  -call --config root=facebook_one gnn_model=r
 
 
 snakemake   generate_baseline_embs  -call --config root=facebook_one gnn_model=residual2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=facebook  --nolock --ignore-incomplete;
-
 
 which python;
 # fairwalk + dw
@@ -80,9 +78,7 @@ snakemake   generate_node_embeddings  -call --config root=facebook_two gnn_model
 snakemake   generate_node_embeddings  -call --config root=facebook_two gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=facebook  --nolock --ignore-incomplete;
 snakemake   generate_node_embeddings  -call --config root=facebook_two gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=facebook  --nolock --ignore-incomplete;
 
-snakemake   generate_node_embeddings  -call --config root=facebook_two gnn_model=residual2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=facebook --nolock --ignore-incomplete;
-
-
+snakemake   generate_node_embeddings  -call --config root=facebook_two gnn_model=residual2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=facebook  --nolock --ignore-incomplete;
 
 
 # baseline
@@ -90,7 +86,6 @@ snakemake   generate_baseline_embs  -call --config root=facebook_two gnn_model=r
 
 
 snakemake   generate_baseline_embs  -call --config root=facebook_two gnn_model=residual2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=facebook  --nolock --ignore-incomplete;
-
 
 which python;
 # fairwalk + dw
@@ -122,9 +117,7 @@ snakemake   generate_node_embeddings  -call --config root=facebook_three gnn_mod
 snakemake   generate_node_embeddings  -call --config root=facebook_three gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=facebook  --nolock --ignore-incomplete;
 snakemake   generate_node_embeddings  -call --config root=facebook_three gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=facebook  --nolock --ignore-incomplete;
 
-
-snakemake   generate_node_embeddings  -call --config root=facebook_three gnn_model=residual2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=facebook --nolock --ignore-incomplete;
-
+snakemake   generate_node_embeddings  -call --config root=facebook_three gnn_model=residual2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=facebook  --nolock --ignore-incomplete;
 
 
 
@@ -133,6 +126,7 @@ snakemake   generate_baseline_embs  -call --config root=facebook_three gnn_model
 
 
 snakemake   generate_baseline_embs  -call --config root=facebook_three gnn_model=residual2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=facebook  --nolock --ignore-incomplete;
+
 
 which python;
 # fairwalk + dw
@@ -164,7 +158,7 @@ snakemake   generate_node_embeddings  -call --config root=facebook_four gnn_mode
 snakemake   generate_node_embeddings  -call --config root=facebook_four gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=facebook  --nolock --ignore-incomplete;
 snakemake   generate_node_embeddings  -call --config root=facebook_four gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=facebook  --nolock --ignore-incomplete;
 
-snakemake   generate_node_embeddings  -call --config root=facebook_four gnn_model=residual2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=facebook --nolock --ignore-incomplete;
+snakemake   generate_node_embeddings  -call --config root=facebook_four gnn_model=residual2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=facebook  --nolock --ignore-incomplete;
 
 
 # baseline
@@ -172,6 +166,7 @@ snakemake   generate_baseline_embs  -call --config root=facebook_four gnn_model=
 
 
 snakemake   generate_baseline_embs  -call --config root=facebook_four gnn_model=residual2vec env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=facebook  --nolock --ignore-incomplete;
+
 
 which python;
 # fairwalk + dw
@@ -203,8 +198,7 @@ snakemake   generate_node_embeddings  -call --config root=facebook_five gnn_mode
 snakemake   generate_node_embeddings  -call --config root=facebook_five gnn_model=gat env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=facebook  --nolock --ignore-incomplete;
 snakemake   generate_node_embeddings  -call --config root=facebook_five gnn_model=gcn env=local device=cuda:0 r2v=false crosswalk=false fairwalk=false node2vec=false dataset=facebook  --nolock --ignore-incomplete;
 
-
-snakemake   generate_node_embeddings  -call --config root=facebook_five gnn_model=residual2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=facebook --nolock --ignore-incomplete;
+snakemake   generate_node_embeddings  -call --config root=facebook_five gnn_model=residual2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true dataset=facebook  --nolock --ignore-incomplete;
 
 
 

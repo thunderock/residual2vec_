@@ -57,6 +57,8 @@ class LinkPrediction(nn.Module):
         batch_size = x.size(0)
         y = self._forward_common(X, edge_index)
         X = self.i_lin(torch.cat([x.view(x.size(0), -1).repeat(1, self.repeat_val), y.mean(dim=0).expand(batch_size, -1)], dim=1))
+        # insert relu here
+        X = F.relu(X)
         return self.i_lin_out(X)
 
 

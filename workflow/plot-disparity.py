@@ -45,7 +45,7 @@ MODEL_ORDER = model_order if 'deepwalk' in focal_model_list else model_order[1:]
 markers = [model2markers[k] for k in MODEL_ORDER]
 linestyles = [model2linestyle[k] for k in MODEL_ORDER]
 
-data_order = ["polbook", "polblog", "airport", "facebook"]
+data_order = ["polbook", "polblog", "airport", "twitch", "facebook"]
 
 
 plot_data = data_table.copy()

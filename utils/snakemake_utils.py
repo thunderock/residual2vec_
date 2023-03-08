@@ -2,13 +2,13 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 00:55:24
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-02-14 22:40:59
+# @Last Modified time: 2023-02-20 11:25:19
 from os.path import join as j
 
 import numpy as np
 import torch
 from models import weighted_node2vec
-from utils.config import R2V_TRAINING_EPOCHS, NUM_GNN_LAYERS, NUM_WORKERS
+from utils.config import R2V_TRAINING_EPOCHS, NUM_GNN_LAYERS, DATASET_BATCH_SIZE, DATASET_LEARNING_RATE, NUM_THREADS
 from scipy import sparse
 import pandas as pd
 from snakemake.utils import Paramspace
@@ -96,7 +96,7 @@ class FileResources(object):
             return str(j(self.root, f"{self.dataset}_{self.model_name}_embs.npy"))
         return str(j(self.root, f"{self.dataset}_{self.model_name}_{feature_method}_{negative_sampling}_embs.npy"))
 
-def get_dataset(name):
+def get_dataset(name, **kwargs):
     dataset = None
     if name == 'pokec':
         from dataset.pokec_data import PokecDataFrame
@@ -119,9 +119,21 @@ def get_dataset(name):
     elif name == 'copenhagen':
         from dataset import copenhagen_data
         dataset = copenhagen_data.CopenhagenData()
+    elif name == 'twitch':
+        from dataset import twitch_data
+        dataset = twitch_data.TwitchData(group_col='language', **kwargs)
     # add other datasets here
     return dataset
 
+def get_adj_from_edge_index(edge_index, num_nodes):
+    
+    row, col = edge_index
+    from torch_sparse import SparseTensor
+    adj = SparseTensor(row=row, col=col, sparse_sizes=(num_nodes, num_nodes))
+    row, col, _ = adj.coo()
+    ones = np.ones(row.shape[0], dtype=np.int32)
+    A = sparse.csr_matrix((ones, (row.numpy(), col.numpy())), shape=(num_nodes, num_nodes))
+    return A
 
 def get_networkx_graph(dataset):
     from torch_geometric.utils import to_networkx
@@ -145,8 +157,8 @@ def get_graph_tool_graph(dataset):
     g.vertex_properties["y"] = y
     return g
 
-def get_inf_modularity(dataset):
-    dataset = get_dataset(dataset)
+def get_inf_modularity(dataset, **kwargs):
+    dataset = get_dataset(dataset, **kwargs)
     g = get_graph_tool_graph(dataset)
     N = dataset.get_grouped_col().shape[0]
     y = g.vertex_properties['y']
@@ -270,7 +282,7 @@ def get_gnn_model(model_name, num_features, emb_dim, dataset=None, num_layers=No
     return model
 
 
-def train_model_and_get_embs(adj, model_name, X, sampler, gnn_layers, epochs, learn_outvec, model_dim=128):
+def train_model_and_get_embs(adj, model_name, X, sampler, gnn_layers, epochs, learn_outvec, num_workers, batch_size, learning_rate, model_dim=128):
     num_nodes = adj.shape[0]
     edge_index = get_edge_index_from_sparse_path(adj)
     print(edge_index.shape)
@@ -280,15 +292,14 @@ def train_model_and_get_embs(adj, model_name, X, sampler, gnn_layers, epochs, le
         edge_index=edge_index,
         sampler=sampler
     )
-    dataloader = NeighborEdgeSampler(dataset, batch_size=256, shuffle=True, num_workers=NUM_WORKERS, pin_memory=True)
+    dataloader = NeighborEdgeSampler(dataset, batch_size=256, shuffle=True, num_workers=num_workers, pin_memory=True)
     model = get_gnn_model(model_name=model_name, emb_dim=model_dim, num_layers=gnn_layers, num_features=X.shape[1], learn_outvec=learn_outvec)
     from residual2vec.residual2vec_sgd import residual2vec_sgd as rv
-    frame = rv(noise_sampler=False, window_length=5, num_walks=10, walk_length=80, batch_size=256 * 3).fit()
-    frame.transform(model=model, dataloader=dataloader, epochs=epochs)
+    frame = rv(noise_sampler=False, window_length=5, num_walks=10, walk_length=80, batch_size=batch_size).fit()
+    frame.transform(model=model, dataloader=dataloader, epochs=epochs, learning_rate=learning_rate)
     embs = torch.zeros((num_nodes, model_dim))
-    batch_size = 256
     model.eval()
-    dataloader = NeighborEdgeSampler(dataset, batch_size=batch_size, shuffle=False, num_workers=NUM_WORKERS, pin_memory=True, transforming=True)
+    dataloader = NeighborEdgeSampler(dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=True, transforming=True)
     with torch.no_grad():
         for idx, batch in enumerate(tqdm(dataloader, desc="Generating node embeddings")):
             a, _, _ = batch
@@ -312,7 +323,7 @@ def get_reweighted_graph(adj, crosswalk, fairwalk, group_membership=None):
         G = graph.from_numpy(adj, undirected=True)
         G.attr = group_membership
         n_groups = np.unique(group_membership).shape[0]
-        graph.set_weights(G, exp_=2, p_bndry=.7, l=n_groups)
+        graph.set_weights(adj.copy(), group_membership, G, exp_=2, p_bndry=.7, l=n_groups)
         A_ = graph.edge_weights_to_sparse(G, adj)
     if fairwalk:
         G = fw(group_membership=group_membership)
@@ -332,14 +343,16 @@ def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2ve
     model_name: name of model to use, can be ['gcn', 'gat']
     """
     assert not (crosswalk and fairwalk)
-    assert dataset_name in ['airport', 'polbook', 'polblog', 'small_pokec', 'pokec', 'facebook', 'copenhagen']
+    assert dataset_name in ['airport', 'polbook', 'polblog', 'small_pokec', 'pokec', 'facebook', 'copenhagen', 'twitch']
     
     dataset = get_dataset(dataset_name)
     group_membership = dataset.get_grouped_col()
-    edge_index, num_nodes = dataset.edge_index, dataset.X.shape[0]
+    edge_index, num_nodes = dataset.edge_index, group_membership.shape[0]
+    # probably we don't need this, but better to be safe
     edge_index = torch.unique(torch.cat([edge_index, edge_index.flip(0)], dim=1), dim=1)
     return_features = (crosswalk or fairwalk) or model_name in ['deepwalk', 'node2vec']
-    num_features = model_dim if return_features else 16
+    num_features = model_dim
+    adj = get_adj_from_edge_index(edge_index, num_nodes)
     # create data to train
     if node2vec:
         # using node2vec node features
@@ -371,4 +384,15 @@ def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2ve
     
     
         
-    return train_model_and_get_embs(adj=adj, model_name=model_name, X=X, sampler=sampler, gnn_layers=NUM_GNN_LAYERS[dataset_name], epochs=R2V_TRAINING_EPOCHS[dataset_name], learn_outvec=learn_outvec, model_dim=model_dim)
+    return train_model_and_get_embs(adj=adj, model_name=model_name, X=X, sampler=sampler, gnn_layers=NUM_GNN_LAYERS[dataset_name], epochs=R2V_TRAINING_EPOCHS[dataset_name], learn_outvec=learn_outvec, num_workers=NUM_THREADS[dataset_name], batch_size=DATASET_BATCH_SIZE[dataset_name], learning_rate=DATASET_LEARNING_RATE[dataset_name], model_dim=model_dim)
+
+
+def get_connected_components(dataset, get_labels=False):
+    from scipy.sparse.csgraph import connected_components
+    # get adj matrix from edge_index
+    group_membership = dataset.get_grouped_col()
+    adj = get_adj_from_edge_index(dataset.edge_index, group_membership.shape[0])
+    components, labels = connected_components(adj, directed=False, return_labels=True)
+    if get_labels:
+        return components, labels
+    return components

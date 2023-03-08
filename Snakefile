@@ -1,8 +1,13 @@
 import os
 import wandb
+os.environ['PYTORCH_CUDA_ALLOC_CONF'] = "max_split_size_mb: 512"
+# os.environ['DISABLE_WANDB'] = "true"
+# os.environ['DISABLE_TQDM'] = "true"
 # os.environ["CUDA_VISIBLE_DEVICES"]=""
-# config = {'gnn_model': 'gat', 'crosswalk': 'true',
-#           'r2v': 'true', 'dataset': 'pokec', 'device': 'cuda:0'}
+
+
+# config = {'root': 'twitch_two', 'gnn_model': 'gat', 'env': 'local', 'device': 'cuda:0', 'r2v': 'true', 'crosswalk': 'false', 
+# 'fairwalk': 'false', 'node2vec': 'true', 'dataset': 'twitch'}
 
 
 SET_DEVICE = config.get('device', 'cuda:0')
@@ -33,7 +38,7 @@ DATA_ROOT = config.get("root", "data")
 
 # variables sanity check
 assert GNN_MODEL in ('gat', 'gcn', 'residual2vec')
-assert DATASET in ('pokec', 'small_pokec', 'airport', 'polblog', 'polbook', 'facebook', 'copenhagen')
+assert DATASET in ('pokec', 'small_pokec', 'airport', 'polblog', 'polbook', 'facebook', 'copenhagen', 'twitch')
 assert CROSSWALK in (True, False)
 assert R2V in (True, False)
 assert SET_DEVICE in ('cuda:0', 'cpu', 'cuda:1',)
@@ -47,7 +52,7 @@ file_resources = FileResources(root=DATA_ROOT, crosswalk=CROSSWALK, fairwalk=FAI
 print(config)
 
 
-from utils.config import R2V_TRAINING_EPOCHS, NUM_NEGATIVE_SAMPLING, NUM_THREADS
+from utils.config import R2V_TRAINING_EPOCHS, NUM_NEGATIVE_SAMPLING, NUM_THREADS, DATASET_BATCH_SIZE, DATASET_LEARNING_RATE
 rule train_gnn:
     input:
         feature_weights=file_resources.feature_embs,
@@ -56,7 +61,7 @@ rule train_gnn:
         model_weights = file_resources.model_weights
     threads: NUM_THREADS[DATASET]
     params:
-        BATCH_SIZE = 256,
+        BATCH_SIZE = DATASET_BATCH_SIZE[DATASET],
         NODE_TO_VEC_DIM= 128,
         NUM_WORKERS = NUM_THREADS[DATASET],
         SET_DEVICE = SET_DEVICE,
@@ -112,7 +117,7 @@ rule train_gnn:
         ).fit()
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index, sampler=sampler, num_neg_sampling=NUM_NEGATIVE_SAMPLING[DATASET])
         if not DISABLE_WANDB:
-            wandb.init(project=DATASET,name="DATA_ROOT={}_MODEL={}_CROSSWALK={}_FAIRWALK={}_NODE2VEC={}_R2V={}".format(DATA_ROOT, GNN_MODEL, CROSSWALK, FAIRWALK, NODE2VEC, R2V))
+            wandb.init(project=DATASET + '_new',name="DATA_ROOT={}_MODEL={}_CROSSWALK={}_FAIRWALK={}_NODE2VEC={}_R2V={}".format(DATA_ROOT, GNN_MODEL, CROSSWALK, FAIRWALK, NODE2VEC, R2V))
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=True, num_workers=params.NUM_WORKERS, pin_memory=True)
         if GNN_MODEL in ['gat', 'gcn']:
             m = snakemake_utils.get_gnn_model(
@@ -129,13 +134,13 @@ rule train_gnn:
             y = labels.numpy()
             assert R2V
             noise_sampler = node2vecs.utils.node_sampler.SBMNodeSampler(group_membership=y, window_length=1)
-            graph_utils.generate_embedding_with_word2vec(adj_mat, dim, noise_sampler, config.DEVICE, output.model_weights)
+            graph_utils.generate_embedding_with_word2vec(adj_mat, dim, noise_sampler, config.DEVICE, output.model_weights) # not using code configs here so that comparizon with deepwalk is fair DATASET_LEARNING_RATE[DATASET], batch_size=params.BATCH_SIZE)
             return
             
         else:
             raise ValueError("GNN_MODEL must be either gat or gcn")
 
-        model.transform(model=m, dataloader=dataloader, epochs=R2V_TRAINING_EPOCHS[DATASET])
+        model.transform(model=m, dataloader=dataloader, epochs=R2V_TRAINING_EPOCHS[DATASET], learning_rate=DATASET_LEARNING_RATE[DATASET])
         if not DISABLE_WANDB:
             wandb.finish(exit_code=0)
         torch.save(m.state_dict(), output.model_weights)
@@ -152,7 +157,6 @@ rule generate_crosswalk_weights:
             node2vec="doesnt_matter", dataset=DATASET).test_adj_path
 
     params:
-        BATCH_SIZE=256,
         NUM_WORKERS=NUM_THREADS[DATASET],
         SET_DEVICE=SET_DEVICE,
         RV_NUM_WALKS=100
@@ -223,7 +227,6 @@ rule train_features_2_vec:
         features = file_resources.feature_embs
     threads: NUM_THREADS[DATASET]
     params:
-        BATCH_SIZE = 256,
         NODE_TO_VEC_DIM= 128,
         NUM_WORKERS = NUM_THREADS[DATASET],
         SET_DEVICE = SET_DEVICE,
@@ -272,7 +275,7 @@ rule generate_node_embeddings:
     output:
         embs_file = file_resources.embs_file
     params:
-        BATCH_SIZE = 256,
+        BATCH_SIZE = DATASET_BATCH_SIZE[DATASET],
         NODE_TO_VEC_DIM= 128,
         NUM_WORKERS = NUM_THREADS[DATASET],
         SET_DEVICE = SET_DEVICE,
@@ -357,9 +360,8 @@ rule generate_node_embeddings:
         m.eval()
         if GNN_MODEL == 'residual2vec':
             embs = m.ivectors.weight.data.cpu().numpy()[:num_nodes, :]
-        batch_size = model.batch_size
-
-        if GNN_MODEL != 'residual2vec':
+        else:
+            batch_size = model.batch_size
             with torch.no_grad():
                 for idx, batch in enumerate(tqdm(dataloader,desc="Generating node embeddings")):
                     a, _, _ = batch
