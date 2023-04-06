@@ -32,6 +32,9 @@ NODE2VEC = get_string_boolean(NODE2VEC)
 R2V = config.get('r2v', 'false')
 R2V = get_string_boolean(R2V)
 
+DEGREE_AGNOSTIC = config.get('degree_agnostic', 'false')
+DEGREE_AGNOSTIC = get_string_boolean(DEGREE_AGNOSTIC)
+
 # DATA_ROOT = "/data/sg/ashutiwa/residual2vec_"
 # if ENV in ('local', 'carbonate'):
 DATA_ROOT = config.get("root", "data")
@@ -45,14 +48,16 @@ assert SET_DEVICE in ('cuda:0', 'cpu', 'cuda:1',)
 assert FAIRWALK in (True, False)
 assert not (CROSSWALK and FAIRWALK), "CROSSWALK and FAIRWALK cannot be both True"
 assert NODE2VEC in (True, False)
+assert DEGREE_AGNOSTIC in (True, False)
 
 # file resources
 file_resources = FileResources(root=DATA_ROOT, crosswalk=CROSSWALK, fairwalk=FAIRWALK,
-    node2vec=NODE2VEC, r2v=R2V, dataset=DATASET, model_name=GNN_MODEL)
+    node2vec=NODE2VEC, r2v=R2V, dataset=DATASET, model_name=GNN_MODEL, degree_agnostic=DEGREE_AGNOSTIC)
 print(config)
 
 
 from utils.config import R2V_TRAINING_EPOCHS, NUM_NEGATIVE_SAMPLING, NUM_THREADS, DATASET_BATCH_SIZE, DATASET_LEARNING_RATE
+
 rule train_gnn:
     input:
         feature_weights=file_resources.feature_embs,
@@ -92,6 +97,7 @@ rule train_gnn:
         labels = snakemake_utils.get_dataset(DATASET).get_grouped_col()
         sampler = negative_sampling
         if R2V:
+            dcsbm = not DEGREE_AGNOSTIC
             sbm = triplet_dataset.SbmSamplerWrapper(
                 adj_path=input.weighted_adj,
                 group_membership=labels,
@@ -99,7 +105,8 @@ rule train_gnn:
                 padding_id=num_nodes,
                 num_walks=params.RV_NUM_WALKS,
                 use_weights=CROSSWALK,
-                num_edges = edge_index.shape[1]
+                num_edges = edge_index.shape[1],
+                dcsbm=dcsbm
             )
 
             # dont use sbm negative sampler for training
@@ -117,7 +124,7 @@ rule train_gnn:
         ).fit()
         d = triplet_dataset.TripletGraphDataset(X=X, edge_index=edge_index, sampler=sampler, num_neg_sampling=NUM_NEGATIVE_SAMPLING[DATASET])
         if not DISABLE_WANDB:
-            wandb.init(project=DATASET + '_new',name="DATA_ROOT={}_MODEL={}_CROSSWALK={}_FAIRWALK={}_NODE2VEC={}_R2V={}".format(DATA_ROOT, GNN_MODEL, CROSSWALK, FAIRWALK, NODE2VEC, R2V))
+            wandb.init(project=DATASET + '_new',name="DATA_ROOT={}_MODEL={}_CROSSWALK={}_FAIRWALK={}_NODE2VEC={}_R2V={}_DEGREE_AGNOSTIC={}".format(DATA_ROOT, GNN_MODEL, CROSSWALK, FAIRWALK, NODE2VEC, R2V, DEGREE_AGNOSTIC))
         dataloader = triplet_dataset.NeighborEdgeSampler(d, batch_size=model.batch_size, shuffle=True, num_workers=params.NUM_WORKERS, pin_memory=True)
         if GNN_MODEL in ['gat', 'gcn']:
             m = snakemake_utils.get_gnn_model(
@@ -148,13 +155,13 @@ rule train_gnn:
 rule generate_crosswalk_weights:
     output:
         crosswalk_weighted_adj =  FileResources(root=DATA_ROOT, fairwalk=False, crosswalk=True, r2v="doesnt_matter", model_name="doesnt_matter",
-            node2vec="doesnt_matter", dataset=DATASET).adj_path,
+            node2vec="doesnt_matter", dataset=DATASET, degree_agnostic=DEGREE_AGNOSTIC).adj_path,
         fairwalk_weighted_adj =  FileResources(root=DATA_ROOT,fairwalk=True,crosswalk=False,r2v="doesnt_matter",model_name="doesnt_matter",
-            node2vec="doesnt_matter", dataset=DATASET).adj_path,
+            node2vec="doesnt_matter", dataset=DATASET,degree_agnostic=DEGREE_AGNOSTIC).adj_path,
         unweighted_adj =  FileResources(root=DATA_ROOT,fairwalk=False,crosswalk=False,r2v="doesnt_matter",model_name="doesnt_matter",
-            node2vec="doesnt_matter",dataset=DATASET).adj_path,
+            node2vec="doesnt_matter",dataset=DATASET, degree_agnostic=DEGREE_AGNOSTIC).adj_path,
         test_adj =  FileResources(root=DATA_ROOT, fairwalk="doesnt_matter", crosswalk="doesnt_matter", r2v="doesnt_matter", model_name="doesnt_matter",
-            node2vec="doesnt_matter", dataset=DATASET).test_adj_path
+            node2vec="doesnt_matter", dataset=DATASET, degree_agnostic=DEGREE_AGNOSTIC).test_adj_path
 
     params:
         NUM_WORKERS=NUM_THREADS[DATASET],
@@ -306,6 +313,7 @@ rule generate_node_embeddings:
         sampler = negative_sampling
         labels = snakemake_utils.get_dataset(DATASET).get_grouped_col()
         if R2V:
+            dcsbm = not DEGREE_AGNOSTIC
             sbm = triplet_dataset.SbmSamplerWrapper(
                 adj_path=input.weighted_adj,
                 group_membership=labels,
@@ -313,7 +321,8 @@ rule generate_node_embeddings:
                 padding_id=num_nodes,
                 num_walks=params.RV_NUM_WALKS,
                 use_weights=CROSSWALK,
-                num_edges = edge_index.shape[1]
+                num_edges = edge_index.shape[1],
+                dcsbm=dcsbm
             )
 
             # dont use sbm negative sampler for training

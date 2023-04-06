@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 00:55:24
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-02-20 11:25:19
+# @Last Modified time: 2023-04-08 13:38:05
 from os.path import join as j
 
 import numpy as np
@@ -29,7 +29,7 @@ def get_string_boolean(string):
 
 
 class FileResources(object):
-    def __init__(self, root: str, fairwalk:bool, crosswalk: bool, r2v: bool, model_name:str, node2vec:bool, dataset:str):
+    def __init__(self, root: str, fairwalk:bool, crosswalk: bool, r2v: bool, model_name:str, node2vec:bool, dataset:str, degree_agnostic:bool):
         self.root = root
         self.crosswalk = crosswalk
         self.r2v = r2v
@@ -37,6 +37,7 @@ class FileResources(object):
         self.model_name = model_name
         self.node2vec = node2vec
         self.dataset = dataset
+        self.degree_agnostic = degree_agnostic
 
     @property
     def adj_path(self):
@@ -85,6 +86,8 @@ class FileResources(object):
         if self.r2v: negative_sampling = "r2v"
         if self.model_name == "residual2vec":
             return str(j(self.root, f"{self.dataset}_{self.model_name}.h5"))
+        if self.degree_agnostic:
+            return str(j(self.root, f"{self.dataset}_{self.model_name}_{feature_method}_{negative_sampling}_er_sampler.h5"))
         return str(j(self.root, f"{self.dataset}_{self.model_name}_{feature_method}_{negative_sampling}.h5"))
 
     @property
@@ -94,6 +97,8 @@ class FileResources(object):
         if self.r2v: negative_sampling = "r2v"
         if self.model_name == "residual2vec":
             return str(j(self.root, f"{self.dataset}_{self.model_name}_embs.npy"))
+        if self.degree_agnostic:
+            return str(j(self.root, f"{self.dataset}_{self.model_name}_{feature_method}_{negative_sampling}_er_sampler_embs.npy"))
         return str(j(self.root, f"{self.dataset}_{self.model_name}_{feature_method}_{negative_sampling}_embs.npy"))
 
 def get_dataset(name, **kwargs):

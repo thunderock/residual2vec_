@@ -37,6 +37,10 @@ MODEL_LIST = [
     "residual2vec",
     "baseline+deepwalk",
     "baseline+node2vec",
+    # "er_sampler+gat+deepwalk",
+    # "er_sampler+gat+node2vec",
+    # "er_sampler+gcn+deepwalk",
+    # "er_sampler+gcn+node2vec",
 ]
 
 MODEL2EMBFILE_POSTFIX= {
@@ -56,7 +60,12 @@ MODEL2EMBFILE_POSTFIX= {
     "node2vec": "_node2vec.npy",
     "residual2vec": "_residual2vec_embs.npy",
     "baseline+deepwalk": "_baseline_man_woman+deepwalk_embs.npy",
-    "baseline+node2vec": "_baseline_man_woman+node2vec_embs.npy",}
+    "baseline+node2vec": "_baseline_man_woman+node2vec_embs.npy",
+    # "er_sampler+gat+deepwalk": "_gat_deepwalk_r2v_er_sampler_embs.npy",
+    # "er_sampler+gat+node2vec": "_gat_node2vec_r2v_er_sampler_embs.npy",
+    # "er_sampler+gcn+deepwalk": "_gcn_deepwalk_r2v_er_sampler_embs.npy",
+    # "er_sampler+gcn+node2vec": "_gcn_node2vec_r2v_er_sampler_embs.npy",
+    }
 
 # ====================
 # Input files

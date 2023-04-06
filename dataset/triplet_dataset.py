@@ -107,12 +107,12 @@ class NeighborEdgeSampler(torch.utils.data.DataLoader):
 
 
 class SbmSamplerWrapper(object):
-    def __init__(self, adj_path, group_membership, window_length, num_edges, padding_id, num_walks, use_weights=True):
+    def __init__(self, adj_path, group_membership, window_length, num_edges, padding_id, num_walks, use_weights=True, dcsbm=True):
         from residual2vec.node_samplers import SBMNodeSampler
 
         from scipy import sparse
         from residual2vec import utils
-        self.sampler = SBMNodeSampler(window_length=window_length, group_membership=group_membership, dcsbm=True)
+        self.sampler = SBMNodeSampler(window_length=window_length, group_membership=group_membership, dcsbm=dcsbm)
         adj = adj_path if sparse.issparse(adj_path) else sparse.load_npz(adj_path)
         if not use_weights:
             adj.data = np.ones_like(adj.data)
