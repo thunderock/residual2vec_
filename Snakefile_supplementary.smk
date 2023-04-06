@@ -8,14 +8,14 @@ include: "./utils/workflow_utils.smk" # not able to merge this with snakemake_ut
 # =====================
 # Output
 # =====================
-FIG_EMB = j("figs", "embedding", "data~{data}_sampleId~{sampleId}_model~{model}.pdf")
+FIG_EMB = j("figs", "embedding", "data~{data}_sampleId~{sampleId}_model~{model}.png")
 
 # =====================
 # Main output
 # =====================
 rule supplementary_figs:
     input:
-        expand(FIG_EMB, data = ["polbook"], sampleId=["one"], model=MODEL_LIST),
+        expand(FIG_EMB, data = ["polbook"], sampleId=["two"], model=MODEL_LIST),
 
 # =====================
 # Plot

@@ -2,8 +2,11 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-24 00:52:33
 # @Last Modified by:   Sadamori Kojaku
-# @Last Modified time: 2023-01-24 01:20:26
+# @Last Modified time: 2023-02-14 10:41:49
 # %%
+import os
+
+os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
 import numpy as np
 import pandas as pd
 from scipy import sparse
@@ -17,7 +20,7 @@ if "snakemake" in sys.modules:
     node_table_file = snakemake.input["node_table_file"]
     output_file = snakemake.output["output_file"]
 else:
-    emb_file = "../data/derived/preprocessed/polbook/polbook_one/polbook_gat_None_deepwalk_deepwalk_embs.npy"
+    emb_file = "../data/derived/preprocessed/polbook/polbook_three/polbook_word2vec_None_deepwalk_deepwalk_embs.npy"
     node_table_file = "../data/derived/preprocessed/polbook/node_table.csv"
 
 # ========================
@@ -45,8 +48,11 @@ N = emb.shape[0]
 # PCA Projection
 # ========================
 from sklearn.decomposition import PCA
+from sklearn.neighbors import LocalOutlierFactor
 
-xy = PCA(n_components=2).fit_transform(emb)
+clf = LocalOutlierFactor(n_neighbors=40, contamination=0.1)
+s = clf.fit_predict(emb)
+xy = PCA(n_components=2, whiten=True).fit(emb[s > 0, :]).transform(emb)
 
 # ========================
 # Styles
@@ -60,7 +66,7 @@ if is_polbook_data:
             "Group": np.array(["Liberal", "Conservative", "Neutral"])[group_ids],
         }
     )
-    cmap = sns.color_palette()
+    cmap = sns.color_palette("tab10")
     colors = {"Liberal": cmap[0], "Conservative": cmap[3], "Neutral": cmap[4]}
 else:
     plot_data = pd.DataFrame(
@@ -105,4 +111,4 @@ ax.legend(
 )
 ax.axis("off")
 
-fig.savefig(output_file, bbox_inches="tight", dpi=300)
+fig.savefig("tmp.pdf", bbox_inches="tight", dpi=300)
