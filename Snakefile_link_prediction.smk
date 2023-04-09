@@ -108,7 +108,7 @@ FIG_FAIRNESS_PER_NODE = j("figs", "deepwalk_disparity_per_node.png")
 # ===================
 
 lp_benchmark_params = {
-    "edgeSampling":["uniform", "degree-biased", "degree-group-biased"],
+    "edgeSampling":["uniform", "degree-biased"],
     "model":MODEL_LIST,
     "sampleId":["one", "two", "three", "four", "five"],
     "iteration":list(range(N_ITERATION))
