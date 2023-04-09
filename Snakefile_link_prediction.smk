@@ -218,10 +218,10 @@ rule plot_auc_roc_score_deepwalk:
             "crosswalk+deepwalk",
             "deepwalk",
             "residual2vec",
-            "er_sampler+gcn+deepwalk"
+            "er_sampler+gcn+deepwalk",
             # "GCN+deepwalk+random",
             "GCN+deepwalk+r2v",
-            "er_sampler+gat+deepwalk"
+            "er_sampler+gat+deepwalk",
             # "GAT+deepwalk+random",
             "GAT+deepwalk+r2v",
             "baseline+deepwalk"
@@ -239,9 +239,9 @@ rule plot_auc_roc_score_node2vec:
             "fairwalk+node2vec",
             "crosswalk+node2vec",
             # "GCN+node2vec+random",
-            "er_sampler+gcn+node2vec"
+            "er_sampler+gcn+node2vec",
             "GCN+node2vec+r2v",
-            "er_sampler+gat+node2vec"
+            "er_sampler+gat+node2vec",
             # "GAT+node2vec+random",
             "GAT+node2vec+r2v",
             "baseline+node2vec" # replace this with baseline + node2vec
