@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 09:05:36
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-04-09 16:49:40
+# @Last Modified time: 2023-04-09 19:55:56
 import seaborn as sns
 
 model_names = {
@@ -23,10 +23,10 @@ model_names = {
     "residual2vec": "DeepWalk (debiased)",
     "baseline+deepwalk": "Baseline (debiased)",
     "baseline+node2vec": "Baseline-node2vec (debiased)",
-    "er_sampler+gat+node2vec": "GAT-node2vec",
-    "er_sampler+gat+deepwalk": "GAT",
-    "er_sampler+gcn+node2vec": "GCN-node2vec",
-    "er_sampler+gcn+deepwalk": "GCN",
+    "ersampler+gat+node2vec": "GAT-node2vec",
+    "ersampler+gat+deepwalk": "GAT",
+    "ersampler+gcn+node2vec": "GCN-node2vec",
+    "ersampler+gcn+deepwalk": "GCN",
 }
 
 model2group = {
@@ -47,10 +47,10 @@ model2group = {
     "residual2vec": "DeepWalk",
     "baseline+deepwalk": "Manipulation of embedding",
     "baseline+node2vec": "Manipulation of embedding",
-    "er_sampler+gat+node2vec": "GAT",
-    "er_sampler+gat+deepwalk": "GAT",
-    "er_sampler+gcn+node2vec": "GCN",
-    "er_sampler+gcn+deepwalk": "GCN"
+    "ersampler+gat+node2vec": "GAT",
+    "ersampler+gat+deepwalk": "GAT",
+    "ersampler+gcn+node2vec": "GCN",
+    "ersampler+gcn+deepwalk": "GCN"
 }
 model2type = {
     "fairwalk+deepwalk": "Debiased",
@@ -70,8 +70,8 @@ model2type = {
     "residual2vec": "Debiased",
     "baseline+deepwalk": "Debiased",
     "baseline+node2vec": "Debiased",
-    "er_sampler+gat+node2vec": "Vanilla",
-    "er_sampler+gat+deepwalk": "Vanilla",
+    "ersampler+gat+node2vec": "Vanilla",
+    "ersampler+gat+deepwalk": "Vanilla",
 }
 
 model2markers = {
