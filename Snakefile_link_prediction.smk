@@ -37,10 +37,10 @@ MODEL_LIST = [
     "residual2vec",
     "baseline+deepwalk",
     "baseline+node2vec",
-    # "er_sampler+gat+deepwalk",
-    # "er_sampler+gat+node2vec",
-    # "er_sampler+gcn+deepwalk",
-    # "er_sampler+gcn+node2vec",
+    "er_sampler+gat+deepwalk",
+    "er_sampler+gat+node2vec",
+    "er_sampler+gcn+deepwalk",
+    "er_sampler+gcn+node2vec",
 ]
 
 MODEL2EMBFILE_POSTFIX= {
@@ -61,10 +61,10 @@ MODEL2EMBFILE_POSTFIX= {
     "residual2vec": "_residual2vec_embs.npy",
     "baseline+deepwalk": "_baseline_man_woman+deepwalk_embs.npy",
     "baseline+node2vec": "_baseline_man_woman+node2vec_embs.npy",
-    # "er_sampler+gat+deepwalk": "_gat_deepwalk_r2v_er_sampler_embs.npy",
-    # "er_sampler+gat+node2vec": "_gat_node2vec_r2v_er_sampler_embs.npy",
-    # "er_sampler+gcn+deepwalk": "_gcn_deepwalk_r2v_er_sampler_embs.npy",
-    # "er_sampler+gcn+node2vec": "_gcn_node2vec_r2v_er_sampler_embs.npy",
+    "er_sampler+gat+deepwalk": "_gat_deepwalk_r2v_er_sampler_embs.npy",
+    "er_sampler+gat+node2vec": "_gat_node2vec_r2v_er_sampler_embs.npy",
+    "er_sampler+gcn+deepwalk": "_gcn_deepwalk_r2v_er_sampler_embs.npy",
+    "er_sampler+gcn+node2vec": "_gcn_node2vec_r2v_er_sampler_embs.npy",
     }
 
 # ====================
@@ -218,9 +218,11 @@ rule plot_auc_roc_score_deepwalk:
             "crosswalk+deepwalk",
             "deepwalk",
             "residual2vec",
-            "GCN+deepwalk+random",
+            "er_sampler+gcn+deepwalk"
+            # "GCN+deepwalk+random",
             "GCN+deepwalk+r2v",
-            "GAT+deepwalk+random",
+            "er_sampler+gat+deepwalk"
+            # "GAT+deepwalk+random",
             "GAT+deepwalk+r2v",
             "baseline+deepwalk"
         ]
@@ -236,9 +238,11 @@ rule plot_auc_roc_score_node2vec:
         focal_model_list = [
             "fairwalk+node2vec",
             "crosswalk+node2vec",
-            "GCN+node2vec+random",
+            # "GCN+node2vec+random",
+            "er_sampler+gcn+node2vec"
             "GCN+node2vec+r2v",
-            "GAT+node2vec+random",
+            "er_sampler+gat+node2vec"
+            # "GAT+node2vec+random",
             "GAT+node2vec+r2v",
             "baseline+node2vec" # replace this with baseline + node2vec
         ]
@@ -256,9 +260,11 @@ rule plot_disparity:
             "crosswalk+deepwalk",
             "deepwalk",
             "residual2vec",
-            "GCN+deepwalk+random",
+            # "GCN+deepwalk+random",
+            "er_sampler+gcn+deepwalk",
             "GCN+deepwalk+r2v",
-            "GAT+deepwalk+random",
+            # "GAT+deepwalk+random",
+            "er_sampler+gat+deepwalk",
             "GAT+deepwalk+r2v",
             "baseline+deepwalk"
         ]
@@ -274,9 +280,11 @@ rule plot_disparity_node2vec:
         focal_model_list = [
             "fairwalk+node2vec",
             "crosswalk+node2vec",
-            "GCN+node2vec+random",
+            "er_sampler+gcn+node2vec",
+            # "GCN+node2vec+random",
             "GCN+node2vec+r2v",
-            "GAT+node2vec+random",
+            "er_sampler+gat+node2vec",
+            # "GAT+node2vec+random",
             "GAT+node2vec+r2v",
             "baseline+node2vec"
         ]
@@ -294,9 +302,11 @@ rule plot_disparity_curve_deepwalk:
             "crosswalk+deepwalk",
             "deepwalk",
             "residual2vec",
-            "GCN+deepwalk+random",
+            # "GCN+deepwalk+random",
+            "er_sampler+gcn+deepwalk",
             "GCN+deepwalk+r2v",
-            "GAT+deepwalk+random",
+            # "GAT+deepwalk+random",
+            "er_sampler+gat+deepwalk",
             "GAT+deepwalk+r2v",
             "baseline+deepwalk"
         ]
@@ -312,9 +322,11 @@ rule plot_disparity_curve_node2vec:
         focal_model_list = [
             "fairwalk+node2vec",
             "crosswalk+node2vec",
-            "GCN+node2vec+random",
+            # "GCN+node2vec+random",
+            "er_sampler+gcn+node2vec",
             "GCN+node2vec+r2v",
-            "GAT+node2vec+random",
+            # "GAT+node2vec+random",
+            "er_sampler+gat+node2vec",
             "GAT+node2vec+r2v",
             "baseline+node2vec"
         ]
