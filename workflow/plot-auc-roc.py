@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-17 08:52:11
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-02-14 12:13:51
+# @Last Modified time: 2023-04-09 17:48:41
 # %%
 import numpy as np
 import pandas as pd
@@ -54,7 +54,7 @@ plot_data = data_table.copy()
 
 # Filtering
 plot_data = plot_data[plot_data["model"].isin(focal_model_list)]
-plot_data = plot_data[plot_data["edgeSampling"].isin(["degree-group-biased"])]
+plot_data = plot_data[plot_data["edgeSampling"].isin(["uniform"])]
 
 # Append new columns
 plot_data["modelType"] = plot_data["model"].map(model2type)
