@@ -63,8 +63,8 @@ MODEL2EMBFILE_POSTFIX= {
     "baseline+node2vec": "_baseline_man_woman+node2vec_embs.npy",
     "ersampler+gat+deepwalk": "_gat_deepwalk_r2v_er_sampler_embs.npy",
     "ersampler+gat+node2vec": "_gat_node2vec_r2v_er_sampler_embs.npy",
-    "ersampler+gcn+deepwalk": "_gcn_deepwalk_r2v_er_sampler_embs.npy",
-    "ersampler+gcn+node2vec": "_gcn_node2vec_r2v_er_sampler_embs.npy",
+    "groupbiased+gcn+deepwalk": "_gcn_deepwalk_r2v_er_sampler_embs.npy",
+    "groupbiased+gcn+node2vec": "_gcn_node2vec_r2v_er_sampler_embs.npy",
     }
 
 # ====================

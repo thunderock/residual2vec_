@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 00:55:24
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-04-08 13:38:05
+# @Last Modified time: 2023-04-10 15:54:39
 from os.path import join as j
 
 import numpy as np
@@ -85,9 +85,11 @@ class FileResources(object):
         negative_sampling = "deepwalk"
         if self.r2v: negative_sampling = "r2v"
         if self.model_name == "residual2vec":
+            if self.degree_agnostic:
+                return str(j(self.root, f"{self.dataset}_{self.model_name}_groupbiased.h5"))
             return str(j(self.root, f"{self.dataset}_{self.model_name}.h5"))
         if self.degree_agnostic:
-            return str(j(self.root, f"{self.dataset}_{self.model_name}_{feature_method}_{negative_sampling}_er_sampler.h5"))
+            return str(j(self.root, f"{self.dataset}_{self.model_name}_{feature_method}_{negative_sampling}_groupbiased.h5"))
         return str(j(self.root, f"{self.dataset}_{self.model_name}_{feature_method}_{negative_sampling}.h5"))
 
     @property
@@ -96,9 +98,12 @@ class FileResources(object):
         negative_sampling = "deepwalk"
         if self.r2v: negative_sampling = "r2v"
         if self.model_name == "residual2vec":
+            if self.degree_agnostic:
+                return str(j(self.root, f"{self.dataset}_{self.model_name}_groupbiased_embs.npy"))
+                
             return str(j(self.root, f"{self.dataset}_{self.model_name}_embs.npy"))
         if self.degree_agnostic:
-            return str(j(self.root, f"{self.dataset}_{self.model_name}_{feature_method}_{negative_sampling}_er_sampler_embs.npy"))
+            return str(j(self.root, f"{self.dataset}_{self.model_name}_{feature_method}_{negative_sampling}_groupbiased_embs.npy"))
         return str(j(self.root, f"{self.dataset}_{self.model_name}_{feature_method}_{negative_sampling}_embs.npy"))
 
 def get_dataset(name, **kwargs):

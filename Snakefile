@@ -96,8 +96,8 @@ rule train_gnn:
         num_nodes = snakemake_utils.get_num_nodes_from_adj(input.weighted_adj)
         labels = snakemake_utils.get_dataset(DATASET).get_grouped_col()
         sampler = negative_sampling
+        dcsbm = not DEGREE_AGNOSTIC
         if R2V:
-            dcsbm = not DEGREE_AGNOSTIC
             sbm = triplet_dataset.SbmSamplerWrapper(
                 adj_path=input.weighted_adj,
                 group_membership=labels,
@@ -140,7 +140,7 @@ rule train_gnn:
             adj_mat = snakemake_utils.get_adj_mat_from_path(input.weighted_adj).tocsr()
             y = labels.numpy()
             assert R2V
-            noise_sampler = node2vecs.utils.node_sampler.SBMNodeSampler(group_membership=y, window_length=1)
+            noise_sampler = node2vecs.utils.node_sampler.SBMNodeSampler(group_membership=y, window_length=1, dcsbm=dcsbm)
             graph_utils.generate_embedding_with_word2vec(adj_mat, dim, noise_sampler, config.DEVICE, output.model_weights) # not using code configs here so that comparizon with deepwalk is fair DATASET_LEARNING_RATE[DATASET], batch_size=params.BATCH_SIZE)
             return
             
@@ -312,8 +312,8 @@ rule generate_node_embeddings:
         num_nodes = snakemake_utils.get_num_nodes_from_adj(input.weighted_adj)
         sampler = negative_sampling
         labels = snakemake_utils.get_dataset(DATASET).get_grouped_col()
+        dcsbm = not DEGREE_AGNOSTIC
         if R2V:
-            dcsbm = not DEGREE_AGNOSTIC
             sbm = triplet_dataset.SbmSamplerWrapper(
                 adj_path=input.weighted_adj,
                 group_membership=labels,
@@ -351,7 +351,6 @@ rule generate_node_embeddings:
                 num_layers=None,
                 learn_outvec=False
             )
-
         elif GNN_MODEL == 'residual2vec':
             from node2vec import node2vecs
             m = node2vecs.Word2Vec(
@@ -394,5 +393,6 @@ rule generate_baseline_embs:
         NODE2VEC = NODE2VEC,
         DATA_ROOT = DATA_ROOT,
     script: "baseline_1.py"
+    
 # Snakefile for the link prediction benchmark
 include: "Snakefile_link_prediction.smk"
