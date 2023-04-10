@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 09:05:36
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-04-09 19:55:56
+# @Last Modified time: 2023-04-10 13:06:11
 import seaborn as sns
 
 model_names = {
@@ -72,6 +72,8 @@ model2type = {
     "baseline+node2vec": "Debiased",
     "ersampler+gat+node2vec": "Vanilla",
     "ersampler+gat+deepwalk": "Vanilla",
+    "ersampler+gcn+node2vec": "Vanilla",
+    "ersampler+gcn+deepwalk": "Vanilla"
 }
 
 model2markers = {
