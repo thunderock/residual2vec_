@@ -57,6 +57,7 @@ snakemake   generate_node_embeddings  -call --config root=facebook_one gnn_model
 snakemake   generate_node_embeddings  -call --config root=facebook_one gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false degree_agnostic=true dataset=facebook  --nolock --ignore-incomplete;
 snakemake   generate_node_embeddings  -call --config root=facebook_one gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false degree_agnostic=true dataset=facebook  --nolock --ignore-incomplete;
 
+snakemake   generate_node_embeddings  -call --config root=facebook_one gnn_model=residual2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true degree_agnostic=true dataset=facebook  --nolock --ignore-incomplete;
 
 
 which python;
@@ -110,6 +111,7 @@ snakemake   generate_node_embeddings  -call --config root=facebook_two gnn_model
 snakemake   generate_node_embeddings  -call --config root=facebook_two gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false degree_agnostic=true dataset=facebook  --nolock --ignore-incomplete;
 snakemake   generate_node_embeddings  -call --config root=facebook_two gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false degree_agnostic=true dataset=facebook  --nolock --ignore-incomplete;
 
+snakemake   generate_node_embeddings  -call --config root=facebook_two gnn_model=residual2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true degree_agnostic=true dataset=facebook  --nolock --ignore-incomplete;
 
 
 which python;
@@ -165,6 +167,7 @@ snakemake   generate_node_embeddings  -call --config root=facebook_three gnn_mod
 snakemake   generate_node_embeddings  -call --config root=facebook_three gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false degree_agnostic=true dataset=facebook  --nolock --ignore-incomplete;
 snakemake   generate_node_embeddings  -call --config root=facebook_three gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false degree_agnostic=true dataset=facebook  --nolock --ignore-incomplete;
 
+snakemake   generate_node_embeddings  -call --config root=facebook_three gnn_model=residual2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true degree_agnostic=true dataset=facebook  --nolock --ignore-incomplete;
 
 
 
@@ -218,6 +221,7 @@ snakemake   generate_node_embeddings  -call --config root=facebook_four gnn_mode
 snakemake   generate_node_embeddings  -call --config root=facebook_four gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false degree_agnostic=true dataset=facebook  --nolock --ignore-incomplete;
 snakemake   generate_node_embeddings  -call --config root=facebook_four gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false degree_agnostic=true dataset=facebook  --nolock --ignore-incomplete;
 
+snakemake   generate_node_embeddings  -call --config root=facebook_four gnn_model=residual2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true degree_agnostic=true dataset=facebook  --nolock --ignore-incomplete;
 
 
 which python;
@@ -270,4 +274,5 @@ snakemake   generate_node_embeddings  -call --config root=facebook_five gnn_mode
 snakemake   generate_node_embeddings  -call --config root=facebook_five gnn_model=gat env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false degree_agnostic=true dataset=facebook  --nolock --ignore-incomplete;
 snakemake   generate_node_embeddings  -call --config root=facebook_five gnn_model=gcn env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=false degree_agnostic=true dataset=facebook  --nolock --ignore-incomplete;
 
+snakemake   generate_node_embeddings  -call --config root=facebook_five gnn_model=residual2vec env=local device=cuda:0 r2v=true crosswalk=false fairwalk=false node2vec=true degree_agnostic=true dataset=facebook  --nolock --ignore-incomplete;
 
