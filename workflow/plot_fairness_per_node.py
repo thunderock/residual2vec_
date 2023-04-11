@@ -26,12 +26,13 @@ EMBS_MAPPING = {
     "deepwalk": "_deepwalk.npy",
     "node2vec": "_node2vec.npy",
     "residual2vec": "_residual2vec_embs.npy",
+    "groupbiased+residual2vec": "_residual2vec_groupbiased_embs.npy",
     "baseline+deepwalk": "_baseline_man_woman+deepwalk_embs.npy",
     "baseline+node2vec": "_baseline_man_woman+node2vec_embs.npy",
-    "ersampler+gat+deepwalk": "_gat_deepwalk_r2v_er_sampler_embs.npy",
-    "ersampler+gat+node2vec": "_gat_node2vec_r2v_er_sampler_embs.npy",
-    "ersampler+gcn+deepwalk": "_gcn_deepwalk_r2v_er_sampler_embs.npy",
-    "ersampler+gcn+node2vec": "_gcn_node2vec_r2v_er_sampler_embs.npy",}
+    "groupbiased+gat+deepwalk": "_gat_deepwalk_r2v_groupbiased_embs.npy",
+    "groupbiased+gat+node2vec": "_gat_node2vec_r2v_groupbiased_embs.npy",
+    "groupbiased+gcn+deepwalk": "_gcn_deepwalk_r2v_groupbiased_embs.npy",
+    "groupbiased+gcn+node2vec": "_gcn_node2vec_r2v_groupbiased_embs.npy",}
 SAMPLE_ID = "one"
 
 print(os.getcwd())
@@ -70,16 +71,16 @@ ARCHS = ["GCN", "GAT", "word2vec"]
 
 ARCH_MAPPING = {
     "GCN": {
-        "baseline": "ersampler+gcn+deepwalk",
-        "proposed": "GCN+deepwalk+r2v",
+        "baseline": "GCN+deepwalk+random",
+        "proposed": "groupbiased+gcn+deepwalk",
         },
     "GAT": {
-        "baseline": "ersampler+gat+deepwalk",
-        "proposed": "GAT+deepwalk+r2v",
+        "baseline": "GAT+deepwalk+random",
+        "proposed": "groupbiased+gat+deepwalk",
         },
     "word2vec": {
         "baseline": "deepwalk",
-        "proposed": "residual2vec",
+        "proposed": "groupbiased+residual2vec",
         },
 }
 

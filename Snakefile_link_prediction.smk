@@ -35,12 +35,13 @@ MODEL_LIST = [
     "deepwalk",
     "node2vec",
     "residual2vec",
+    "groupbiased+residual2vec"
     "baseline+deepwalk",
     "baseline+node2vec",
-    "ersampler+gat+deepwalk",
-    "ersampler+gat+node2vec",
-    "ersampler+gcn+deepwalk",
-    "ersampler+gcn+node2vec",
+    "groupbiased+gat+deepwalk",
+    "groupbiased+gat+node2vec",
+    "groupbiased+gcn+deepwalk",
+    "groupbiased+gcn+node2vec",
 ]
 
 MODEL2EMBFILE_POSTFIX= {
@@ -59,12 +60,13 @@ MODEL2EMBFILE_POSTFIX= {
     "deepwalk": "_deepwalk.npy",
     "node2vec": "_node2vec.npy",
     "residual2vec": "_residual2vec_embs.npy",
+    "groupbiased+residual2vec": "_residual2vec_groupbiased_embs.npy",
     "baseline+deepwalk": "_baseline_man_woman+deepwalk_embs.npy",
     "baseline+node2vec": "_baseline_man_woman+node2vec_embs.npy",
-    "ersampler+gat+deepwalk": "_gat_deepwalk_r2v_er_sampler_embs.npy",
-    "ersampler+gat+node2vec": "_gat_node2vec_r2v_er_sampler_embs.npy",
-    "groupbiased+gcn+deepwalk": "_gcn_deepwalk_r2v_er_sampler_embs.npy",
-    "groupbiased+gcn+node2vec": "_gcn_node2vec_r2v_er_sampler_embs.npy",
+    "groupbiased+gat+deepwalk": "_gat_deepwalk_r2v_groupbiased_embs.npy",
+    "groupbiased+gat+node2vec": "_gat_node2vec_r2v_groupbiased_embs.npy",
+    "groupbiased+gcn+deepwalk": "_gcn_deepwalk_r2v_groupbiased_embs.npy",
+    "groupbiased+gcn+node2vec": "_gcn_node2vec_r2v_groupbiased_embs.npy",
     }
 
 # ====================
@@ -217,13 +219,13 @@ rule plot_auc_roc_score_deepwalk:
             "fairwalk+deepwalk",
             "crosswalk+deepwalk",
             "deepwalk",
-            "residual2vec",
-            "ersampler+gcn+deepwalk",
-            # "GCN+deepwalk+random",
-            "GCN+deepwalk+r2v",
-            "ersampler+gat+deepwalk",
-            # "GAT+deepwalk+random",
-            "GAT+deepwalk+r2v",
+            "groupbiased+residual2vec",
+            "GCN+deepwalk+random",
+            "groupbiased+gcn+deepwalk",
+            # "GCN+deepwalk+r2v",
+            "GAT+deepwalk+random",
+            "groupbiased+gat+deepwalk",
+            # "GAT+deepwalk+r2v",
             "baseline+deepwalk"
         ]
     output:
@@ -238,12 +240,12 @@ rule plot_auc_roc_score_node2vec:
         focal_model_list = [
             "fairwalk+node2vec",
             "crosswalk+node2vec",
-            # "GCN+node2vec+random",
-            "ersampler+gcn+node2vec",
-            "GCN+node2vec+r2v",
-            "ersampler+gat+node2vec",
-            # "GAT+node2vec+random",
-            "GAT+node2vec+r2v",
+            "GCN+node2vec+random",
+            "groupbiased+gcn+node2vec",
+            # "GCN+node2vec+r2v",
+            "GAT+node2vec+random",
+            "groupbiased+gat+node2vec",
+            # "GAT+node2vec+r2v",
             "baseline+node2vec" # replace this with baseline + node2vec
         ]
     output:
@@ -259,13 +261,13 @@ rule plot_disparity:
             "fairwalk+deepwalk",
             "crosswalk+deepwalk",
             "deepwalk",
-            "residual2vec",
-            # "GCN+deepwalk+random",
-            "ersampler+gcn+deepwalk",
-            "GCN+deepwalk+r2v",
-            # "GAT+deepwalk+random",
-            "ersampler+gat+deepwalk",
-            "GAT+deepwalk+r2v",
+            "groupbiased+residual2vec",
+            "GCN+deepwalk+random",
+            "groupbiased+gcn+deepwalk",
+            # "GCN+deepwalk+r2v",
+            "GAT+deepwalk+random",
+            "groupbiased+gat+deepwalk",
+            # "GAT+deepwalk+r2v",
             "baseline+deepwalk"
         ]
     output:
@@ -280,12 +282,13 @@ rule plot_disparity_node2vec:
         focal_model_list = [
             "fairwalk+node2vec",
             "crosswalk+node2vec",
-            "ersampler+gcn+node2vec",
-            # "GCN+node2vec+random",
-            "GCN+node2vec+r2v",
-            "ersampler+gat+node2vec",
-            # "GAT+node2vec+random",
-            "GAT+node2vec+r2v",
+            "GCN+node2vec+random",
+            "groupbiased+gcn+node2vec",
+            
+            # "GCN+node2vec+r2v",
+            "GAT+node2vec+random",
+            "groupbiased+gat+node2vec",
+            # "GAT+node2vec+r2v",
             "baseline+node2vec"
         ]
     output:
@@ -301,13 +304,13 @@ rule plot_disparity_curve_deepwalk:
             "fairwalk+deepwalk",
             "crosswalk+deepwalk",
             "deepwalk",
-            "residual2vec",
-            # "GCN+deepwalk+random",
-            "ersampler+gcn+deepwalk",
-            "GCN+deepwalk+r2v",
-            # "GAT+deepwalk+random",
-            "ersampler+gat+deepwalk",
-            "GAT+deepwalk+r2v",
+            "groupbiased+residual2vec",
+            "GCN+deepwalk+random",
+            "groupbiased+gcn+deepwalk",
+            # "GCN+deepwalk+r2v",
+            "GAT+deepwalk+random",
+            "groupbiased+gat+deepwalk",
+            # "GAT+deepwalk+r2v",
             "baseline+deepwalk"
         ]
     output:
@@ -322,12 +325,12 @@ rule plot_disparity_curve_node2vec:
         focal_model_list = [
             "fairwalk+node2vec",
             "crosswalk+node2vec",
-            # "GCN+node2vec+random",
-            "ersampler+gcn+node2vec",
-            "GCN+node2vec+r2v",
-            # "GAT+node2vec+random",
-            "ersampler+gat+node2vec",
-            "GAT+node2vec+r2v",
+            "GCN+node2vec+random",
+            "groupbiased+gcn+node2vec",
+            # "GCN+node2vec+r2v",
+            "GAT+node2vec+random",
+            "groupbiased+gat+node2vec",
+            # "GAT+node2vec+r2v",
             "baseline+node2vec"
         ]
     output:
