@@ -35,7 +35,7 @@ MODEL_LIST = [
     "deepwalk",
     "node2vec",
     "residual2vec",
-    "groupbiased+residual2vec"
+    "groupbiased+residual2vec",
     "baseline+deepwalk",
     "baseline+node2vec",
     "groupbiased+gat+deepwalk",
