@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 09:05:36
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-04-11 00:25:28
+# @Last Modified time: 2023-04-11 13:23:38
 import seaborn as sns
 
 model_names = {
@@ -70,6 +70,7 @@ model2type = {
     "deepwalk": "Vanilla",
     "node2vec": "Vanilla",
     "residual2vec": "Debiased",
+    "groupbiased+residual2vec": "Debiased",
     "baseline+deepwalk": "Debiased",
     "baseline+node2vec": "Debiased",
     "groupbiased+gat+node2vec": "Debiased",
