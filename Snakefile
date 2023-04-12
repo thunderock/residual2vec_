@@ -204,7 +204,6 @@ rule generate_crosswalk_weights:
             file_path=output.fairwalk_weighted_adj,
             crosswalk=False,
             fairwalk=True,
-            
             num_nodes=num_nodes,
             edge_index=n.train_edges,
             group_membership=d.get_grouped_col()
@@ -222,7 +221,7 @@ rule generate_crosswalk_weights:
             crosswalk=False,
             fairwalk=False,
             num_nodes=num_nodes,
-            edge_index=n.train_edges,
+            edge_index=n.test_edges,
             group_membership=d.get_grouped_col()
         )
 

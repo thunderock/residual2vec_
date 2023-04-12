@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-17 03:57:05
-# @Last Modified by:   Sadamori Kojaku
-# @Last Modified time: 2023-01-17 09:35:10
+# @Last Modified by:   Ashutosh Tiwari
+# @Last Modified time: 2023-04-12 15:12:00
 # %%
 import numpy as np
 import pandas as pd
@@ -84,7 +84,7 @@ def generate_positive_negative_edges(net, test_net, neg_edge_sampler):
     while n_sampled < n_test_edges:
 
         # Sample negative edges based on SBM sampler
-        _neg_src = np.random.choice(src, size=n_test_edges - n_sampled, replace=True)
+        _neg_src = np.random.randint(0, n_nodes, size=n_test_edges - n_sampled)
         _neg_trg = neg_edge_sampler.sampling(_neg_src, _neg_src, n_nodes + 1)
 
         #
