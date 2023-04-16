@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 00:55:24
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-02-20 11:25:19
+# @Last Modified time: 2023-04-12 16:55:25
 from os.path import join as j
 
 import numpy as np
@@ -29,7 +29,7 @@ def get_string_boolean(string):
 
 
 class FileResources(object):
-    def __init__(self, root: str, fairwalk:bool, crosswalk: bool, r2v: bool, model_name:str, node2vec:bool, dataset:str):
+    def __init__(self, root: str, fairwalk:bool, crosswalk: bool, r2v: bool, model_name:str, node2vec:bool, dataset:str, degree_agnostic:bool):
         self.root = root
         self.crosswalk = crosswalk
         self.r2v = r2v
@@ -37,6 +37,7 @@ class FileResources(object):
         self.model_name = model_name
         self.node2vec = node2vec
         self.dataset = dataset
+        self.degree_agnostic = degree_agnostic
 
     @property
     def adj_path(self):
@@ -84,7 +85,11 @@ class FileResources(object):
         negative_sampling = "deepwalk"
         if self.r2v: negative_sampling = "r2v"
         if self.model_name == "residual2vec":
+            if self.degree_agnostic:
+                return str(j(self.root, f"{self.dataset}_{self.model_name}_groupbiased.h5"))
             return str(j(self.root, f"{self.dataset}_{self.model_name}.h5"))
+        if self.degree_agnostic:
+            return str(j(self.root, f"{self.dataset}_{self.model_name}_{feature_method}_{negative_sampling}_groupbiased.h5"))
         return str(j(self.root, f"{self.dataset}_{self.model_name}_{feature_method}_{negative_sampling}.h5"))
 
     @property
@@ -93,7 +98,12 @@ class FileResources(object):
         negative_sampling = "deepwalk"
         if self.r2v: negative_sampling = "r2v"
         if self.model_name == "residual2vec":
+            if self.degree_agnostic:
+                return str(j(self.root, f"{self.dataset}_{self.model_name}_groupbiased_embs.npy"))
+                
             return str(j(self.root, f"{self.dataset}_{self.model_name}_embs.npy"))
+        if self.degree_agnostic:
+            return str(j(self.root, f"{self.dataset}_{self.model_name}_{feature_method}_{negative_sampling}_groupbiased_embs.npy"))
         return str(j(self.root, f"{self.dataset}_{self.model_name}_{feature_method}_{negative_sampling}_embs.npy"))
 
 def get_dataset(name, **kwargs):
@@ -122,6 +132,10 @@ def get_dataset(name, **kwargs):
     elif name == 'twitch':
         from dataset import twitch_data
         dataset = twitch_data.TwitchData(group_col='language', **kwargs)
+    elif name == 'generic':
+        from dataset import generic_data
+        assert 'edge_index' in kwargs and 'group_membership' in kwargs, "edge_index and group_membership must be provided for generic dataset"
+        dataset = generic_data.GenericData(**kwargs)
     # add other datasets here
     return dataset
 
@@ -210,7 +224,6 @@ def _get_node2vec_model(embedding_dim, num_nodes, weighted_adj_path=None, group_
             embedding_dim=embedding_dim,
             weighted_adj=weighted_adj_path
         )
-
     return weighted_node2vec.UnWeightedNode2Vec(
             num_nodes=num_nodes,
             embedding_dim=embedding_dim,
@@ -231,9 +244,7 @@ def train_deepwalk_get_embs(file_path, **kwargs):
     return model.train_and_get_embs(file_path)
 
 def store_weighted_adj(file_path, edge_index, num_nodes, crosswalk, fairwalk, group_membership,):
-    
     # make this edge index symmetric
-    
     edge_index = torch.unique(torch.cat([edge_index, edge_index.flip(0)], dim=1), dim=1)
     row, col = edge_index
     from torch_sparse import SparseTensor

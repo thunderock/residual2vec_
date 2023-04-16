@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+# @Author: Ashutosh Tiwari
+# @Email: checkashu@gmail.com
+# @Date:   2023-02-19 17:05:02
+# @Filepath: utils/network_splitter.py
 import numpy as np
 import torch
 from scipy import sparse
@@ -36,7 +41,10 @@ class NetworkTrainTestSplitterWithMST(NetworkTrainTestSplitter):
         :param G: Networkx graph object. Origin Graph
         :param fraction: Fraction of edges that will be removed (test_edge).
         """
-
+        # remove duplicate edges from undirected graph
+        edge_list = torch.unique(torch.cat([edge_list, edge_list.flip(0)], dim=1), dim=1)
+        edge_list = edge_list[:, edge_list[0] < edge_list[1]]
+        
         super(NetworkTrainTestSplitterWithMST, self).__init__(
             num_nodes=num_nodes, edge_list=edge_list, fraction=fraction
         )
