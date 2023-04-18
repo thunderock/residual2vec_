@@ -145,7 +145,7 @@ rule fairness_per_node:
         embs_mapping = MODEL2EMBFILE_POSTFIX,
         datasets = DATA_LIST,
         base_dir = SRC_DATA_ROOT,
-        sample_id = "one",
+        sample_ids = SAMPLE_ID_LIST
     output:
         FIG_FAIRNESS_PER_NODE
     threads: 1
