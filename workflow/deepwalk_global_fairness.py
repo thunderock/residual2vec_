@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 # @Author: Ashutosh Tiwari
 # @Email: checkashu@gmail.com
-# @Date:   2023-02-24 14:40:10
-# @Filepath: workflow/plot_fairness_per_node.py
+# @Date:   2023-04-18 18:13:09
+# @Filepath: workflow/deepwalk_global_fairness.py
 import sys, os
 
 
 DATASETS = ["polbook", "polblog", "airport", 'twitch', 'facebook']
 # print present working directory
 BASE_DIR = "../final_"
-OUTPUT_FILE = "figs/deepwalk_disparity_per_node.png"
+OUTPUT_FILE = "figs/deepwalk_global_fairness.png"
 EMBS_MAPPING = {
     "fairwalk+deepwalk": "_fairwalk_deepwalk.npy",
     "fairwalk+node2vec": "_fairwalk_node2vec.npy",
@@ -33,7 +33,11 @@ EMBS_MAPPING = {
     "groupbiased+gat+node2vec": "_gat_node2vec_r2v_groupbiased_embs.npy",
     "groupbiased+gcn+deepwalk": "_gcn_deepwalk_r2v_groupbiased_embs.npy",
     "groupbiased+gcn+node2vec": "_gcn_node2vec_r2v_groupbiased_embs.npy",}
+
+
 SAMPLE_IDS = ["one", "two", "three", "four", "five"]
+
+
 
 print(os.getcwd())
 print(os.listdir())
@@ -58,8 +62,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from tqdm import tqdm
 from utils import snakemake_utils, score
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
-def get_embs(dataset,sample_id):
+
+def get_embs(dataset, sample_id):
 
     folder = j(BASE_DIR, dataset, dataset + '_' + sample_id)
     ret = {}
@@ -67,7 +73,9 @@ def get_embs(dataset,sample_id):
         ret[i] = np.load(j(folder, dataset + EMBS_MAPPING[i]))
     return ret
 
-ARCHS = ["GCN", "GAT", "word2vec"]
+def get_labels(dataset):
+    return snakemake_utils.get_dataset(dataset).get_grouped_col().numpy()
+
 
 ARCH_MAPPING = {
     "GCN": {
@@ -84,11 +92,39 @@ ARCH_MAPPING = {
         },
 }
 
+ARCHS = ["GCN", "GAT", "word2vec"]
+
+
+
+# arch, ds = "GCN", "polbook"
+
+# embs = get_embs(ds, "one")
+# proposed = embs[ARCH_MAPPING[arch]["proposed"]]
+# baseline = embs[ARCH_MAPPING[arch]["baseline"]]
+# y = get_labels(ds)
+
+
 mp = {
     'Dataset': [],
     'architecture': [],
     'score': []
 }
+
+
+
+def get_fairness_score(emb, y_):
+    k = np.unique(y_).shape[0]
+    v = LinearDiscriminantAnalysis(n_components=k - 1).fit(emb, y_)
+    v = v.scalings_
+    v = np.einsum("ij,j->ij", v, 1 / np.linalg.norm(v, axis=0))
+    num = np.var(emb @ v, axis=0)
+    den = np.var(emb, axis=0)
+    return np.sum(num) / np.sum(den)
+    
+# proposed = get_fairness_score(proposed, y)
+# baseline = get_fairness_score(baseline, y)
+# 
+# print(proposed, baseline, proposed / baseline)
 
 for dataset in tqdm(DATASETS,desc="loading embs"):
     y = snakemake_utils.get_dataset(dataset).get_grouped_col().numpy()
@@ -97,50 +133,34 @@ for dataset in tqdm(DATASETS,desc="loading embs"):
         emb = get_embs(dataset, sample_id)
         for arch in ARCHS:
             for model in ["baseline", "proposed"]:
-                s = score.get_node_parity(emb[ARCH_MAPPING[arch][model]], y, 'std')
-                df.append(pd.DataFrame({
-                    'dataset': dataset,
-                    'disparity per node': s,
-                    'model': model,
-                    'architecture': arch,
-                    'sample_id': sample_id,
-                    "node_id": np.arange(len(y))
-                }))              
-    df = pd.concat(df, axis=0, ignore_index=True)
+                s = get_fairness_score(emb[ARCH_MAPPING[arch][model]], y)
+                df.append((
+                    dataset,
+                    s,
+                    model,
+                    arch,
+                    sample_id
+                ))              
+    df = pd.DataFrame(df, columns=['dataset', 'disparity per node', 'model', 'architecture', 'sample_id'])
+    df.to_csv(f"/tmp/df_{dataset}.csv", index=False)
     for arch in ARCHS:
-        baseline_scores = df[(df.architecture == arch) & (df.model == 'baseline') & (df.dataset == dataset)][['disparity per node', 'node_id']].groupby('node_id', sort=True).mean()['disparity per node'].values
-        proposed_scores = df[(df.architecture == arch) & (df.model == 'proposed') & (df.dataset == dataset)][['disparity per node', 'node_id']].groupby('node_id', sort=True,).mean()['disparity per node'].values
-        
-        ratio = ((baseline_scores - proposed_scores) > 0).sum() / baseline_scores.shape[0]
+        baseline_scores = np.mean(df[(df.architecture == arch) & (df.model == 'baseline') & (df.dataset == dataset)]['disparity per node'].values)
+        proposed_scores = np.mean(df[(df.architecture == arch) & (df.model == 'proposed') & (df.dataset == dataset)]['disparity per node'].values)
+        ratio = proposed_scores / baseline_scores
         mp['Dataset'].append(dataset.capitalize())
         mp['architecture'].append(arch)
         mp['score'].append(ratio)
-# df = []
-
-# for arch in tqdm(ARCHS, desc="creating df"):
-#     for i, dataset in enumerate(DATASETS):
-#         for model in ["baseline", "proposed"]:
-#             s = score.get_node_parity(embs[i][ARCH_MAPPING[arch][model]], y[i], 'std')
-#             df.append(pd.DataFrame({
-#                 'dataset': dataset,
-#                 'disparity per node': s,
-#                 'model': model,
-#                 'architecture': arch,
-#             }))
-# print(df.shape)
-# df.to_csv(OUTPUT_FILE, index=False)
 
 fdf = pd.DataFrame(mp)
+
 ax=sns.barplot(data=fdf, x='Dataset', y='score', hue='architecture', palette='Set2')
-plt.ylabel('Fraction of nodes debiased by \n proposed method', fontsize=15)
+
 plt.xlabel('Datasets', fontsize=20)
 ax.legend(loc="upper right", prop = { "size": 8 }, frameon=False)
-plt.axhline(y=.5, linestyle='--', c='red', )
+plt.axhline(y=1., linestyle='--', c='red', )
 plt.xticks(fontsize=14)
 plt.yticks(fontsize=14)
-ax.annotate('50% baseline', xy=(0, .52), color='#4D4D4D',)
 sns.despine()
 #save figure
 plt.savefig(OUTPUT_FILE, dpi='figure', bbox_inches='tight')
-
 

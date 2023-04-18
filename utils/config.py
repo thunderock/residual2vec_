@@ -55,7 +55,8 @@ R2V_TRAINING_EPOCHS = {
     'polblog': 200 * 3, 
     'facebook': 30,
     'copenhagen': 200 * 3,
-    "twitch": 20
+    "twitch": 20,
+    'generic': 10
 }
 NUM_GNN_LAYERS = {
     'pokec': 5,
@@ -65,7 +66,8 @@ NUM_GNN_LAYERS = {
     'polbook': 3,
     'polblog': 3,
     'copenhagen': 3,
-    'twitch': 5
+    'twitch': 5,
+    'generic': 3
 }
 
 NUM_NEGATIVE_SAMPLING = {
@@ -76,7 +78,8 @@ NUM_NEGATIVE_SAMPLING = {
     'polblog': 10,
     'copenhagen': 10,
     'facebook': 1,
-    'twitch': 1
+    'twitch': 1,
+    'generic': 1
 }
 
 NUM_THREADS = {
@@ -87,7 +90,8 @@ NUM_THREADS = {
     'polblog': 50,
     'facebook': 50,
     'copenhagen': 50,
-    'twitch': 50
+    'twitch': 50,
+    'generic': 50
 }
 
 TEST_SPLIT_FRAC = {
@@ -98,7 +102,8 @@ TEST_SPLIT_FRAC = {
     'polblog': .45,
     'facebook': .45,
     'copenhagen': .45,
-    'twitch': .45
+    'twitch': .45,
+    'generic': .45
 }
 
 DATASET_BATCH_SIZE = {
@@ -107,6 +112,7 @@ DATASET_BATCH_SIZE = {
     "polblog": 256,
     "facebook": 256,
     "twitch": 8,
+    'generic': 256
 }
 
 DATASET_LEARNING_RATE = {
@@ -115,8 +121,5 @@ DATASET_LEARNING_RATE = {
     "polblog": 0.001,
     "facebook": 0.001,
     "twitch": 0.001 / 32,
+    'generic': 0.001
 }
-
-NUM_WORKERS = 20
-LOGGER = logging.getLogger(__name__)
-LOGFORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
