@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 09:05:36
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-02-14 14:01:29
+# @Last Modified time: 2023-04-11 13:23:38
 import seaborn as sns
 
 model_names = {
@@ -21,8 +21,13 @@ model_names = {
     "deepwalk": "DeepWalk",
     "node2vec": "node2vec",
     "residual2vec": "DeepWalk (debiased)",
+    "groupbiased+residual2vec": "DeepWalk (debiased)",
     "baseline+deepwalk": "Baseline (debiased)",
     "baseline+node2vec": "Baseline-node2vec (debiased)",
+    "groupbiased+gat+node2vec": "GAT-node2vec (debiased)",
+    "groupbiased+gat+deepwalk": "GAT (debiased)",
+    "groupbiased+gcn+node2vec": "GCN-node2vec (debiased)",
+    "groupbiased+gcn+deepwalk": "GCN (debiased)",
 }
 
 model2group = {
@@ -41,8 +46,13 @@ model2group = {
     "deepwalk": "DeepWalk",
     "node2vec": "DeepWalk",
     "residual2vec": "DeepWalk",
+    "groupbiased+residual2vec": "DeepWalk",
     "baseline+deepwalk": "Manipulation of embedding",
     "baseline+node2vec": "Manipulation of embedding",
+    "groupbiased+gat+node2vec": "GAT",
+    "groupbiased+gat+deepwalk": "GAT",
+    "groupbiased+gcn+node2vec": "GCN",
+    "groupbiased+gcn+deepwalk": "GCN"
 }
 model2type = {
     "fairwalk+deepwalk": "Debiased",
@@ -60,8 +70,13 @@ model2type = {
     "deepwalk": "Vanilla",
     "node2vec": "Vanilla",
     "residual2vec": "Debiased",
+    "groupbiased+residual2vec": "Debiased",
     "baseline+deepwalk": "Debiased",
     "baseline+node2vec": "Debiased",
+    "groupbiased+gat+node2vec": "Debiased",
+    "groupbiased+gat+deepwalk": "Debiased",
+    "groupbiased+gcn+node2vec": "Debiased",
+    "groupbiased+gcn+deepwalk": "Debiased"
 }
 
 model2markers = {

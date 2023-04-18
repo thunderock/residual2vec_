@@ -35,12 +35,13 @@ MODEL_LIST = [
     "deepwalk",
     "node2vec",
     "residual2vec",
+    "groupbiased+residual2vec",
     "baseline+deepwalk",
     "baseline+node2vec",
-    # "er_sampler+gat+deepwalk",
-    # "er_sampler+gat+node2vec",
-    # "er_sampler+gcn+deepwalk",
-    # "er_sampler+gcn+node2vec",
+    "groupbiased+gat+deepwalk",
+    "groupbiased+gat+node2vec",
+    "groupbiased+gcn+deepwalk",
+    "groupbiased+gcn+node2vec",
 ]
 
 MODEL2EMBFILE_POSTFIX= {
@@ -59,12 +60,13 @@ MODEL2EMBFILE_POSTFIX= {
     "deepwalk": "_deepwalk.npy",
     "node2vec": "_node2vec.npy",
     "residual2vec": "_residual2vec_embs.npy",
+    "groupbiased+residual2vec": "_residual2vec_groupbiased_embs.npy",
     "baseline+deepwalk": "_baseline_man_woman+deepwalk_embs.npy",
     "baseline+node2vec": "_baseline_man_woman+node2vec_embs.npy",
-    # "er_sampler+gat+deepwalk": "_gat_deepwalk_r2v_er_sampler_embs.npy",
-    # "er_sampler+gat+node2vec": "_gat_node2vec_r2v_er_sampler_embs.npy",
-    # "er_sampler+gcn+deepwalk": "_gcn_deepwalk_r2v_er_sampler_embs.npy",
-    # "er_sampler+gcn+node2vec": "_gcn_node2vec_r2v_er_sampler_embs.npy",
+    "groupbiased+gat+deepwalk": "_gat_deepwalk_r2v_groupbiased_embs.npy",
+    "groupbiased+gat+node2vec": "_gat_node2vec_r2v_groupbiased_embs.npy",
+    "groupbiased+gcn+deepwalk": "_gcn_deepwalk_r2v_groupbiased_embs.npy",
+    "groupbiased+gcn+node2vec": "_gcn_node2vec_r2v_groupbiased_embs.npy",
     }
 
 # ====================
@@ -108,7 +110,7 @@ FIG_FAIRNESS_PER_NODE = j("figs", "deepwalk_disparity_per_node.png")
 # ===================
 
 lp_benchmark_params = {
-    "edgeSampling":["uniform", "degree-biased", "degree-group-biased"],
+    "edgeSampling":["uniform", "degree-biased"],
     "model":MODEL_LIST,
     "sampleId":["one", "two", "three", "four", "five"],
     "iteration":list(range(N_ITERATION))
@@ -217,11 +219,13 @@ rule plot_auc_roc_score_deepwalk:
             "fairwalk+deepwalk",
             "crosswalk+deepwalk",
             "deepwalk",
-            "residual2vec",
+            "groupbiased+residual2vec",
             "GCN+deepwalk+random",
-            "GCN+deepwalk+r2v",
+            "groupbiased+gcn+deepwalk",
+            # "GCN+deepwalk+r2v",
             "GAT+deepwalk+random",
-            "GAT+deepwalk+r2v",
+            "groupbiased+gat+deepwalk",
+            # "GAT+deepwalk+r2v",
             "baseline+deepwalk"
         ]
     output:
@@ -237,9 +241,11 @@ rule plot_auc_roc_score_node2vec:
             "fairwalk+node2vec",
             "crosswalk+node2vec",
             "GCN+node2vec+random",
-            "GCN+node2vec+r2v",
+            "groupbiased+gcn+node2vec",
+            # "GCN+node2vec+r2v",
             "GAT+node2vec+random",
-            "GAT+node2vec+r2v",
+            "groupbiased+gat+node2vec",
+            # "GAT+node2vec+r2v",
             "baseline+node2vec" # replace this with baseline + node2vec
         ]
     output:
@@ -255,11 +261,13 @@ rule plot_disparity:
             "fairwalk+deepwalk",
             "crosswalk+deepwalk",
             "deepwalk",
-            "residual2vec",
+            "groupbiased+residual2vec",
             "GCN+deepwalk+random",
-            "GCN+deepwalk+r2v",
+            "groupbiased+gcn+deepwalk",
+            # "GCN+deepwalk+r2v",
             "GAT+deepwalk+random",
-            "GAT+deepwalk+r2v",
+            "groupbiased+gat+deepwalk",
+            # "GAT+deepwalk+r2v",
             "baseline+deepwalk"
         ]
     output:
@@ -275,9 +283,12 @@ rule plot_disparity_node2vec:
             "fairwalk+node2vec",
             "crosswalk+node2vec",
             "GCN+node2vec+random",
-            "GCN+node2vec+r2v",
+            "groupbiased+gcn+node2vec",
+            
+            # "GCN+node2vec+r2v",
             "GAT+node2vec+random",
-            "GAT+node2vec+r2v",
+            "groupbiased+gat+node2vec",
+            # "GAT+node2vec+r2v",
             "baseline+node2vec"
         ]
     output:
@@ -293,11 +304,13 @@ rule plot_disparity_curve_deepwalk:
             "fairwalk+deepwalk",
             "crosswalk+deepwalk",
             "deepwalk",
-            "residual2vec",
+            "groupbiased+residual2vec",
             "GCN+deepwalk+random",
-            "GCN+deepwalk+r2v",
+            "groupbiased+gcn+deepwalk",
+            # "GCN+deepwalk+r2v",
             "GAT+deepwalk+random",
-            "GAT+deepwalk+r2v",
+            "groupbiased+gat+deepwalk",
+            # "GAT+deepwalk+r2v",
             "baseline+deepwalk"
         ]
     output:
@@ -313,9 +326,11 @@ rule plot_disparity_curve_node2vec:
             "fairwalk+node2vec",
             "crosswalk+node2vec",
             "GCN+node2vec+random",
-            "GCN+node2vec+r2v",
+            "groupbiased+gcn+node2vec",
+            # "GCN+node2vec+r2v",
             "GAT+node2vec+random",
-            "GAT+node2vec+r2v",
+            "groupbiased+gat+node2vec",
+            # "GAT+node2vec+r2v",
             "baseline+node2vec"
         ]
     output:
