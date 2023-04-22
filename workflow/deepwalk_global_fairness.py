@@ -10,6 +10,7 @@ DATASETS = ["polbook", "polblog", "airport", 'twitch', 'facebook']
 # print present working directory
 BASE_DIR = "../final_"
 OUTPUT_FILE = "figs/deepwalk_global_fairness.png"
+CW_OUTPUT_FILE = "figs/crosswalk_global_fairness.png"
 EMBS_MAPPING = {
     "fairwalk+deepwalk": "_fairwalk_deepwalk.npy",
     "fairwalk+node2vec": "_fairwalk_node2vec.npy",
@@ -44,12 +45,14 @@ print(os.listdir())
 if "snakemake" in sys.modules:
     DATASETS = snakemake.params["datasets"]
     BASE_DIR = snakemake.params["base_dir"]
-    OUTPUT_FILE = str(snakemake.output)
+    OUTPUT_FILE = str(snakemake.output[0])
+    CW_OUTPUT_FILE = str(snakemake.output[1])
     EMBS_MAPPING = snakemake.params["embs_mapping"]
     SAMPLE_IDS = snakemake.params["sample_ids"]
 print(DATASETS)
 print(BASE_DIR)
 print(OUTPUT_FILE)
+print(CW_OUTPUT_FILE)
 print(EMBS_MAPPING)
 print(SAMPLE_IDS)
  
@@ -90,9 +93,17 @@ ARCH_MAPPING = {
         "baseline": "deepwalk",
         "proposed": "groupbiased+residual2vec",
         },
+    "crosswalk": {
+        "baseline": "deepwalk",
+        "proposed": "crosswalk+deepwalk",
+    },
+    "fairwalk": {
+        "baseline": "deepwalk",
+        "proposed": "fairwalk+deepwalk",
+    }
 }
 
-ARCHS = ["GCN", "GAT", "word2vec"]
+ARCHS = ["GCN", "GAT", "word2vec", "crosswalk", "fairwalk"]
 
 
 
@@ -153,14 +164,21 @@ for dataset in tqdm(DATASETS,desc="loading embs"):
 
 fdf = pd.DataFrame(mp)
 
-ax=sns.barplot(data=fdf, x='Dataset', y='score', hue='architecture', palette='Set2')
+def plot_global_fairness(dframe, file_name):
+    
+    ax=sns.barplot(data=dframe, x='Dataset', y='score', hue='architecture', palette='Set2')
+    ax.set_yscale('log')
 
-plt.xlabel('Datasets', fontsize=20)
-ax.legend(loc="upper right", prop = { "size": 8 }, frameon=False)
-plt.axhline(y=1., linestyle='--', c='red', )
-plt.xticks(fontsize=14)
-plt.yticks(fontsize=14)
-sns.despine()
-#save figure
-plt.savefig(OUTPUT_FILE, dpi='figure', bbox_inches='tight')
+    plt.xlabel('Datasets', fontsize=20)
+    ax.legend(loc="upper right", prop = { "size": 8 }, frameon=False)
+    plt.axhline(y=1., linestyle='--', c='#4D4D4D', )
+    plt.xticks(fontsize=14)
+    plt.yticks(fontsize=14)
+    sns.despine()
+    #save figure
+    plt.savefig(file_name, dpi='figure', bbox_inches='tight')
+
+plot_global_fairness(fdf[~fdf.architecture.isin(['crosswalk', 'fairwalk'])], OUTPUT_FILE)
+plot_global_fairness(fdf[fdf.architecture.isin(['crosswalk', 'fairwalk'])], CW_OUTPUT_FILE)
+
 
