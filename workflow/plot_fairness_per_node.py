@@ -10,6 +10,7 @@ DATASETS = ["polbook", "polblog", "airport", 'twitch', 'facebook']
 # print present working directory
 BASE_DIR = "../final_"
 OUTPUT_FILE = "figs/deepwalk_disparity_per_node.png"
+CW_OUTPUT_FILE = "figs/crosswalk_disparity_per_node.png"
 EMBS_MAPPING = {
     "fairwalk+deepwalk": "_fairwalk_deepwalk.npy",
     "fairwalk+node2vec": "_fairwalk_node2vec.npy",
@@ -40,7 +41,8 @@ print(os.listdir())
 if "snakemake" in sys.modules:
     DATASETS = snakemake.params["datasets"]
     BASE_DIR = snakemake.params["base_dir"]
-    OUTPUT_FILE = str(snakemake.output)
+    OUTPUT_FILE = str(snakemake.output[0])
+    CW_OUTPUT_FILE = str(snakemake.output[1])
     EMBS_MAPPING = snakemake.params["embs_mapping"]
     SAMPLE_IDS = snakemake.params["sample_ids"]
 print(DATASETS)
@@ -67,7 +69,7 @@ def get_embs(dataset,sample_id):
         ret[i] = np.load(j(folder, dataset + EMBS_MAPPING[i]))
     return ret
 
-ARCHS = ["GCN", "GAT", "word2vec"]
+ARCHS = ["GCN", "GAT", "word2vec", "crosswalk", "fairwalk"]
 
 ARCH_MAPPING = {
     "GCN": {
@@ -82,6 +84,14 @@ ARCH_MAPPING = {
         "baseline": "deepwalk",
         "proposed": "groupbiased+residual2vec",
         },
+    "crosswalk": {
+        "baseline": "deepwalk",
+        "proposed": "crosswalk+deepwalk",
+    },
+    "fairwalk": {
+        "baseline": "deepwalk",
+        "proposed": "fairwalk+deepwalk",
+    }
 }
 
 mp = {
@@ -115,32 +125,24 @@ for dataset in tqdm(DATASETS,desc="loading embs"):
         mp['Dataset'].append(dataset.capitalize())
         mp['architecture'].append(arch)
         mp['score'].append(ratio)
-# df = []
 
-# for arch in tqdm(ARCHS, desc="creating df"):
-#     for i, dataset in enumerate(DATASETS):
-#         for model in ["baseline", "proposed"]:
-#             s = score.get_node_parity(embs[i][ARCH_MAPPING[arch][model]], y[i], 'std')
-#             df.append(pd.DataFrame({
-#                 'dataset': dataset,
-#                 'disparity per node': s,
-#                 'model': model,
-#                 'architecture': arch,
-#             }))
-# print(df.shape)
-# df.to_csv(OUTPUT_FILE, index=False)
 
 fdf = pd.DataFrame(mp)
-ax=sns.barplot(data=fdf, x='Dataset', y='score', hue='architecture', palette='Set2')
-plt.ylabel('Fraction of nodes debiased by \n proposed method', fontsize=15)
-plt.xlabel('Datasets', fontsize=20)
-ax.legend(loc="upper right", prop = { "size": 8 }, frameon=False)
-plt.axhline(y=.5, linestyle='--', c='red', )
-plt.xticks(fontsize=14)
-plt.yticks(fontsize=14)
-ax.annotate('50% baseline', xy=(0, .52), color='#4D4D4D',)
-sns.despine()
-#save figure
-plt.savefig(OUTPUT_FILE, dpi='figure', bbox_inches='tight')
+
+def plot_local_fairness(dframe, file_name):
+    
+    ax=sns.barplot(data=dframe, x='Dataset', y='score', hue='architecture', palette='Set2')
+    plt.ylabel('Fraction of nodes debiased by \n proposed method', fontsize=15)
+    plt.xlabel('Datasets', fontsize=20)
+    ax.legend(loc="upper right", prop = { "size": 8 }, frameon=False)
+    plt.axhline(y=.5, linestyle='--', c='#4D4D4D', )
+    plt.xticks(list(plt.xticks()[0]) + [.5], fontsize=14)
+    plt.yticks(fontsize=14)
+    sns.despine()
+    #save figure
+    plt.savefig(file_name, dpi='figure', bbox_inches='tight')
+
+plot_local_fairness(fdf[~fdf.Dataset.isin(['crosswalk', 'fairwalk'])], OUTPUT_FILE)
 
 
+plot_local_fairness(fdf[fdf.Dataset.isin(['crosswalk', 'fairwalk'])], CW_OUTPUT_FILE)
