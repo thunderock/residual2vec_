@@ -155,18 +155,19 @@ for dataset in tqdm(DATASETS,desc="loading embs"):
     df = pd.DataFrame(df, columns=['dataset', 'disparity per node', 'model', 'architecture', 'sample_id'])
     df.to_csv(f"/tmp/df_{dataset}.csv", index=False)
     for arch in ARCHS:
-        baseline_scores = np.mean(df[(df.architecture == arch) & (df.model == 'baseline') & (df.dataset == dataset)]['disparity per node'].values)
-        proposed_scores = np.mean(df[(df.architecture == arch) & (df.model == 'proposed') & (df.dataset == dataset)]['disparity per node'].values)
-        ratio = proposed_scores / baseline_scores
-        mp['Dataset'].append(dataset.capitalize())
-        mp['architecture'].append(arch)
-        mp['score'].append(ratio)
+        baseline_scores = df[(df.architecture == arch) & (df.model == 'baseline') & (df.dataset == dataset)]['disparity per node'].values
+        proposed_scores = df[(df.architecture == arch) & (df.model == 'proposed') & (df.dataset == dataset)]['disparity per node'].values
+        for i in range(len(baseline_scores)):
+            mp['Dataset'].append(dataset.capitalize())
+            mp['architecture'].append(arch)
+            mp['score'].append(proposed_scores[i] / baseline_scores[i])
+        
 
 fdf = pd.DataFrame(mp)
 
 def plot_global_fairness(dframe, file_name):
     
-    ax=sns.barplot(data=dframe, x='Dataset', y='score', hue='architecture', palette='Set2')
+    ax=sns.pointplot(data=dframe, x='Dataset', y='score', hue='architecture', palette='Set2', dodge=True, join=False, capsize=.15)
     ax.set_yscale('log')
 
     plt.xlabel('Datasets', fontsize=20)
@@ -177,6 +178,7 @@ def plot_global_fairness(dframe, file_name):
     sns.despine()
     #save figure
     plt.savefig(file_name, dpi='figure', bbox_inches='tight')
+    plt.close()
 
 plot_global_fairness(fdf[~fdf.architecture.isin(['crosswalk', 'fairwalk'])], OUTPUT_FILE)
 plot_global_fairness(fdf[fdf.architecture.isin(['crosswalk', 'fairwalk'])], CW_OUTPUT_FILE)

@@ -118,20 +118,21 @@ for dataset in tqdm(DATASETS,desc="loading embs"):
                 }))              
     df = pd.concat(df, axis=0, ignore_index=True)
     for arch in ARCHS:
-        baseline_scores = df[(df.architecture == arch) & (df.model == 'baseline') & (df.dataset == dataset)][['disparity per node', 'node_id']].groupby('node_id', sort=True).mean()['disparity per node'].values
-        proposed_scores = df[(df.architecture == arch) & (df.model == 'proposed') & (df.dataset == dataset)][['disparity per node', 'node_id']].groupby('node_id', sort=True,).mean()['disparity per node'].values
+        baseline_scores = np.array(df[(df.architecture == arch) & (df.model == 'baseline') & (df.dataset == dataset)][['disparity per node', 'node_id']].groupby('node_id', sort=True)['disparity per node'].apply(list).tolist())
+        proposed_scores = np.array(df[(df.architecture == arch) & (df.model == 'proposed') & (df.dataset == dataset)][['disparity per node', 'node_id']].groupby('node_id', sort=True)['disparity per node'].apply(list).tolist())
         
-        ratio = ((baseline_scores - proposed_scores) > 0).sum() / baseline_scores.shape[0]
-        mp['Dataset'].append(dataset.capitalize())
-        mp['architecture'].append(arch)
-        mp['score'].append(ratio)
+        ratios = ((baseline_scores - proposed_scores) > 0).sum(axis=0) / baseline_scores.shape[0]
+        for idx, ratio in enumerate(ratios):
+            
+            mp['Dataset'].append(dataset.capitalize())
+            mp['architecture'].append(arch)
+            mp['score'].append(ratio)
 
 
 fdf = pd.DataFrame(mp)
 
 def plot_local_fairness(dframe, file_name):
-    
-    ax=sns.barplot(data=dframe, x='Dataset', y='score', hue='architecture', palette='Set2')
+    ax=sns.pointplot(data=dframe, x='Dataset', y='score', hue='architecture', palette='Set2', dodge=True, join=False, capsize=.15)
     plt.ylabel('Fraction of nodes debiased by \n proposed method', fontsize=15)
     plt.xlabel('Datasets', fontsize=20)
     ax.legend(loc="upper right", prop = { "size": 8 }, frameon=False)
@@ -141,8 +142,9 @@ def plot_local_fairness(dframe, file_name):
     sns.despine()
     #save figure
     plt.savefig(file_name, dpi='figure', bbox_inches='tight')
+    plt.close()
 
-plot_local_fairness(fdf[~fdf.Dataset.isin(['crosswalk', 'fairwalk'])], OUTPUT_FILE)
+plot_local_fairness(fdf[~fdf.architecture.isin(['crosswalk', 'fairwalk'])], OUTPUT_FILE)
 
 
-plot_local_fairness(fdf[fdf.Dataset.isin(['crosswalk', 'fairwalk'])], CW_OUTPUT_FILE)
+plot_local_fairness(fdf[fdf.architecture.isin(['crosswalk', 'fairwalk'])], CW_OUTPUT_FILE)

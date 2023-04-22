@@ -104,7 +104,10 @@ FIG_LP_SCORE_NODE2VEC = j("figs", "aucroc_node2vec.pdf")
 FIG_DISPARITY_SCORE_NODE2VEC= j("figs", "disparity_node2vec.pdf")
 FIG_DISPARITY_CURVE_NODE2VEC = j("figs", "disparity-curve_node2vec.pdf")
 
-FIG_FAIRNESS_PER_NODE = j("figs", "deepwalk_disparity_per_node.png")
+FIG_LOCAL_FAIRNESS_PER_NODE = j("figs", "deepwalk_disparity_per_node.png")
+FIG_LOCAL_FAIRNESS_PER_NODE_CW = j("figs", "deepwalk_disparity_per_node_cw.png")
+FIG_GLOBAL_FAIRNESS_PER_NODE = j("figs", "deepwalk_disparity_per_node_global.png")
+FIG_GLOBAL_FAIRNESS_PER_NODE_CW = j("figs", "deepwalk_disparity_per_node_global_cw.png")
 # ===================
 # Configurations
 # ===================
@@ -138,7 +141,10 @@ rule link_prediction_figs:
         FIG_LP_SCORE_NODE2VEC,
         FIG_DISPARITY_CURVE_DEEPWALK,
         FIG_DISPARITY_CURVE_NODE2VEC,
-        FIG_FAIRNESS_PER_NODE,
+        FIG_LOCAL_FAIRNESS_PER_NODE,
+        FIG_LOCAL_FAIRNESS_PER_NODE_CW,
+        FIG_GLOBAL_FAIRNESS_PER_NODE,
+        FIG_GLOBAL_FAIRNESS_PER_NODE_CW,
 
 rule fairness_per_node:
     params:
@@ -147,10 +153,25 @@ rule fairness_per_node:
         base_dir = SRC_DATA_ROOT,
         sample_ids = SAMPLE_ID_LIST
     output:
-        FIG_FAIRNESS_PER_NODE
+        FIG_LOCAL_FAIRNESS_PER_NODE,
+        FIG_LOCAL_FAIRNESS_PER_NODE_CW,
     threads: 1
     script:
         "workflow/plot_fairness_per_node.py"
+
+rule plot_global_fairness:
+    params:
+        embs_mapping = MODEL2EMBFILE_POSTFIX,
+        datasets = DATA_LIST,
+        base_dir = SRC_DATA_ROOT,
+        sample_ids = SAMPLE_ID_LIST
+    output:
+        FIG_GLOBAL_FAIRNESS_PER_NODE,
+        FIG_GLOBAL_FAIRNESS_PER_NODE_CW,
+    threads: 1
+    script:
+        "workflow/plot_global_fairness.py"
+        
 # =====================
 # Network generation
 # =====================
