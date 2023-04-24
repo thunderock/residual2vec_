@@ -97,6 +97,8 @@ DISPARITY_ALL_SCORE_FILE = j(RESULT_DIR, "result_disparity.csv")
 # Figures
 #
 FIG_LP_SCORE_DEEPWALK = j("figs", "aucroc_deepwalk.pdf")
+FIG_LP_SCORE_DEEPWALK_PROPOSED_COMPARISON = j("figs", "aucroc_deepwalk_proposed_comparison.pdf")
+
 FIG_DISPARITY_SCORE_DEEPWALK= j("figs", "disparity_deepwalk.pdf")
 FIG_DISPARITY_CURVE_DEEPWALK = j("figs", "disparity-curve_deepwalk.pdf")
 
@@ -232,6 +234,28 @@ rule concatenate_disparity_results:
 # =====================
 # Plot
 # =====================
+# rule plot_auc_roc_score_deepwalk:
+#     input:
+#         input_file = LP_ALL_SCORE_FILE
+#     params:
+#         focal_model_list = [
+#             "fairwalk+deepwalk",
+#             "crosswalk+deepwalk",
+#             "deepwalk",
+#             "groupbiased+residual2vec",
+#             "GCN+deepwalk+random",
+#             "groupbiased+gcn+deepwalk",
+#             # "GCN+deepwalk+r2v",
+#             "GAT+deepwalk+random",
+#             "groupbiased+gat+deepwalk",
+#             # "GAT+deepwalk+r2v",
+#             "baseline+deepwalk"
+#         ]
+#     output:
+#         output_file = FIG_LP_SCORE_DEEPWALK
+#     script:
+#         "workflow/plot-auc-roc.py"
+
 rule plot_auc_roc_score_deepwalk:
     input:
         input_file = LP_ALL_SCORE_FILE
@@ -247,12 +271,14 @@ rule plot_auc_roc_score_deepwalk:
             "GAT+deepwalk+random",
             "groupbiased+gat+deepwalk",
             # "GAT+deepwalk+r2v",
-            "baseline+deepwalk"
-        ]
+            "baseline+deepwalk" # replace this with baseline + deepwalk
+        ],
+        SAMPLING_METHOD = "uniform"
     output:
-        output_file = FIG_LP_SCORE_DEEPWALK
+        FIG_LP_SCORE_DEEPWALK, FIG_LP_SCORE_DEEPWALK_PROPOSED_COMPARISON
     script:
-        "workflow/plot-auc-roc.py"
+        "workflow/plot_auc_roc.py"
+
 
 rule plot_auc_roc_score_node2vec:
     input:
