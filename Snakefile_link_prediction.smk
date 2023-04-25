@@ -384,3 +384,8 @@ rule plot_disparity_curve_node2vec:
         output_file = FIG_DISPARITY_CURVE_NODE2VEC
     script:
         "workflow/plot-disparity-curve-node2vec.py"
+
+# =====================
+# TODO: merge with the following snakemake
+# =====================
+include: "Snakefile_supplementary.smk"
