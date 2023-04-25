@@ -273,7 +273,7 @@ rule plot_auc_roc_score_deepwalk:
             # "GAT+deepwalk+r2v",
             "baseline+deepwalk" # replace this with baseline + deepwalk
         ],
-        SAMPLING_METHOD = "uniform"
+        sampling_method = "uniform"
     output:
         FIG_LP_SCORE_DEEPWALK, FIG_LP_SCORE_DEEPWALK_PROPOSED_COMPARISON
     script:
