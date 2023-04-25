@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 00:55:24
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-04-20 21:00:48
+# @Last Modified time: 2023-04-25 14:34:47
 from os.path import join as j
 
 import numpy as np
@@ -349,7 +349,7 @@ def get_reweighted_graph(adj, crosswalk, fairwalk, group_membership=None):
 
 
 
-def get_embs_from_dataset(dataset_name: str='generic', crosswalk: bool=False, r2v: bool=True, node2vec: bool=False, fairwalk: bool=False, model_name: str=None, learn_outvec:bool=False, model_dim=128, edges=None, group_membership=None, degree_agnostic=False):
+def get_embs_from_dataset(dataset_name: str='generic', crosswalk: bool=False, r2v: bool=True, node2vec: bool=False, fairwalk: bool=False, model_name: str=None, learn_outvec:bool=False, model_dim=128, edges=None, group_membership=None, degree_agnostic=True):
     """
     returns embs given dataset name
     dataset: name of dataset
@@ -362,7 +362,7 @@ def get_embs_from_dataset(dataset_name: str='generic', crosswalk: bool=False, r2
     assert not (crosswalk and fairwalk)
     assert dataset_name in ['airport', 'polbook', 'polblog', 'facebook', 'twitch', 'generic']
     
-    dataset = get_dataset(dataset_name, edges=edges, group_membership=group_membership)
+    dataset = get_dataset(dataset_name, edge_index=edges, group_membership=group_membership)
     group_membership = dataset.get_grouped_col()
     edge_index, num_nodes = dataset.edge_index, group_membership.shape[0]
     # probably we don't need this, but better to be safe
