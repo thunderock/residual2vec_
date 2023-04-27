@@ -22,6 +22,23 @@ def get_direction(embs, y=None, method='PCA'):
     return direction
 
 
+def doPCA(pairs, embs, num_components=1):
+    matrix = []
+    # these are column vectors for each class
+    tuple_size, size = pairs.shape
+    # print("size: ", size, "tuple_size: ", tuple_size)
+    for i in range(size):
+        center = np.mean(embs[pairs[:, i]], axis=0)
+        # print(center.shape, pairs[:, i].shape)
+        for member in range(tuple_size):
+            matrix.append(embs[pairs[member, i]] - center)
+        # matrix.append(embs[pairs[:, i]] - center)
+    
+    matrix = np.vstack(matrix)
+    pca = PCA(n_components = num_components)
+    pca.fit(matrix)
+    return pca
+
 
 class EMB_UTILS(object):
 
