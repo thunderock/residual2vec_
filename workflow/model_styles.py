@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 09:05:36
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-04-22 20:42:33
+# @Last Modified time: 2023-04-29 13:52:19
 import seaborn as sns
 
 model_names = {
@@ -86,6 +86,7 @@ model2markers = {
     "Fairwalk": "v",
     "CrossWalk": "^",
     "Manipulation of embedding": "p",
+    
 }
 
 model2linestyle = {

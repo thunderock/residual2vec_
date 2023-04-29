@@ -273,7 +273,7 @@ rule plot_auc_roc_score_deepwalk:
             # "GAT+deepwalk+r2v",
             "baseline+deepwalk" # replace this with baseline + deepwalk
         ],
-        sampling_method = "uniform"
+        sampling_method = "uniform",
     output:
         FIG_LP_SCORE_DEEPWALK, FIG_LP_SCORE_DEEPWALK_PROPOSED_COMPARISON
     script:
@@ -388,4 +388,4 @@ rule plot_disparity_curve_node2vec:
 # =====================
 # TODO: merge with the following snakemake
 # =====================
-include: "Snakefile_supplementary.smk"
+# include: "Snakefile_supplementary.smk"

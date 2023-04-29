@@ -29,6 +29,7 @@ FOCAL_MODEL_LIST = [
             "baseline+deepwalk"
         ]
 SAMPLING_METHOD = "uniform"
+DATASETS = ["polbook", "polblog", "airport", "twitch", "facebook"]
 
 if "snakemake" in sys.modules:
     INPUT_FILE = snakemake.input["input_file"]
@@ -43,30 +44,51 @@ print("OUTPUT_MANIPULATION_METHODS: ", OUTPUT_MANIPULATION_METHODS)
 print("FOCAL_MODEL_LIST: ", FOCAL_MODEL_LIST)
 print("SAMPLING_METHOD: ", SAMPLING_METHOD)
 
+
 df = pd.read_csv(INPUT_FILE)
 df = df[df.edgeSampling == SAMPLING_METHOD]
 df = df[['score', 'data', 'sampleId', 'model']]
 
 from model_styles import model_names, model2group, model2type, model2markers, model2linestyle, model2colors
-from new_model_styles import MODEL_TO_IS_ARCHITECTURE, EMB_MANIPULATION_METHODS
+from new_model_styles import MODEL_TO_IS_ARCHITECTURE, EMB_MANIPULATION_METHODS, EMB_MANIPULATION_RENAME, EMB_MANIPULATION_MODEL_TO_COLOR, EMB_MANIPULATION_MODEL_TO_MARKER
 
 df['type'] = df['model'].map(model2type)
 df['architecture'] = df['model'].map(model2group)
 
 
-g = sns.catplot(x='data', y='score', hue='type', data=df[df.model.isin([model for model in FOCAL_MODEL_LIST if MODEL_TO_IS_ARCHITECTURE[model]])],capsize=.15, join=False, col="architecture", kind="point", sharex=True, sharey=True,
-           palette = {"Vanilla":"grey", "Debiased":sns.color_palette().as_hex()[3]})
+g = sns.catplot(col='data', y='score', hue='type', data=df[df.model.isin([model for model in FOCAL_MODEL_LIST if MODEL_TO_IS_ARCHITECTURE[model]])],
+                capsize=.15, join=False, 
+                x="architecture", kind="point", sharex=True, sharey=True,
+        palette = {"Vanilla":"grey", "Debiased":sns.color_palette().as_hex()[3]}, height=4, aspect=.5)
+
+for (i,j,k), data in g.facet_data():
+    ax = g.facet_axis(i, j)
+    if j > 0:
+        ax.get_yaxis().set_visible(False)
+        # remove y axis line
+        ax.spines['left'].set_visible(False)
+        ax.get_yaxis().set_ticks([])
 sns.despine()
 plt.savefig(OUTPUT_PROPOSED_VS_BASELINE, dpi=300, bbox_inches='tight')
 plt.close()
 
 
 model_order = [model for model in FOCAL_MODEL_LIST if EMB_MANIPULATION_METHODS[model]]
+# df.to_csv("/tmp/df.csv", index=False)
+
 ax = sns.pointplot(x='data', y='score', hue='model', 
               data=df[df.model.isin(model_order)], 
-              join=False, capsize=.15, )
+              join=False, capsize=.15, palette=EMB_MANIPULATION_MODEL_TO_COLOR,
+              markers=[EMB_MANIPULATION_MODEL_TO_MARKER[i] for i in model_order],
+              hue_order=model_order,
+              )
 legend_handles, _= ax.get_legend_handles_labels()
-ax.legend(legend_handles,[model2group[i] for i in model_order], bbox_to_anchor=(1,1), prop={'size': 6})
+# print("debug", [l.get_label() for l in legend_handles])
+
+# print(legend_handles, len(legend_handles), [EMB_MANIPULATION_RENAME[i] for i in model_order] )
+ax.legend(legend_handles,[EMB_MANIPULATION_RENAME[i.get_label()] for i in legend_handles], bbox_to_anchor=(1,1), prop={'size': 6})
+
+
 plt.title("Comparison of debiased models")
 plt.xlabel("Datasets")
 plt.ylabel("AUC-ROC")
