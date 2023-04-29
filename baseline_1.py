@@ -66,5 +66,5 @@ def get_embs(dataset, node2vec=NODE2VEC):
             
 
 embs = get_embs(dataset=DATASET, node2vec=NODE2VEC)
-np.save(j("/tmp/", "{}_baseline_man_woman+{}_embs.npy".format(DATASET, METHOD_NAME)), embs)
 
+np.save(j(BASE, "{}_baseline_man_woman+{}_embs.npy".format(DATASET, METHOD_NAME)), embs)
