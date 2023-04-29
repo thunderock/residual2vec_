@@ -14,11 +14,10 @@ from baseline.we_utils import get_direction, EMB_UTILS
 from baseline import we
 from sklearn.decomposition import PCA
 
-def debias_wrapper(emb, gender_specific_words, definitional, 
-        equalize, y, direction, drop_gender_specific_words=False):
+def debias_wrapper(emb, equalize, direction):
     embs = emb.copy()
     nodes, dim = embs.shape
-    K = np.unique(y).shape[0]
+    # K = np.unique(y).shape[0]
     # direction = get_direction(embs, y, direction_method)
     # direction = we.doPCA(definitional, embs, num_components=1).components_[0]
     # gender specific words are the node ids, lets have a vector of size 1x nodes
@@ -26,36 +25,24 @@ def debias_wrapper(emb, gender_specific_words, definitional,
     # definitional are not the node ids, but the centroids of the groups
     # equalize are pairs of node ids
 #     assert definitional.shape == (K, K - 1)
-    assert direction.shape == (dim, )
-    assert equalize.shape[1:] == (2, )
-    assert gender_specific_words.shape[0] == K
+    # for i in range(nodes):
+    #     group = y[i]
+    #     if drop_gender_specific_words:
+    #         embs[i] = we.drop(embs[i], direction)
 
-
-    for i in range(nodes):
-        group = y[i]
-        if drop_gender_specific_words:
-            embs[i] = we.drop(embs[i], direction)
-
-        else:
-            if i not in gender_specific_words[group]:
-                embs[i] = we.drop(embs[i], direction)
+    #     else:
+    #         if i not in gender_specific_words[group]:
+    #             embs[i] = we.drop(embs[i], direction)
 
     embs = EMB_UTILS.normalize(embs)
 
-    for (a,b) in equalize:
-        a, b = int(a), int(b)
-        y = we.drop((embs[a] + embs[b]) / 2, direction)
-        import warnings
-        # print y value in case of warning
-        z = np.sqrt(1 - np.linalg.norm(y)**2)
-
-        if (embs[a] - embs[b]).dot(direction) < 0:
-            z = -z
-        embs[a] = y + z * direction
-        embs[b] = y - z * direction
-
+    # need to change this to take just one node and apply the equation from paper
+    
+    for a in equalize:
+        
+        w_b = direction * np.dot(embs[a], direction)
+        embs[a] = embs[a] - w_b
     embs = EMB_UTILS.normalize(embs)
-
     return embs
 
     
