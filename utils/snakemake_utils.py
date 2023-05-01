@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 00:55:24
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-04-25 14:34:47
+# @Last Modified time: 2023-05-01 18:54:52
 from os.path import join as j
 
 import numpy as np
@@ -361,7 +361,10 @@ def get_embs_from_dataset(dataset_name: str='generic', crosswalk: bool=False, r2
     """
     assert not (crosswalk and fairwalk)
     assert dataset_name in ['airport', 'polbook', 'polblog', 'facebook', 'twitch', 'generic']
-    
+    import os
+    os.environ['PYTORCH_CUDA_ALLOC_CONF'] = "max_split_size_mb: 512"
+    os.environ['DISABLE_WANDB'] = "true"
+    os.environ['DISABLE_TQDM'] = "true"
     dataset = get_dataset(dataset_name, edge_index=edges, group_membership=group_membership)
     group_membership = dataset.get_grouped_col()
     edge_index, num_nodes = dataset.edge_index, group_membership.shape[0]
