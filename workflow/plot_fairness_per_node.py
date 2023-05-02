@@ -5,7 +5,6 @@
 # @Filepath: workflow/plot_fairness_per_node.py
 import sys, os
 
-
 DATASETS = ["polbook", "polblog", "airport", 'twitch', 'facebook']
 # print present working directory
 BASE_DIR = "../final_"
@@ -60,6 +59,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from tqdm import tqdm
 from utils import snakemake_utils, score
+from workflow.new_model_styles import ARCHITECTURE_TO_COLOR
 
 def get_embs(dataset,sample_id):
 
@@ -132,7 +132,7 @@ for dataset in tqdm(DATASETS,desc="loading embs"):
 fdf = pd.DataFrame(mp)
 
 def plot_local_fairness(dframe, file_name):
-    ax=sns.pointplot(data=dframe, x='Dataset', y='score', hue='architecture', palette='Set2', dodge=True, join=False, capsize=.15)
+    ax=sns.pointplot(data=dframe, x='Dataset', y='score', hue='architecture', palette=ARCHITECTURE_TO_COLOR, dodge=True, join=False, capsize=.15)
     plt.ylabel('Fraction of debiased nodes by \n proposed', fontsize=15)
     plt.xlabel('Dataset', fontsize=20)
     ax.legend(loc="upper right", prop = { "size": 12 }, frameon=False)

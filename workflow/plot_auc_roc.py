@@ -76,7 +76,9 @@ for (i,j,k), data in g.facet_data():
         # remove y axis line
         ax.spines['left'].set_visible(False)
         # ax.get_yaxis().set_ticks([])
-plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    else:
+        ax.legend(loc="upper right", borderaxespad=0.)
+# plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 sns.despine()
 plt.savefig(OUTPUT_PROPOSED_VS_BASELINE, dpi=300, bbox_inches='tight')
 plt.close()

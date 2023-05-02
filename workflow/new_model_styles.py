@@ -84,26 +84,33 @@ EMB_MANIPULATION_RENAME = {
     'groupbiased+gcn+node2vec': 'GCN (debiased)',
 }
 
-bcmap = sns.color_palette("coolwarm").as_hex()
+bcmap = sns.color_palette("Set3").as_hex()
+ARCHITECTURE_TO_COLOR = {
+    'GCN': bcmap[3],
+    'GAT': bcmap[5],
+    'word2vec': bcmap[7],
+    'fairwalk': bcmap[4],
+    'crosswalk': bcmap[2],
+}
 
 EMB_MANIPULATION_MODEL_TO_COLOR = {
     # very cool
-    'fairwalk+deepwalk': bcmap[0],
-    'fairwalk+node2vec': bcmap[0],
-    'crosswalk+deepwalk': bcmap[1],
-    'crosswalk+node2vec': bcmap[1],
-    'GCN+deepwalk+r2v': bcmap[4],
-    'GCN+node2vec+r2v': bcmap[4],
+    'fairwalk+deepwalk': bcmap[4],
+    'fairwalk+node2vec': bcmap[4],
+    'crosswalk+deepwalk': bcmap[2],
+    'crosswalk+node2vec': bcmap[2],
+    'GCN+deepwalk+r2v': bcmap[3],
+    'GCN+node2vec+r2v': bcmap[3],
     'GAT+deepwalk+r2v': bcmap[5],
     'GAT+node2vec+r2v': bcmap[5],
-    'residual2vec': bcmap[3],
-    'baseline+deepwalk': bcmap[1],
-    'baseline+node2vec': bcmap[1],
-    'groupbiased+residual2vec': bcmap[3],
+    'residual2vec': bcmap[7],
+    'baseline+deepwalk': bcmap[11],
+    'baseline+node2vec': bcmap[11],
+    'groupbiased+residual2vec': bcmap[7],
     'groupbiased+gat+deepwalk': bcmap[5],
     'groupbiased+gat+node2vec': bcmap[5],
-    'groupbiased+gcn+deepwalk': bcmap[4],
-    'groupbiased+gcn+node2vec': bcmap[4],
+    'groupbiased+gcn+deepwalk': bcmap[3],
+    'groupbiased+gcn+node2vec': bcmap[3],
 }
 
 reference = {

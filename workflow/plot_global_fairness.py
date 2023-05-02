@@ -6,6 +6,7 @@
 import sys, os
 
 
+
 DATASETS = ["polbook", "polblog", "airport", 'twitch', 'facebook']
 # print present working directory
 BASE_DIR = "../final_"
@@ -66,7 +67,7 @@ import seaborn as sns
 from tqdm import tqdm
 from utils import snakemake_utils, score
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-
+from workflow.new_model_styles import ARCHITECTURE_TO_COLOR
 
 def get_embs(dataset, sample_id):
 
@@ -167,7 +168,7 @@ fdf = pd.DataFrame(mp)
 
 def plot_global_fairness(dframe, file_name):
     
-    ax=sns.pointplot(data=dframe, x='Dataset', y='score', hue='architecture', palette='Set2', dodge=True, join=False, capsize=.15)
+    ax=sns.pointplot(data=dframe, x='Dataset', y='score', hue='architecture', palette=ARCHITECTURE_TO_COLOR, dodge=True, join=False, capsize=.15)
     ax.set_yscale('log')
 
     plt.xlabel('Datasets', fontsize=20)
