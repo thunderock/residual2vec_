@@ -133,9 +133,9 @@ fdf = pd.DataFrame(mp)
 
 def plot_local_fairness(dframe, file_name):
     ax=sns.pointplot(data=dframe, x='Dataset', y='score', hue='architecture', palette='Set2', dodge=True, join=False, capsize=.15)
-    plt.ylabel('Fraction of nodes debiased by \n proposed method', fontsize=15)
-    plt.xlabel('Datasets', fontsize=20)
-    ax.legend(loc="upper right", prop = { "size": 8 }, frameon=False)
+    plt.ylabel('Fraction of debiased nodes by \n proposed', fontsize=15)
+    plt.xlabel('Dataset', fontsize=20)
+    ax.legend(loc="upper right", prop = { "size": 12 }, frameon=False)
     plt.axhline(y=.5, linestyle='--', c='#4D4D4D', )
     plt.xticks(list(plt.xticks()[0]) + [.5], fontsize=14)
     plt.yticks(fontsize=14)
@@ -146,5 +146,5 @@ def plot_local_fairness(dframe, file_name):
 
 plot_local_fairness(fdf[~fdf.architecture.isin(['crosswalk', 'fairwalk'])], OUTPUT_FILE)
 
-
 plot_local_fairness(fdf[fdf.architecture.isin(['crosswalk', 'fairwalk'])], CW_OUTPUT_FILE)
+
