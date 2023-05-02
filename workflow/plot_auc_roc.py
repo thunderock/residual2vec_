@@ -10,6 +10,7 @@ import pandas as pd
 from scipy import sparse
 from tqdm import tqdm
 from matplotlib import pyplot as plt
+import matplotlib as mpl
 import seaborn as sns
 
 
@@ -17,16 +18,23 @@ INPUT_FILE = "data/derived/results/result_auc_roc.csv"
 OUTPUT_PROPOSED_VS_BASELINE = 'figs/auc_roc_proposed_vs_baseline.png'
 OUTPUT_MANIPULATION_METHODS = 'figs/auc_roc_manipulation_methods.png'
 DATASETS = ["polbook", "polblog", "airport", "twitch", "facebook"]
+
 FOCAL_MODEL_LIST = [
+            # order this in the order of complexity
+            "groupbiased+residual2vec",
+
+            "groupbiased+gcn+deepwalk",
+
+            "groupbiased+gat+deepwalk",
             "fairwalk+deepwalk",
             "crosswalk+deepwalk",
             "deepwalk",
-            "groupbiased+residual2vec",
+            
             "GCN+deepwalk+random",
-            "groupbiased+gcn+deepwalk",
+            # "GCN+deepwalk+r2v",
             "GAT+deepwalk+random",
-            "groupbiased+gat+deepwalk",
-            "baseline+deepwalk"
+            # "GAT+deepwalk+r2v",
+            "baseline+deepwalk" # replace this with baseline + deepwalk
         ]
 SAMPLING_METHOD = "uniform"
 DATASETS = ["polbook", "polblog", "airport", "twitch", "facebook"]
@@ -54,20 +62,21 @@ from new_model_styles import MODEL_TO_IS_ARCHITECTURE, EMB_MANIPULATION_METHODS,
 
 df['type'] = df['model'].map(model2type)
 df['architecture'] = df['model'].map(model2group)
-
+df['data'] = df['data'].map(lambda x: x.capitalize())
 
 g = sns.catplot(col='data', y='score', hue='type', data=df[df.model.isin([model for model in FOCAL_MODEL_LIST if MODEL_TO_IS_ARCHITECTURE[model]])],
                 capsize=.15, join=False, 
                 x="architecture", kind="point", sharex=True, sharey=True,
-        palette = {"Vanilla":"grey", "Debiased":sns.color_palette().as_hex()[3]}, height=4, aspect=.5)
-
+        palette = {"Vanilla":"grey", "Debiased":sns.color_palette().as_hex()[3]}, height=4, aspect=.5, scale=0.5, errwidth=1.5, errorbar=('ci', 95), legend=False)
+g.set_axis_labels("", "AUC-ROC")
 for (i,j,k), data in g.facet_data():
     ax = g.facet_axis(i, j)
     if j > 0:
         ax.get_yaxis().set_visible(False)
         # remove y axis line
         ax.spines['left'].set_visible(False)
-        ax.get_yaxis().set_ticks([])
+        # ax.get_yaxis().set_ticks([])
+plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 sns.despine()
 plt.savefig(OUTPUT_PROPOSED_VS_BASELINE, dpi=300, bbox_inches='tight')
 plt.close()
@@ -81,16 +90,27 @@ ax = sns.pointplot(x='data', y='score', hue='model',
               join=False, capsize=.15, palette=EMB_MANIPULATION_MODEL_TO_COLOR,
               markers=[EMB_MANIPULATION_MODEL_TO_MARKER[i] for i in model_order],
               hue_order=model_order,
+              errwidth=1.5, scale=0.5, errorbar=('ci',95), 
               )
 legend_handles, _= ax.get_legend_handles_labels()
-# print("debug", [l.get_label() for l in legend_handles])
 
-# print(legend_handles, len(legend_handles), [EMB_MANIPULATION_RENAME[i] for i in model_order] )
-ax.legend(legend_handles,[EMB_MANIPULATION_RENAME[i.get_label()] for i in legend_handles], bbox_to_anchor=(1,1), prop={'size': 6})
+separator = 0
+for model in model_order:
+    if 'debiased' not in EMB_MANIPULATION_RENAME[model]:
+        break
+    separator += 1
+    
+legend_renames = [EMB_MANIPULATION_RENAME[i.get_label()] for i in legend_handles]
 
+legend_handles.insert(separator, mpl.lines.Line2D([], [], linestyle=''))
+legend_renames.insert(separator, "")
+# inside the plot
+ax.legend(legend_handles, legend_renames, prop={'size': 6}, loc='lower right')
 
+# bring ticks closer
+ax.tick_params(axis='x', which='major', pad=0.5)
 plt.title("Comparison of debiased models")
-plt.xlabel("Datasets")
+plt.xlabel("Dataset")
 plt.ylabel("AUC-ROC")
 sns.despine()
 plt.savefig(OUTPUT_MANIPULATION_METHODS, dpi=300, bbox_inches='tight')

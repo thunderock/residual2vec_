@@ -261,15 +261,19 @@ rule plot_auc_roc_score_deepwalk:
         input_file = LP_ALL_SCORE_FILE
     params:
         focal_model_list = [
+            # order this in the order of complexity
+            "groupbiased+residual2vec",
+
+            "groupbiased+gcn+deepwalk",
+
+            "groupbiased+gat+deepwalk",
             "fairwalk+deepwalk",
             "crosswalk+deepwalk",
             "deepwalk",
-            "groupbiased+residual2vec",
+            
             "GCN+deepwalk+random",
-            "groupbiased+gcn+deepwalk",
             # "GCN+deepwalk+r2v",
             "GAT+deepwalk+random",
-            "groupbiased+gat+deepwalk",
             # "GAT+deepwalk+r2v",
             "baseline+deepwalk" # replace this with baseline + deepwalk
         ],
