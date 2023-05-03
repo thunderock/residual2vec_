@@ -10,9 +10,11 @@ import pandas as pd
 from scipy import sparse
 from tqdm import tqdm
 from matplotlib import pyplot as plt
+from matplotlib.lines import Line2D as ln
 import matplotlib as mpl
 import seaborn as sns
-
+from matplotlib.patheffects import withStroke
+import matplotlib.ticker as ticker
 
 INPUT_FILE = "data/derived/results/result_auc_roc.csv"
 OUTPUT_PROPOSED_VS_BASELINE = 'figs/auc_roc_proposed_vs_baseline.png'
@@ -78,6 +80,8 @@ for (i,j,k), data in g.facet_data():
         # ax.get_yaxis().set_ticks([])
     else:
         ax.legend(loc="upper right", borderaxespad=0.)
+    for child in ax.findobj(ln):
+        child.set(path_effects=[withStroke(linewidth=1.5, foreground='black')])
 # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 sns.despine()
 plt.savefig(OUTPUT_PROPOSED_VS_BASELINE, dpi=300, bbox_inches='tight')
@@ -111,6 +115,9 @@ ax.legend(legend_handles, legend_renames, prop={'size': 6}, loc='lower right')
 
 # bring ticks closer
 ax.tick_params(axis='x', which='major', pad=0.5)
+for child in ax.findobj(ln):
+        child.set(path_effects=[withStroke(linewidth=1.5, foreground='black')])
+
 plt.title("Comparison of debiased models")
 plt.xlabel("Dataset")
 plt.ylabel("AUC-ROC")
