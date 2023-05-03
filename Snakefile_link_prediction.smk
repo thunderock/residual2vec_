@@ -97,6 +97,8 @@ DISPARITY_ALL_SCORE_FILE = j(RESULT_DIR, "result_disparity.csv")
 # Figures
 #
 FIG_LP_SCORE_DEEPWALK = j("figs", "aucroc_deepwalk.pdf")
+FIG_LP_SCORE_DEEPWALK_PROPOSED_COMPARISON = j("figs", "aucroc_deepwalk_proposed_comparison.pdf")
+
 FIG_DISPARITY_SCORE_DEEPWALK= j("figs", "disparity_deepwalk.pdf")
 FIG_DISPARITY_CURVE_DEEPWALK = j("figs", "disparity-curve_deepwalk.pdf")
 
@@ -104,7 +106,10 @@ FIG_LP_SCORE_NODE2VEC = j("figs", "aucroc_node2vec.pdf")
 FIG_DISPARITY_SCORE_NODE2VEC= j("figs", "disparity_node2vec.pdf")
 FIG_DISPARITY_CURVE_NODE2VEC = j("figs", "disparity-curve_node2vec.pdf")
 
-FIG_FAIRNESS_PER_NODE = j("figs", "deepwalk_disparity_per_node.png")
+FIG_LOCAL_FAIRNESS_PER_NODE = j("figs", "deepwalk_disparity_per_node.png")
+FIG_LOCAL_FAIRNESS_PER_NODE_CW = j("figs", "deepwalk_disparity_per_node_cw.png")
+FIG_GLOBAL_FAIRNESS_PER_NODE = j("figs", "deepwalk_disparity_per_node_global.png")
+FIG_GLOBAL_FAIRNESS_PER_NODE_CW = j("figs", "deepwalk_disparity_per_node_global_cw.png")
 # ===================
 # Configurations
 # ===================
@@ -138,19 +143,37 @@ rule link_prediction_figs:
         FIG_LP_SCORE_NODE2VEC,
         FIG_DISPARITY_CURVE_DEEPWALK,
         FIG_DISPARITY_CURVE_NODE2VEC,
-        FIG_FAIRNESS_PER_NODE,
+        FIG_LOCAL_FAIRNESS_PER_NODE,
+        FIG_LOCAL_FAIRNESS_PER_NODE_CW,
+        FIG_GLOBAL_FAIRNESS_PER_NODE,
+        FIG_GLOBAL_FAIRNESS_PER_NODE_CW,
 
 rule fairness_per_node:
     params:
         embs_mapping = MODEL2EMBFILE_POSTFIX,
         datasets = DATA_LIST,
         base_dir = SRC_DATA_ROOT,
-        sample_id = "one",
+        sample_ids = SAMPLE_ID_LIST
     output:
-        FIG_FAIRNESS_PER_NODE
+        FIG_LOCAL_FAIRNESS_PER_NODE,
+        FIG_LOCAL_FAIRNESS_PER_NODE_CW,
     threads: 1
     script:
         "workflow/plot_fairness_per_node.py"
+
+rule plot_global_fairness:
+    params:
+        embs_mapping = MODEL2EMBFILE_POSTFIX,
+        datasets = DATA_LIST,
+        base_dir = SRC_DATA_ROOT,
+        sample_ids = SAMPLE_ID_LIST
+    output:
+        FIG_GLOBAL_FAIRNESS_PER_NODE,
+        FIG_GLOBAL_FAIRNESS_PER_NODE_CW,
+    threads: 1
+    script:
+        "workflow/plot_global_fairness.py"
+        
 # =====================
 # Network generation
 # =====================
@@ -211,27 +234,55 @@ rule concatenate_disparity_results:
 # =====================
 # Plot
 # =====================
+# rule plot_auc_roc_score_deepwalk:
+#     input:
+#         input_file = LP_ALL_SCORE_FILE
+#     params:
+#         focal_model_list = [
+#             "fairwalk+deepwalk",
+#             "crosswalk+deepwalk",
+#             "deepwalk",
+#             "groupbiased+residual2vec",
+#             "GCN+deepwalk+random",
+#             "groupbiased+gcn+deepwalk",
+#             # "GCN+deepwalk+r2v",
+#             "GAT+deepwalk+random",
+#             "groupbiased+gat+deepwalk",
+#             # "GAT+deepwalk+r2v",
+#             "baseline+deepwalk"
+#         ]
+#     output:
+#         output_file = FIG_LP_SCORE_DEEPWALK
+#     script:
+#         "workflow/plot-auc-roc.py"
+
 rule plot_auc_roc_score_deepwalk:
     input:
         input_file = LP_ALL_SCORE_FILE
     params:
         focal_model_list = [
+            # order this in the order of complexity
+            "groupbiased+residual2vec",
+
+            "groupbiased+gcn+deepwalk",
+
+            "groupbiased+gat+deepwalk",
             "fairwalk+deepwalk",
             "crosswalk+deepwalk",
             "deepwalk",
-            "groupbiased+residual2vec",
+            
             "GCN+deepwalk+random",
-            "groupbiased+gcn+deepwalk",
             # "GCN+deepwalk+r2v",
             "GAT+deepwalk+random",
-            "groupbiased+gat+deepwalk",
             # "GAT+deepwalk+r2v",
-            "baseline+deepwalk"
-        ]
+            "baseline+deepwalk" # replace this with baseline + deepwalk
+        ],
+        sampling_method = "uniform",
     output:
-        output_file = FIG_LP_SCORE_DEEPWALK
+        FIG_LP_SCORE_DEEPWALK, FIG_LP_SCORE_DEEPWALK_PROPOSED_COMPARISON
     script:
-        "workflow/plot-auc-roc.py"
+        "workflow/plot_auc_roc.py"
+
 
 rule plot_auc_roc_score_node2vec:
     input:
@@ -341,4 +392,4 @@ rule plot_disparity_curve_node2vec:
 # =====================
 # TODO: merge with the following snakemake
 # =====================
-include: "Snakefile_supplementary.smk"
+# include: "Snakefile_supplementary.smk"

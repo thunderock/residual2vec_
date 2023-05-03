@@ -5,24 +5,27 @@
 
 
 import sys
-from utils import graph_utils, snakemake_utils
 from models import fast_knn_cpu
 import numpy as np
 from sklearn.decomposition import PCA
 from baseline.debias_graph import debias_wrapper
-from baseline.we import doPCA
-from baseline.we_utils import get_direction
+from baseline.we_utils import get_direction, doPCA
 from os.path import join as j
 
+BASE = "../final_/polbook/polbook_one/"
+NODE2VEC = False
+DATASET = "polbook"
 
 if "snakemake" in sys.modules:
+    print("snakemake" in sys.modules)
+
+    from utils import graph_utils, snakemake_utils
     BASE = snakemake.params["DATA_ROOT"]
-    NODE2VEC = snakemake_utils.get_string_boolean(snakemake.params["NODE2VEC"])
+    
     DATASET = snakemake.params["DATASET"]
-else:
-    BASE = "../final_/polbook/polbook_one/"
-    NODE2VEC = False
-    DATASET = "polbook"
+    NODE2VEC = snakemake_utils.get_string_boolean(snakemake.params["NODE2VEC"])
+
+from utils import graph_utils, snakemake_utils
 
 METHOD_NAME = 'node2vec' if NODE2VEC else 'deepwalk'
 print("BASE: ", BASE, "NODE2VEC: ", NODE2VEC, "DATASET: ", DATASET)
@@ -36,12 +39,12 @@ def get_embs(dataset, node2vec=NODE2VEC):
     # definitional words, these are supposed to be represent the group,
     # in this case lets take these to be the nodes closest to centroid of group
     # in this case are the centroids of the groups
-    definitional = graph_utils.get_n_nearest_neighbors_for_nodes(
-        nodes=centroids, 
-        embs=deepwalk,
-        k=1,
-        metric='cosine'
-    )
+    # definitional = graph_utils.get_n_nearest_neighbors_for_nodes(
+    #     nodes=centroids, 
+    #     embs=deepwalk,
+    #     k=1,
+    #     metric='cosine'
+    # )
     
     N, dim = deepwalk.shape
     K = np.unique(y).shape[0]
@@ -52,17 +55,16 @@ def get_embs(dataset, node2vec=NODE2VEC):
         k=int (.2 * N) // K,
         metric='cosine'
     )
-    equalize = graph_utils.get_farthest_pairs(deepwalk, y, same_class=False, 
-                                              per_class_count=int((.2 * N) / K))
+    # equalize = graph_utils.get_farthest_pairs(deepwalk, y, same_class=False, per_class_count=int((.2 * N) / K))
+    # equalize all nodes
+    equalize = np.arange(N)
+    print("number of gender specific pairs: ", gender_specific_nodes.shape)
+    # direction = get_direction(deepwalk, y, "PCA")
+    direction = doPCA(gender_specific_nodes, deepwalk, num_components=1).components_[0]
     
-    print("number of equalize pairs: ", equalize.shape)
-    direction = get_direction(deepwalk, y, "PCA")
-    
-    return debias_wrapper(emb=deepwalk,gender_specific_words=gender_specific_nodes, 
-               definitional=None, equalize=equalize, y=y, direction=direction,
-               drop_gender_specific_words=True)
+    return debias_wrapper(emb=deepwalk, equalize=equalize, direction=direction,)
             
 
 embs = get_embs(dataset=DATASET, node2vec=NODE2VEC)
-np.save(j(BASE, "{}_baseline_man_woman+{}_embs.npy".format(DATASET, METHOD_NAME)), embs)
 
+np.save(j(BASE, "{}_baseline_man_woman+{}_embs.npy".format(DATASET, METHOD_NAME)), embs)

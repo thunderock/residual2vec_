@@ -2,7 +2,7 @@
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 00:55:24
 # @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-04-12 16:55:25
+# @Last Modified time: 2023-05-01 18:54:52
 from os.path import join as j
 
 import numpy as np
@@ -106,7 +106,7 @@ class FileResources(object):
             return str(j(self.root, f"{self.dataset}_{self.model_name}_{feature_method}_{negative_sampling}_groupbiased_embs.npy"))
         return str(j(self.root, f"{self.dataset}_{self.model_name}_{feature_method}_{negative_sampling}_embs.npy"))
 
-def get_dataset(name, **kwargs):
+def get_dataset(name='generic', **kwargs):
     dataset = None
     if name == 'pokec':
         from dataset.pokec_data import PokecDataFrame
@@ -292,8 +292,14 @@ def get_gnn_model(model_name, num_features, emb_dim, dataset=None, num_layers=No
         raise NotImplementedError
     return model
 
-
+def train_residual2vec(adj, noise_sampler, dim=128, batch_size=256, ):
+    from node2vec import node2vecs
+    from utils import graph_utils, config
+    return graph_utils.generate_embedding_with_word2vec(A=adj, dim=dim, noise_sampler=noise_sampler, batch_size=batch_size, device=config.DEVICE)
+    
 def train_model_and_get_embs(adj, model_name, X, sampler, gnn_layers, epochs, learn_outvec, num_workers, batch_size, learning_rate, model_dim=128):
+    if model_name == 'residual2vec':
+        return train_residual2vec(adj=adj, noise_sampler=sampler, dim=model_dim, batch_size=batch_size)
     num_nodes = adj.shape[0]
     edge_index = get_edge_index_from_sparse_path(adj)
     print(edge_index.shape)
@@ -343,7 +349,7 @@ def get_reweighted_graph(adj, crosswalk, fairwalk, group_membership=None):
 
 
 
-def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2vec: bool, fairwalk: bool, model_name: str=None, learn_outvec:bool=False, model_dim=128, adj=None):
+def get_embs_from_dataset(dataset_name: str='generic', crosswalk: bool=False, r2v: bool=True, node2vec: bool=False, fairwalk: bool=False, model_name: str=None, learn_outvec:bool=False, model_dim=128, edges=None, group_membership=None, degree_agnostic=True):
     """
     returns embs given dataset name
     dataset: name of dataset
@@ -354,9 +360,12 @@ def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2ve
     model_name: name of model to use, can be ['gcn', 'gat']
     """
     assert not (crosswalk and fairwalk)
-    assert dataset_name in ['airport', 'polbook', 'polblog', 'small_pokec', 'pokec', 'facebook', 'copenhagen', 'twitch']
-    
-    dataset = get_dataset(dataset_name)
+    assert dataset_name in ['airport', 'polbook', 'polblog', 'facebook', 'twitch', 'generic']
+    import os
+    os.environ['PYTORCH_CUDA_ALLOC_CONF'] = "max_split_size_mb: 512"
+    os.environ['DISABLE_WANDB'] = "true"
+    os.environ['DISABLE_TQDM'] = "true"
+    dataset = get_dataset(dataset_name, edge_index=edges, group_membership=group_membership)
     group_membership = dataset.get_grouped_col()
     edge_index, num_nodes = dataset.edge_index, group_membership.shape[0]
     # probably we don't need this, but better to be safe
@@ -379,15 +388,18 @@ def get_embs_from_dataset(dataset_name: str, crosswalk: bool, r2v: bool, node2ve
     if return_features:
         return X
     assert not (crosswalk and fairwalk)
-    assert model_name in ['gcn', 'gat']
+    assert model_name in ['gcn', 'gat', 'residual2vec']
     X = torch.from_numpy(X)
     
     # use weights in case of crosswalk or fairwalk
     use_weights = True if (crosswalk or fairwalk) else False
     # select sampler
-    if r2v:
+    if model_name == 'residual2vec':
+        from node2vec import node2vecs
+        sampler = node2vecs.utils.node_sampler.SBMNodeSampler(group_membership=group_membership, window_length=1, dcsbm=not degree_agnostic)
+    elif r2v:
         from dataset.triplet_dataset import SbmSamplerWrapper
-        sbm_sampler_wrapper = SbmSamplerWrapper(adj_path=adj, group_membership=group_membership, window_length=1, padding_id=num_nodes, num_walks=100, num_edges=edge_index.shape[1], use_weights=use_weights)
+        sbm_sampler_wrapper = SbmSamplerWrapper(adj_path=adj, group_membership=group_membership, window_length=1, padding_id=num_nodes, num_walks=100, num_edges=edge_index.shape[1], use_weights=use_weights, dcsbm=not degree_agnostic)
         sampler = sbm_sampler_wrapper.sample_neg_edges
     else:
         from torch_geometric.utils import negative_sampling
