@@ -123,49 +123,72 @@ palette = {
     for k in plot_data["type_model"].unique()
 }
 # palette = {"Vanilla": "#adadad", "Debiased": sns.color_palette().as_hex()[3]}
-
-g = sns.catplot(
+# %%
+xpos = {
+    "Vanilla+word2vec": 0,
+    "Fairwalk": 1,
+    "Crosswalk": 2,
+    "Debiased+word2vec": 3,
+    "Vanilla+GCN": 4,
+    "Debiased+GCN": 5,
+    "Vanilla+GAT": 6,
+    "Debiased+GAT": 7,
+}
+plot_data["x"] = plot_data["type_model"].map(xpos)
+jitter = 0.1
+plot_data["x"] += 2 * jitter * np.random.rand(plot_data.shape[0]) - jitter
+g = sns.FacetGrid(
     col="data",
-    x="architecture",
-    y="score",
     hue="type_model",
     data=plot_data,
-    order=["word2vec", "GCN", "GAT"],
+    # order=["word2vec", "GCN", "GAT"],
     # capsize=0.15,
     # join=False,
     # kind="point",
     palette=palette,
     sharex=True,
     sharey=False,
-    kind="strip",
+    # kind="strip",
     height=3.5,
-    aspect=0.8,
+    aspect=1,
     # scale=0.5,
     # errwidth=1.5,
     # errorbar=("ci", 95),
-    legend=True,
-    edgecolor="k",
-    size=6.5,
-    linewidth=0.8,
-    dodge=True,
-    native_scale=True,
-    jitter=0.3,
-    legend_out=True,
+    # legend=True,
+    # edgecolor="k",
+    # size=6.5,
+    # linewidth=0.8,
+    # dodge=True,
+    # native_scale=True,
+    # jitter=0.3,
+    # legend_out=True,
 )
-# Plot the scatter boxplot
-#
-# Styling
-#
+g.map(sns.scatterplot, "x", "score", "type_model", palette=palette, edgecolor="k")
 g.set_axis_labels("", "AUC-ROC")
 g.fig.text(0.5, 0.02, "Model architecture")
 
 g.set_titles(col_template="{col_name}")
 g.set(xlim=(-0.5, None))
 
-for i, arch in enumerate(range(3)):
-    for ax in g.axes.flat:
-        ax.axvline(i + 0.5, color="k", lw=0.5, ls=":")
+partitions = [3.5, 5.5, 7.5, 9.5]
+for ax in g.axes.flat:
+    ax.set_xticks([1.5, 4.5, 6.5], ["word2vec", "GCN", "GAT"])
+    for p in partitions:
+        ax.axvline(p, color="k", lw=0.5, ls=":")
         # ax.axvspan(-0.5 + i, 0.5 + i, facecolor=arch2color[arch], alpha=0.1, zorder=-1)
+
+current_handles, current_labels = g.axes.flat[-1].get_legend_handles_labels()
+idx = np.array([4, 0, 2, 10]).astype(int)
+current_handles = [current_handles[i] for i in idx]
+current_labels = ["Vanilla", "Fairwalk", "Crosswalk", "Proposed"]
+g.axes.flat[2].legend(
+    current_handles,
+    current_labels,
+    frameon=False,
+    loc="upper center",
+    bbox_to_anchor=(0.5, -0.25),
+    ncols=4,
+)
 sns.despine()
 plt.savefig(OUTPUT_PROPOSED_VS_BASELINE, dpi=300, bbox_inches="tight")
-plt.close()
+# plt.close()
