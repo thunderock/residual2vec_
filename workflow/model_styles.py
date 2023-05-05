@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-18 09:05:36
-# @Last Modified by:   Ashutosh Tiwari
-# @Last Modified time: 2023-04-29 13:52:19
+# @Last Modified by:   Sadamori Kojaku
+# @Last Modified time: 2023-05-03 16:34:54
 import seaborn as sns
 
 model_names = {
@@ -43,16 +43,16 @@ model2group = {
     "GAT+deepwalk+r2v": "GAT",
     "GAT+node2vec+random": "GAT",
     "GAT+node2vec+r2v": "GAT",
-    "deepwalk": "DeepWalk",
-    "node2vec": "DeepWalk",
-    "residual2vec": "DeepWalk",
-    "groupbiased+residual2vec": "DeepWalk",
+    "deepwalk": "word2vec",
+    "node2vec": "word2vec",
+    "residual2vec": "word2vec",
+    "groupbiased+residual2vec": "word2vec",
     "baseline+deepwalk": "Manipulation of embedding",
     "baseline+node2vec": "Manipulation of embedding",
     "groupbiased+gat+node2vec": "GAT",
     "groupbiased+gat+deepwalk": "GAT",
     "groupbiased+gcn+node2vec": "GCN",
-    "groupbiased+gcn+deepwalk": "GCN"
+    "groupbiased+gcn+deepwalk": "GCN",
 }
 model2type = {
     "fairwalk+deepwalk": "Debiased",
@@ -76,17 +76,16 @@ model2type = {
     "groupbiased+gat+node2vec": "Debiased",
     "groupbiased+gat+deepwalk": "Debiased",
     "groupbiased+gcn+node2vec": "Debiased",
-    "groupbiased+gcn+deepwalk": "Debiased"
+    "groupbiased+gcn+deepwalk": "Debiased",
 }
 
 model2markers = {
-    "DeepWalk":"s",
+    "DeepWalk": "s",
     "GCN": "o",
     "GAT": "d",
     "Fairwalk": "v",
     "CrossWalk": "^",
     "Manipulation of embedding": "p",
-    
 }
 
 model2linestyle = {
@@ -99,7 +98,14 @@ model2linestyle = {
 }
 
 
-model_order = ["DeepWalk", "GCN", "GAT", "Fairwalk", "CrossWalk", "Manipulation of embedding"]
+model_order = [
+    "DeepWalk",
+    "GCN",
+    "GAT",
+    "Fairwalk",
+    "CrossWalk",
+    "Manipulation of embedding",
+]
 
 
 # ========================
@@ -117,5 +123,4 @@ model2colors = {
     "Fairwalk": "#2d2d2d",
     "CrossWalk": "#8d8d8d",
     "Manipulation of embedding": "red",
-    
 }

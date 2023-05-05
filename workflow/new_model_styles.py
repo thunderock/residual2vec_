@@ -5,15 +5,16 @@
 # @Filepath: workflow/new_model_styles.py
 
 
-
 import matplotlib.pyplot as plt
 import seaborn as sns
 from enum import Enum
+
 
 class Architecture(Enum):
     Word2Vec = 1
     GAT = 2
     GCN = 3
+
 
 MODEL_TO_IS_ARCHITECTURE = {
     "fairwalk+deepwalk": False,
@@ -38,7 +39,7 @@ MODEL_TO_IS_ARCHITECTURE = {
     "groupbiased+gat+node2vec": Architecture.GAT,
     "groupbiased+gcn+deepwalk": Architecture.GCN,
     "groupbiased+gcn+node2vec": Architecture.GCN,
-    }
+}
 
 EMB_MANIPULATION_METHODS = {
     "fairwalk+deepwalk": True,
@@ -63,84 +64,80 @@ EMB_MANIPULATION_METHODS = {
     "groupbiased+gat+node2vec": True,
     "groupbiased+gcn+deepwalk": True,
     "groupbiased+gcn+node2vec": True,
-    }
+}
 
 EMB_MANIPULATION_RENAME = {
-    'fairwalk+deepwalk': 'Fairwalk',
-    'fairwalk+node2vec': 'Fairwalk',
-    'crosswalk+deepwalk': 'Crosswalk',
-    'crosswalk+node2vec': 'Crosswalk',
-    'GCN+deepwalk+r2v': 'GCN (debiased)',
-    'GCN+node2vec+r2v': 'GCN (debiased)',
-    'GAT+deepwalk+r2v': 'GAT (debiased)',
-    'GAT+node2vec+r2v': 'GAT (debiased)',
-    'residual2vec': 'Deepwalk (debiased)',
-    'baseline+deepwalk': 'Manipulation of embeddings',
-    'baseline+node2vec': 'Manipulation of embeddings',
-    'groupbiased+residual2vec': 'Deepwalk (debiased)',
-    'groupbiased+gat+deepwalk': 'GAT (debiased)',
-    'groupbiased+gat+node2vec': 'GAT (debiased)',
-    'groupbiased+gcn+deepwalk': 'GCN (debiased)',
-    'groupbiased+gcn+node2vec': 'GCN (debiased)',
+    "fairwalk+deepwalk": "Fairwalk",
+    "fairwalk+node2vec": "Fairwalk",
+    "crosswalk+deepwalk": "Crosswalk",
+    "crosswalk+node2vec": "Crosswalk",
+    "GCN+deepwalk+r2v": "GCN (debiased)",
+    "GCN+node2vec+r2v": "GCN (debiased)",
+    "GAT+deepwalk+r2v": "GAT (debiased)",
+    "GAT+node2vec+r2v": "GAT (debiased)",
+    "residual2vec": "Deepwalk (debiased)",
+    "baseline+deepwalk": "Bolkubasi",
+    "baseline+node2vec": "Bolkubasi",
+    "groupbiased+residual2vec": "Deepwalk (debiased)",
+    "groupbiased+gat+deepwalk": "GAT (debiased)",
+    "groupbiased+gat+node2vec": "GAT (debiased)",
+    "groupbiased+gcn+deepwalk": "GCN (debiased)",
+    "groupbiased+gcn+node2vec": "GCN (debiased)",
 }
 
 bcmap = sns.color_palette("Set3").as_hex()
 ARCHITECTURE_TO_COLOR = {
-    'GCN': bcmap[3],
-    'GAT': bcmap[5],
-    'word2vec': bcmap[7],
-    'fairwalk': bcmap[4],
-    'crosswalk': bcmap[2],
+    "GCN": bcmap[3],
+    "GAT": bcmap[5],
+    "word2vec": bcmap[7],
+    "fairwalk": bcmap[4],
+    "crosswalk": bcmap[2],
 }
 
 EMB_MANIPULATION_MODEL_TO_COLOR = {
     # very cool
-    'fairwalk+deepwalk': bcmap[4],
-    'fairwalk+node2vec': bcmap[4],
-    'crosswalk+deepwalk': bcmap[2],
-    'crosswalk+node2vec': bcmap[2],
-    'GCN+deepwalk+r2v': bcmap[3],
-    'GCN+node2vec+r2v': bcmap[3],
-    'GAT+deepwalk+r2v': bcmap[5],
-    'GAT+node2vec+r2v': bcmap[5],
-    'residual2vec': bcmap[7],
-    'baseline+deepwalk': bcmap[11],
-    'baseline+node2vec': bcmap[11],
-    'groupbiased+residual2vec': bcmap[7],
-    'groupbiased+gat+deepwalk': bcmap[5],
-    'groupbiased+gat+node2vec': bcmap[5],
-    'groupbiased+gcn+deepwalk': bcmap[3],
-    'groupbiased+gcn+node2vec': bcmap[3],
+    "fairwalk+deepwalk": bcmap[4],
+    "fairwalk+node2vec": bcmap[4],
+    "crosswalk+deepwalk": bcmap[2],
+    "crosswalk+node2vec": bcmap[2],
+    "GCN+deepwalk+r2v": bcmap[3],
+    "GCN+node2vec+r2v": bcmap[3],
+    "GAT+deepwalk+r2v": bcmap[5],
+    "GAT+node2vec+r2v": bcmap[5],
+    "residual2vec": bcmap[7],
+    "baseline+deepwalk": bcmap[11],
+    "baseline+node2vec": bcmap[11],
+    "groupbiased+residual2vec": bcmap[7],
+    "groupbiased+gat+deepwalk": bcmap[5],
+    "groupbiased+gat+node2vec": bcmap[5],
+    "groupbiased+gcn+deepwalk": bcmap[3],
+    "groupbiased+gcn+node2vec": bcmap[3],
 }
 
 reference = {
-    "DeepWalk":"s",
+    "DeepWalk": "s",
     "GCN": "o",
     "GAT": "d",
     "Fairwalk": "v",
     "CrossWalk": "^",
     "Manipulation of embedding": "p",
-    
 }
 
 EMB_MANIPULATION_MODEL_TO_MARKER = {
-    'fairwalk+deepwalk': reference['Fairwalk'],
-    'fairwalk+node2vec': reference['Fairwalk'],
-    'crosswalk+deepwalk': reference['CrossWalk'],
-    'crosswalk+node2vec': reference['CrossWalk'],
-    'GCN+deepwalk+r2v': reference['GCN'],
-    'GCN+node2vec+r2v': reference['GCN'],
-    'GAT+deepwalk+r2v': reference['GAT'],
-    'GAT+node2vec+r2v': reference['GAT'],
-    'residual2vec': reference['DeepWalk'],
-    'baseline+deepwalk': reference['Manipulation of embedding'],
-    'baseline+node2vec': reference['Manipulation of embedding'],
-    'groupbiased+residual2vec': reference['DeepWalk'],
-    'groupbiased+gat+deepwalk': reference['GAT'],
-    'groupbiased+gat+node2vec': reference['GAT'],
-    'groupbiased+gcn+deepwalk': reference['GCN'],
-    'groupbiased+gcn+node2vec': reference['GCN'],
+    "fairwalk+deepwalk": reference["Fairwalk"],
+    "fairwalk+node2vec": reference["Fairwalk"],
+    "crosswalk+deepwalk": reference["CrossWalk"],
+    "crosswalk+node2vec": reference["CrossWalk"],
+    "GCN+deepwalk+r2v": reference["GCN"],
+    "GCN+node2vec+r2v": reference["GCN"],
+    "GAT+deepwalk+r2v": reference["GAT"],
+    "GAT+node2vec+r2v": reference["GAT"],
+    "residual2vec": reference["DeepWalk"],
+    "baseline+deepwalk": reference["Manipulation of embedding"],
+    "baseline+node2vec": reference["Manipulation of embedding"],
+    "groupbiased+residual2vec": reference["DeepWalk"],
+    "groupbiased+gat+deepwalk": reference["GAT"],
+    "groupbiased+gat+node2vec": reference["GAT"],
+    "groupbiased+gcn+deepwalk": reference["GCN"],
+    "groupbiased+gcn+node2vec": reference["GCN"],
 }
-    
-    
-    
