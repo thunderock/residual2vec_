@@ -187,7 +187,7 @@ g.axes.flat[2].legend(
     frameon=False,
     loc="upper center",
     bbox_to_anchor=(0.5, -0.25),
-    ncols=4,
+    ncol=4,
 )
 sns.despine()
 plt.savefig(OUTPUT_PROPOSED_VS_BASELINE, dpi=300, bbox_inches="tight")
