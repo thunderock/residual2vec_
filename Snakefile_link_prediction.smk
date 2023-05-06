@@ -96,7 +96,7 @@ DISPARITY_ALL_SCORE_FILE = j(RESULT_DIR, "result_disparity.csv")
 #
 # Figures
 #
-FIG_LP_SCORE_DEEPWALK = j("figs", "aucroc_deepwalk.pdf")
+# FIG_LP_SCORE_DEEPWALK = j("figs", "aucroc_deepwalk.pdf")
 FIG_LP_SCORE_DEEPWALK_PROPOSED_COMPARISON = j("figs", "aucroc_deepwalk_proposed_comparison.pdf")
 
 FIG_DISPARITY_SCORE_DEEPWALK= j("figs", "disparity_deepwalk.pdf")
@@ -137,7 +137,6 @@ rule link_prediction_all:
 
 rule link_prediction_figs:
     input:
-        FIG_LP_SCORE_DEEPWALK,
         FIG_DISPARITY_SCORE_DEEPWALK,
         FIG_DISPARITY_SCORE_NODE2VEC,
         FIG_LP_SCORE_NODE2VEC,
@@ -279,7 +278,7 @@ rule plot_auc_roc_score_deepwalk:
         ],
         sampling_method = "uniform",
     output:
-        FIG_LP_SCORE_DEEPWALK, FIG_LP_SCORE_DEEPWALK_PROPOSED_COMPARISON
+        FIG_LP_SCORE_DEEPWALK_PROPOSED_COMPARISON
     script:
         "workflow/plot_auc_roc.py"
 
