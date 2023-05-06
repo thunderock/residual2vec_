@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Sadamori Kojaku
 # @Date:   2023-01-24 00:52:33
-# @Last Modified by:   Sadamori Kojaku
-# @Last Modified time: 2023-02-14 10:41:49
+# @Last Modified by:   Ashutosh Tiwari
+# @Last Modified time: 2023-05-05 21:10:29
 # %%
 import os
 
@@ -106,9 +106,13 @@ ax.legend(
     loc="upper left",
     bbox_to_anchor=(1, 1),
     frameon=False,
-    ncols=3,
+    ncol=3,
     handletextpad=0.1,
 )
 ax.axis("off")
 
-fig.savefig("tmp.pdf", bbox_inches="tight", dpi=300)
+fig.savefig(output_file, bbox_inches="tight", dpi=300)
+
+# snakemake -c3 supplementary_figs -s Snakefile_supplementary.smk 
+
+# snakemake -c30 link_prediction_figs -s Snakefile_link_prediction.smk

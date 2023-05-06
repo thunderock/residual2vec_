@@ -19,7 +19,6 @@ import matplotlib.ticker as ticker
 
 INPUT_FILE = "../data/derived/results/result_auc_roc.csv"
 OUTPUT_PROPOSED_VS_BASELINE = "../figs/auc_roc_proposed_vs_baseline.pdf"
-OUTPUT_MANIPULATION_METHODS = "../figs/auc_roc_manipulation_methods.pdf"
 DATASETS = ["polbook", "polblog", "airport", "twitch", "facebook"]
 
 FOCAL_MODEL_LIST = [
@@ -42,13 +41,11 @@ DATASETS = ["polbook", "polblog", "airport", "twitch", "facebook"]
 if "snakemake" in sys.modules:
     INPUT_FILE = snakemake.input["input_file"]
     OUTPUT_PROPOSED_VS_BASELINE = snakemake.output[0]
-    OUTPUT_MANIPULATION_METHODS = snakemake.output[1]
     FOCAL_MODEL_LIST = snakemake.params["focal_model_list"]
     SAMPLING_METHOD = snakemake.params["sampling_method"]
 
 print("INPUT_FILE: ", INPUT_FILE)
 print("OUTPUT_PROPOSED_VS_BASELINE: ", OUTPUT_PROPOSED_VS_BASELINE)
-print("OUTPUT_MANIPULATION_METHODS: ", OUTPUT_MANIPULATION_METHODS)
 print("FOCAL_MODEL_LIST: ", FOCAL_MODEL_LIST)
 print("SAMPLING_METHOD: ", SAMPLING_METHOD)
 
