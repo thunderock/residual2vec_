@@ -146,6 +146,7 @@ rule link_prediction_figs:
         FIG_LOCAL_FAIRNESS_PER_NODE_CW,
         FIG_GLOBAL_FAIRNESS_PER_NODE,
         FIG_GLOBAL_FAIRNESS_PER_NODE_CW,
+        FIG_LP_SCORE_DEEPWALK_PROPOSED_COMPARISON
 
 rule fairness_per_node:
     params:
@@ -391,4 +392,4 @@ rule plot_disparity_curve_node2vec:
 # =====================
 # TODO: merge with the following snakemake
 # =====================
-# include: "Snakefile_supplementary.smk"
+include: "Snakefile_supplementary.smk"

@@ -3,12 +3,36 @@ from os.path import join as j
 import itertools
 import pandas as pd
 from snakemake.utils import Paramspace
-include: "./utils/workflow_utils.smk" # not able to merge this with snakemake_utils.py due to some path breakage issues
+
 
 # =====================
 # Output
 # =====================
 FIG_EMB = j("figs", "embedding", "data~{data}_sampleId~{sampleId}_model~{model}.png")
+MODEL_LIST = [
+    "fairwalk+deepwalk",
+    "fairwalk+node2vec",
+    "crosswalk+deepwalk",
+    "crosswalk+node2vec",
+    "GCN+deepwalk+random",
+    "GCN+deepwalk+r2v",
+    "GCN+node2vec+random",
+    "GCN+node2vec+r2v",
+    "GAT+deepwalk+random",
+    "GAT+deepwalk+r2v",
+    "GAT+node2vec+random",
+    "GAT+node2vec+r2v",
+    "deepwalk",
+    "node2vec",
+    "residual2vec",
+    "groupbiased+residual2vec",
+    "baseline+deepwalk",
+    "baseline+node2vec",
+    "groupbiased+gat+deepwalk",
+    "groupbiased+gat+node2vec",
+    "groupbiased+gcn+deepwalk",
+    "groupbiased+gcn+node2vec",
+]
 
 # =====================
 # Main output
