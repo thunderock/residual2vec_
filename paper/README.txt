@@ -328,3 +328,19 @@ Version 1.10    Bug fixes
 Version 1.09    SIGPLAN: revert caption rules (Matthew Fluet)
 
 Version 1.08    SIGPLAN reformatting (Matthew Fluet); bug fixes
+
+
+# Name suggestions
+
+* negative sampling method:
+
+FairNCE
+BiasedNCE
+
+
+
+* training method:
+
+FairGraph
+InclusiveNet
+Unify Net

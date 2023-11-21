@@ -1,0 +1,104 @@
+%%%% kr-instructions.tex -- version 1.3 (11-Jan-2021)
+
+\typeout{KR2023 Instructions for Authors}
+
+% These are the instructions for authors for KR-23.
+
+\documentclass{article}
+\pdfpagewidth=8.5in
+\pdfpageheight=11in
+
+\usepackage{kr}
+% Use the postscript times font!
+\usepackage{times}
+\usepackage{soul}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage[small]{caption}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\urlstyle{same}
+ \usepackage{setspace}
+\usepackage{stfloats}
+% the following package is optional:
+%\usepackage{latexsym}
+
+% See https://www.overleaf.com/learn/latex/theorems_and_proofs
+% for a nice explanation of how to define new theorems, but keep
+% in mind that the amsthm package is already included in this
+% template and that you must *not* alter the styling.
+\newtheorem{example}{Example}
+\newtheorem{theorem}{Theorem}
+
+% Following comment is from ijcai97-submit.tex:
+% The preparation of these files was supported by Schlumberger Palo Alto
+% Research, AT\&T Bell Laboratories, and Morgan Kaufmann Publishers.
+% Shirley Jowell, of Morgan Kaufmann Publishers, and Peter F.
+% Patel-Schneider, of AT\&T Bell Laboratories collaborated on their
+% preparation.
+
+% These instructions can be modified and used in other conferences as long
+% as credit to the authors and supporting agencies is retained, this notice
+% is not changed, and further modification or reuse is not restricted.
+% Neither Shirley Jowell nor Peter F. Patel-Schneider can be listed as
+% contacts for providing assistance without their prior permission.
+
+% To use for other conferences, change references to files and the
+% conference appropriate and use other authors, contacts, publishers, and
+% organizations.
+% Also change the deadline and address for returning papers and the length and
+% page charge instructions.
+% Put where the files are available in the appropriate places.
+%PDF Info Is REQUIRED.
+\pdfinfo{
+/TemplateVersion (KR.2022.0, KR.2023.0)
+}
+
+
+
+\title{Debiasing Graph Neural Networks using Biased Contrastive Learning}
+
+% Single author syntax
+\iffalse % (remove the multiple-author syntax below and \iffalse ... \fi here)
+\author{%
+    Author name
+    \affiliations
+    Affiliation
+    \emails
+    email@example.com    % email
+}
+\fi
+% Multiple author syntax
+\author{%
+Ashutosh Tiwari$^1$\and
+Sadamori Kojaku$^1$\and
+Yong-Yeol Ahn$^{1}$\\
+\affiliations
+$^1$Indiana University, Bloomington, IN, USA\\
+% $^2$Connection Science, MIT, Cambridge, MA, USA\\
+\emails
+\{ashutiwa, skojaku, yyahn\}@iu.edu,
+}
+
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+ Societal biases in networks make their way into AI systems. For example, algorithms trained on social networks may make biased recommendations based on gender and ethnic homophily, which can bias consequential decisions such as promotions and hiring. Previous debiasing methods include the manipulation of input data, manipulation of output embedding, and constrained learning such as adversarial learning. However, manipulation of input data or output embedding may degrade the quality of embedding and introduce new biases, while adversarial learning is known to be highly unstable and sensitive to hyperparameters. Here, we propose a simple framework that utilizes an organic capacity of neural networks for debiasing. Our approach is based on contrastive learning, which trains a neural network to discriminate between actual data (e.g., a given network) and random data (e.g., a random network). We introduce a specific bias into the random data such that the protected attributes are not informative in the discrimination, preventing biases from entering the model. We emphasize that our proposed framework is both non-parametric and generic, applicable to any embedding method or model architecture. Specifically, we conduct evaluations using both node2vec and DeepWalk, with consistent outcomes.
+
+We showcase the efficacy of our biased sampling method in mitigating bias using five distinct datasets characterized by diverse statistical properties, including different scales, degree distributions, and information modularities using two metrics. First using link prediction as an application, we demonstrate that our approach substantially reduces biases compared to the previous approaches while maintaining or improving link prediction accuracy. We use yet another metric, disparity per node, which is ratio of nodes for which standard deviation of cosine similarity from centroid of all protected groups decreased in proposed framework compared to the baseline architecture we achieve values more than $0.5$, $10$ out of $12$ times which indicates that the proposed framework is better than the baseline models trained without biased negative sampling.
+
+
+Our framework is able to effectively debias the embedding and promote greater homogeneity among the political groups, thereby reducing the likelihood of polarization and promoting more nuanced understanding and analysis of the network.
+\end{abstract}
+
+
+
+\end{document}
